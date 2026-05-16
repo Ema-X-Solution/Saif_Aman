@@ -54,8 +54,8 @@ export function LoginForm() {
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "admin@saif-aman.example",
-      password: "demo",
+      email: "",
+      password: "",
       remember: true,
     },
   });
@@ -108,7 +108,6 @@ export function LoginForm() {
                       <Input
                         type="email"
                         autoComplete="email"
-                        placeholder="admin@saif-aman.example"
                         {...field}
                       />
                     </FormControl>
