@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { BusFront, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { usePathname } from "next/navigation";
@@ -9,7 +9,14 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -31,18 +38,18 @@ import { getAxiosErrorMessage } from "@/lib/http-error-message";
 import { busesService } from "@/services/buses.service";
 import { usersAdminService } from "@/services/users-admin.service";
 import { schoolsService } from "@/services/schools.service";
-const schema = z.object({
-  label: z.string().min(1),
-  code: z.string().min(1),
-  plate_number: z.string().min(1),
-  model: z.string().min(1),
-  color: z.string().min(1),
-  school_id: z.string().min(1, "Pick a school."),
-  driver_id: z.string().min(1, "Pick a driver."),
-  supervisor_id: z.string().min(1, "Pick a supervisor."),
+const getSchema = (t: ReturnType<typeof useT>) => z.object({
+  label: z.string().min(1, t("common.required")),
+  code: z.string().min(1, t("common.required")),
+  plate_number: z.string().min(1, t("common.required")),
+  model: z.string().min(1, t("common.required")),
+  color: z.string().min(1, t("common.required")),
+  school_id: z.string().min(1, t("common.pickSchool")),
+  driver_id: z.string().min(1, t("common.required")),
+  supervisor_id: z.string().min(1, t("common.required")),
 });
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<ReturnType<typeof getSchema>>;
 
 interface Option {
   id: number;
@@ -65,7 +72,7 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
   const [supervisors, setSupervisors] = useState<Option[]>([]);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(getSchema(t)),
     defaultValues: {
       label: "",
       code: "",
@@ -146,18 +153,30 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
         {t("buses.addBus")}
       </Button>
       <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto" dir={dialogDir}>
-        {/* Header removed per request */}
+        <DialogHeader className="mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <BusFront className="h-5 w-5 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <DialogTitle className="text-xl">{t("buses.addBus")}</DialogTitle>
+              <DialogDescription className="text-sm font-normal">
+                {t("buses.description")}
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
-                name="label"
+                name="code"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Label</FormLabel>
+                    <FormLabel>{t("buses.code")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Bus A" {...field} />
+                      <Input placeholder={t("buses.codePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -165,12 +184,12 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
               />
               <FormField
                 control={form.control}
-                name="code"
+                name="label"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Code</FormLabel>
+                    <FormLabel>{t("buses.label")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="BUS-001" {...field} />
+                      <Input placeholder={t("buses.labelPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -180,12 +199,12 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
-                name="plate_number"
+                name="color"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Plate number</FormLabel>
+                    <FormLabel>{t("buses.color")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="ABC-123" {...field} />
+                      <Input placeholder={t("buses.colorPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,12 +212,12 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
               />
               <FormField
                 control={form.control}
-                name="color"
+                name="plate_number"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Color</FormLabel>
+                    <FormLabel>{t("buses.plateNumberLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="White" {...field} />
+                      <Input placeholder={t("buses.plateNumberPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -210,9 +229,9 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
               name="model"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Model</FormLabel>
+                  <FormLabel>{t("buses.model")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Toyota Coaster" {...field} />
+                    <Input placeholder={t("buses.modelPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -224,7 +243,7 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
               name="school_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>School</FormLabel>
+                  <FormLabel>{t("schools.school")}</FormLabel>
                   <Select
                     disabled={loadingRefs}
                     onValueChange={field.onChange}
@@ -232,7 +251,7 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select school" />
+                        <SelectValue placeholder={t("buses.selectSchool")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -253,7 +272,7 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
               name="driver_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Driver</FormLabel>
+                  <FormLabel>{t("buses.driver")}</FormLabel>
                   <Select
                     disabled={loadingRefs}
                     onValueChange={field.onChange}
@@ -261,7 +280,7 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select driver" />
+                        <SelectValue placeholder={t("buses.selectDriver")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -282,7 +301,7 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
               name="supervisor_id"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Supervisor</FormLabel>
+                  <FormLabel>{t("buses.supervisor")}</FormLabel>
                   <Select
                     disabled={loadingRefs}
                     onValueChange={field.onChange}
@@ -290,7 +309,7 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select supervisor" />
+                        <SelectValue placeholder={t("buses.selectSupervisor")} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -312,13 +331,13 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 type="submit"
                 disabled={form.formState.isSubmitting || loadingRefs}
               >
-                {form.formState.isSubmitting ? "Saving…" : "Create bus"}
+                {form.formState.isSubmitting ? t("buses.saving") : t("buses.createBus")}
               </Button>
             </DialogFooter>
           </form>

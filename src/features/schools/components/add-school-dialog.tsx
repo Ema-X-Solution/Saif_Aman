@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { School, MapPin, Plus } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { usePathname } from "next/navigation";
@@ -9,7 +9,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -24,22 +30,22 @@ import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { getAxiosErrorMessage } from "@/lib/http-error-message";
 import { schoolsService } from "@/services/schools.service";
 
-const schema = z.object({
-  name: z.string().min(1, "Required."),
-  phone: z.string().min(1, "Required."),
-  email: z.string().email("Valid email required."),
+const getSchema = (t: ReturnType<typeof useT>) => z.object({
+  name: z.string().min(1, t("common.required")),
+  phone: z.string().min(1, t("common.required")),
+  email: z.string().email(t("validation.invalidEmail")),
   website: z.string().trim(),
   notes: z.string().optional(),
-  address: z.string().min(1, "Required."),
+  address: z.string().min(1, t("common.required")),
   latitude: z.coerce.number({
-    invalid_type_error: "Latitude required.",
+    invalid_type_error: t("common.required"),
   }),
   longitude: z.coerce.number({
-    invalid_type_error: "Longitude required.",
+    invalid_type_error: t("common.required"),
   }),
 });
 
-type FormValues = z.infer<typeof schema>;
+type FormValues = z.infer<ReturnType<typeof getSchema>>;
 
 interface AddSchoolDialogProps {
   onCreated?: () => void;
@@ -53,7 +59,7 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(getSchema(t)),
     defaultValues: {
       name: "",
       phone: "",
@@ -91,7 +97,7 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
 
   function useCurrentLocation() {
     if (!("geolocation" in navigator)) {
-      toast.error("Geolocation not supported by your browser.");
+      toast.error(t("schools.locationNotSupported"));
       return;
     }
 
@@ -99,10 +105,10 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
       (pos) => {
         form.setValue("latitude", Number(pos.coords.latitude));
         form.setValue("longitude", Number(pos.coords.longitude));
-        toast.success("Location set to your current coordinates.");
+        toast.success(t("schools.locationSet"));
       },
       (err) => {
-        toast.error("Unable to get location: " + err.message);
+        toast.error(t("schools.locationError") + err.message);
       },
       { enableHighAccuracy: true, timeout: 10000 },
     );
@@ -119,7 +125,17 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
         {t("schools.addSchool")}
       </Button>
       <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto" dir={dialogDir}>
-        {/* Header removed per request */}
+        <DialogHeader className="mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <School className="h-5 w-5 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <DialogTitle className="text-xl">{t("schools.addSchool")}</DialogTitle>
+              
+            </div>
+          </div>
+        </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
@@ -127,19 +143,14 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>{t("common.name")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="School name" {...field} />
+                    <Input placeholder={t("schools.schoolNamePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="flex justify-end">
-              <Button type="button" variant="outline" onClick={useCurrentLocation}>
-                Use current location
-              </Button>
-            </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField
@@ -147,9 +158,9 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>{t("common.phone")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="01012345678" {...field} />
+                      <Input placeholder={t("schools.phonePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,9 +171,9 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("common.email")}</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder="school@example.com" {...field} />
+                      <Input type="email" placeholder={t("schools.emailPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -174,63 +185,49 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
               name="website"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Website</FormLabel>
+                  <FormLabel>{t("schools.website")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://school.com" {...field} />
+                    <Input placeholder={t("schools.websitePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Address</FormLabel>
-                  <FormControl>
-                    <Input placeholder="City, region" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
               <FormField
                 control={form.control}
-                name="latitude"
+                name="address"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Latitude</FormLabel>
+                    <FormLabel>{t("common.address")}</FormLabel>
                     <FormControl>
-                      <Input type="number" step="any" {...field} />
+                      <Input placeholder={t("schools.addressPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="longitude"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Longitude</FormLabel>
-                    <FormControl>
-                      <Input type="number" step="any" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              <div className="flex justify-end">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={useCurrentLocation}
+                  className="gap-2"
+                >
+                  <MapPin className="h-4 w-4" aria-hidden />
+                  {t("schools.useCurrentLocation")}
+                </Button>
+              </div>
             </div>
             <FormField
               control={form.control}
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Notes</FormLabel>
+                  <FormLabel>{t("schools.notes")}</FormLabel>
                   <FormControl>
-                    <Textarea rows={3} placeholder="Optional notes" {...field} />
+                    <Textarea rows={3} placeholder={t("schools.notesPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -242,10 +239,10 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving…" : "Create school"}
+                {form.formState.isSubmitting ? t("schools.saving") : t("schools.createSchool")}
               </Button>
             </DialogFooter>
           </form>

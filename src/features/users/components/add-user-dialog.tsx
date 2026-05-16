@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus } from "lucide-react";
+import { Plus, User } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { usePathname } from "next/navigation";
@@ -40,19 +40,19 @@ import { usersAdminService } from "@/services/users-admin.service";
 
 const statusEnum = z.enum(["pending", "approved", "rejected"]);
 
-const baseSchema = z.object({
+const getBaseSchema = (t: ReturnType<typeof useT>) => z.object({
   school_id: z.string(),
-  name: z.string().min(1, "Required."),
+  name: z.string().min(1, t("common.required")),
   email: z.string().trim(),
-  phone: z.string().min(1, "Required."),
-  password: z.string().min(6, "At least 6 characters."),
+  phone: z.string().min(1, t("common.required")),
+  password: z.string().min(6, t("validation.atLeast6")),
   status: statusEnum,
   address: z.string().trim(),
   latitude: z.string().trim(),
   longitude: z.string().trim(),
 });
 
-type FormValues = z.infer<typeof baseSchema>;
+type FormValues = z.infer<ReturnType<typeof getBaseSchema>>;
 
 interface SchoolOption {
   id: number;
@@ -73,16 +73,16 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
 
   const schema = useMemo(
     () =>
-      baseSchema.superRefine((data, ctx) => {
+      getBaseSchema(t).superRefine((data, ctx) => {
         if (requireSchool && !data.school_id) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
-            message: "Pick a school.",
+            message: t("common.pickSchool"),
             path: ["school_id"],
           });
         }
       }),
-    [requireSchool],
+    [requireSchool, t],
   );
 
   const [open, setOpen] = useState(false);
@@ -96,7 +96,7 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
       email: "",
       phone: "",
       password: "",
-      status: "pending",
+      status: "approved",
       address: "",
       latitude: "",
       longitude: "",
@@ -154,7 +154,7 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
         email: "",
         phone: "",
         password: "",
-        status: "pending",
+        status: "approved",
         address: "",
         latitude: "",
         longitude: "",
@@ -180,16 +180,14 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
         {userType === "supervisor" ? t("users.addSupervisor") : t("users.addDriver")}
       </Button>
       <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto" dir={dialogDir}>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>
-            Creates a user via{" "}
-            <code className="rounded bg-muted px-1 py-0.5 text-xs">
-              POST /users
-            </code>{" "}
-            as{" "}
-            <span className="font-medium capitalize">{userType}</span>.
-          </DialogDescription>
+        <DialogHeader className="mb-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+              <User className="h-5 w-5 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <DialogTitle className="text-xl">{title}</DialogTitle>            </div>
+          </div>
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -199,14 +197,14 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
                 name="school_id"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>School</FormLabel>
+                    <FormLabel>{t("common.selectSchool")}</FormLabel>
                     <Select
                       onValueChange={field.onChange}
                       value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select school" />
+                          <SelectValue placeholder={t("common.selectSchool")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -228,7 +226,7 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full name</FormLabel>
+                  <FormLabel>{t("common.fullName")}</FormLabel>
                   <FormControl>
                     <Input placeholder="Ahmed Ali" {...field} />
                   </FormControl>
@@ -243,7 +241,7 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>{t("common.phone")}</FormLabel>
                     <FormControl>
                       <Input placeholder="010098765432" {...field} />
                     </FormControl>
@@ -256,11 +254,11 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>{t("common.email")}</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
-                        placeholder="Optional"
+                        placeholder={t("common.optional")}
                         {...field}
                       />
                     </FormControl>
@@ -275,7 +273,7 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t("common.password")}</FormLabel>
                   <FormControl>
                     <Input type="password" autoComplete="new-password" {...field} />
                   </FormControl>
@@ -286,42 +284,20 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
 
             <FormField
               control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="pending">Pending</SelectItem>
-                      <SelectItem value="approved">Approved</SelectItem>
-                      <SelectItem value="rejected">Rejected</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>{t("common.address")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Optional" {...field} />
+                    <Input placeholder={t("common.optional")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            {/* Latitude and Longitude hidden visually similar to AddSchool */}
+            <div className="hidden">
               <FormField
                 control={form.control}
                 name="latitude"
@@ -356,10 +332,10 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? "Saving…" : "Create"}
+                {form.formState.isSubmitting ? t("buses.saving") : t("common.add")}
               </Button>
             </DialogFooter>
           </form>

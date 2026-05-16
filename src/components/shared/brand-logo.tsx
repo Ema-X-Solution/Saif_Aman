@@ -43,9 +43,7 @@ export function BrandLogo({
           <span className="text-xs font-medium tracking-wide text-muted-foreground">
             {APP_NAME_EN}
           </span>
-          <span className="text-[11px] text-muted-foreground/90" dir="rtl">
-            {APP_NAME_AR}
-          </span>
+
         </span>
       ) : null}
     </Link>
