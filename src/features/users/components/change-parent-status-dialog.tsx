@@ -10,12 +10,21 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { getAxiosErrorMessage } from "@/lib/http-error-message";
 import { usersAdminService } from "@/services/users-admin.service";
 import type { ApiUserRow } from "@/types/api";
 
 const schema = z.object({ status: z.enum(["pending", "approved", "rejected"]) });
 
 type FormValues = z.infer<typeof schema>;
+type ParentStatus = FormValues["status"];
+
+function toParentStatus(status: string | null | undefined): ParentStatus {
+  if (status === "approved" || status === "rejected" || status === "pending") {
+    return status;
+  }
+  return "pending";
+}
 
 interface Props {
   open: boolean;
@@ -28,13 +37,13 @@ export function ChangeParentStatusDialog({ open, onOpenChange, user, onUpdated }
   const t = useT();
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { status: (user?.status as any) ?? "pending" },
+    defaultValues: { status: toParentStatus(user?.status) },
   });
 
   // reset when user changes
   React.useEffect(() => {
-    form.reset({ status: (user?.status as any) ?? "pending" });
-  }, [user]);
+    form.reset({ status: toParentStatus(user?.status) });
+  }, [user, form]);
 
   async function onSubmit(values: FormValues) {
     if (!user) return;
@@ -55,7 +64,7 @@ export function ChangeParentStatusDialog({ open, onOpenChange, user, onUpdated }
       onOpenChange(false);
       onUpdated?.();
     } catch (err) {
-      toast.error((err as any)?.message ?? "Failed to update status.");
+      toast.error(getAxiosErrorMessage(err));
     }
   }
 

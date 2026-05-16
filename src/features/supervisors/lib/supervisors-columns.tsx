@@ -1,9 +1,8 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { toast } from "sonner";
-
-import { EntityRowActions } from "@/components/tables/entity-row-actions";
+import
+ { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { Supervisor } from "@/types/supervisor";
 

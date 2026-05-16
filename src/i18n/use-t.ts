@@ -4,10 +4,7 @@ import { useMemo } from "react";
 import { usePathname } from "next/navigation";
 
 import { DEFAULT_LOCALE, type AppLocale } from "@/constants/app";
-import en from "@/locales/en.json";
-import ar from "@/locales/ar.json";
-
-type Messages = typeof en;
+import { getMessages, type Messages } from "@/lib/locale-messages";
 
 type AnyRecord = Record<string, unknown>;
 
@@ -18,10 +15,6 @@ function getByPath(obj: AnyRecord, path: string): unknown {
     }
     return undefined;
   }, obj);
-}
-
-export function getMessages(locale: AppLocale): Messages {
-  return locale === "ar" ? (ar as unknown as Messages) : (en as unknown as Messages);
 }
 
 export function getLocaleFromPathname(pathname: string | null): AppLocale {
@@ -42,7 +35,7 @@ export function useT() {
   const locale = getLocaleFromPathname(pathname ?? null);
 
   return useMemo(() => {
-    const messages = getMessages(locale);
+    const messages = getMessages(locale) as Messages;
 
     return (key: string) => {
       const value = getByPath(messages as unknown as AnyRecord, key);

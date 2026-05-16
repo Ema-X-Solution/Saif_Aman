@@ -1,11 +1,15 @@
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { AuthGate } from "@/features/auth/components/auth-gate";
 import { BusesView } from "@/features/buses/components/buses-view";
-import en from "@/locales/en.json";
-import ar from "@/locales/ar.json";
+import { getMessages } from "@/lib/locale-messages";
 
-export default function BusesPage({ params }: { params: { locale: string } }) {
-  const messages = params.locale === "ar" ? (ar as any) : (en as any);
+export default async function BusesPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const messages = getMessages(locale);
   return (
     <AuthGate>
       <DashboardShell title={messages.sidebar.buses}>

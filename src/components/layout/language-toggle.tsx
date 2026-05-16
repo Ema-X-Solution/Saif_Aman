@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import type { AppLocale } from "@/constants/app";
 import { useSettingsStore } from "@/store/settings-store";
 
 export function LanguageToggle() {
@@ -13,7 +14,7 @@ export function LanguageToggle() {
   const next = locale === "en" ? "ar" : "en";
 
   function handleToggle() {
-    setLocale(next as any);
+    setLocale(next as AppLocale);
     // Build new path preserving existing route after locale prefix
     const rest = pathname.replace(/^\/(en|ar)/, "") || "/";
     const newPath = `/${next}${rest}`;

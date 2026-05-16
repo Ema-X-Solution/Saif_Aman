@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import RemoteTable, { RemoteColumn } from "@/components/tables/remote-table";
 import { PageHeader } from "@/components/shared/page-header";
@@ -26,7 +26,7 @@ export function ParentsView() {
   const [selectedUser, setSelectedUser] = useState<ApiUserRow | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const fetcher = async ({ page, pageSize, q }: { page: number; pageSize: number; q?: string }) => {
+  const fetcher = async ({ page }: { page: number; pageSize: number; q?: string }) => {
     const res = await usersAdminService.list({ page, type: "parent" });
     const rows = res.data ?? [];
     const mapped: ParentRow[] = rows.map((p) => ({

@@ -73,20 +73,18 @@ export function buildParentRequestColumns(
 
         const actions: { id: string; label: string; onSelect: () => Promise<void> }[] = [];
 
-        if (status !== "approved") {
-          actions.push({
-            id: "approve",
-            label: t("common.approved"),
-            onSelect: async () => {
-              try {
-                await onUpdateStatus(row.original.id, "approved");
-                toast.success("Request approved.");
-              } catch (err) {
-                toast.error("Failed to approve request.");
-              }
-            },
-          });
-        }
+        actions.push({
+          id: "approve",
+          label: t("common.approved"),
+          onSelect: async () => {
+            try {
+              await onUpdateStatus(row.original.id, "approved");
+              toast.success("Request approved.");
+            } catch {
+              toast.error("Failed to approve request.");
+            }
+          },
+        });
 
         if (status !== "rejected") {
           actions.push({
@@ -96,7 +94,7 @@ export function buildParentRequestColumns(
               try {
                 await onUpdateStatus(row.original.id, "rejected");
                 toast.success("Request rejected.");
-              } catch (err) {
+              } catch {
                 toast.error("Failed to reject request.");
               }
             },

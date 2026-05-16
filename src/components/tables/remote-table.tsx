@@ -118,7 +118,9 @@ export function RemoteTable<T>({
                 <TableRow key={i}>
                   {columns.map((col) => (
                     <TableCell key={col.key} className={col.className}>
-                      {col.render ? col.render(row) : (row as any)[col.key]}
+                      {col.render
+                        ? col.render(row)
+                        : String((row as Record<string, unknown>)[col.key] ?? "")}
                     </TableCell>
                   ))}
                 </TableRow>

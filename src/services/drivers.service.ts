@@ -1,5 +1,5 @@
 import { usersAdminService } from "@/services/users-admin.service";
-import type { ApiUserRow, LaravelPaginator } from "@/types/api";
+import type { ApiUserRow } from "@/types/api";
 import type { Driver } from "@/types/driver";
 
 function normalizeUserStatus(status: string): Driver["status"] {

@@ -1,5 +1,5 @@
 import { usersAdminService } from "@/services/users-admin.service";
-import type { ApiUserRow, LaravelPaginator } from "@/types/api";
+import type { ApiUserRow } from "@/types/api";
 import type { Supervisor } from "@/types/supervisor";
 
 function normalizeUserStatus(status: string): Supervisor["status"] {

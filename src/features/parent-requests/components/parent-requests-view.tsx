@@ -19,7 +19,7 @@ export function ParentRequestsView() {
         await parentRequestsService.updateStatus(id, status);
         const rows = await parentRequestsService.list();
         setData(rows);
-      } catch (err) {
+      } catch {
         // error handled in columns
       }
     }, t),

@@ -4,8 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 
 import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import type { Area } from "@/types/area";
-import { toast } from "sonner";
-
 export function buildAreaColumns(t: (key: string) => string): ColumnDef<Area>[] {
   return [
     { accessorKey: "name", header: t("common.area"), enableSorting: true },

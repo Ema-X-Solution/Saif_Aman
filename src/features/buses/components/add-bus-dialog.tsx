@@ -9,14 +9,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -38,8 +31,6 @@ import { getAxiosErrorMessage } from "@/lib/http-error-message";
 import { busesService } from "@/services/buses.service";
 import { usersAdminService } from "@/services/users-admin.service";
 import { schoolsService } from "@/services/schools.service";
-import type { ApiUserRow, LaravelPaginator } from "@/types/api";
-
 const schema = z.object({
   label: z.string().min(1),
   code: z.string().min(1),
