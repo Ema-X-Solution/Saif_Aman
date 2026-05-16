@@ -1,15 +1,8 @@
 import {
-  Bell,
   Bus,
   ClipboardList,
-  Cog,
-  Gauge,
   LayoutDashboard,
-  MapPin,
   School,
-  Shield,
-  Star,
-  UserCog,
   Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
