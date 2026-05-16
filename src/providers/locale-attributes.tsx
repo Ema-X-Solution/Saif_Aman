@@ -2,10 +2,11 @@
 
 import { useEffect } from "react";
 
-import { useSettingsStore } from "@/store/settings-store";
+import { usePathname } from "next/navigation";
 
 export function LocaleAttributes() {
-  const locale = useSettingsStore((s) => s.locale);
+  const pathname = usePathname();
+  const locale = pathname?.startsWith('/ar') ? 'ar' : 'en';
 
   useEffect(() => {
     const root = document.documentElement;

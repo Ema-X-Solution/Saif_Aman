@@ -7,13 +7,13 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import type { Bus } from "@/types/bus";
 import { toast } from "sonner";
 
-export function buildBusColumns(): ColumnDef<Bus>[] {
+export function buildBusColumns(t: (key: string) => string): ColumnDef<Bus>[] {
   return [
-    { accessorKey: "plateNumber", header: "Plate", enableSorting: true },
-    { accessorKey: "schoolName", header: "School", enableSorting: true },
+    { accessorKey: "plateNumber", header: t("common.plate"), enableSorting: true },
+    { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
     {
       id: "crew",
-      header: "Primary crew",
+      header: t("common.primaryCrew"),
       enableSorting: false,
       cell: ({ row }) => (
         <div className="text-sm">
@@ -24,7 +24,7 @@ export function buildBusColumns(): ColumnDef<Bus>[] {
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("common.status"),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
       enableSorting: true,
     },
@@ -38,8 +38,8 @@ export function buildBusColumns(): ColumnDef<Bus>[] {
           actions={[
             {
               id: "map",
-              label: "Open live map",
-              onSelect: () => toast.message(row.original.plateNumber),
+              label: t("buses.openLiveMap"),
+              onSelect: () => {},
             },
           ]}
         />

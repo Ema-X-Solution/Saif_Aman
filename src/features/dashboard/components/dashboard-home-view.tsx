@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/shared/page-header";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { useT } from "@/i18n/use-t";
 import {
   dashboardService,
   notificationsService,
@@ -23,6 +24,7 @@ import type { ParentRequest } from "@/types/parent-request";
 import type { Review } from "@/types/review";
 
 export function DashboardHomeView() {
+  const t = useT();
   const [stats, setStats] = useState<DashboardStat[]>([]);
   const [activity, setActivity] = useState<ActivityPoint[]>([]);
   const [live, setLive] = useState<LiveBusPoint[]>([]);
@@ -77,8 +79,8 @@ export function DashboardHomeView() {
   return (
     <div className="space-y-8">
       <PageHeader
-        title="Operations overview"
-        description="Monitor schools, buses, and parent workflows from a single admin surface."
+        title={t("dashboard.home.title")}
+        description={t("dashboard.home.description")}
       />
       <DashboardStatsSection stats={stats} />
       <div className="grid gap-6 xl:grid-cols-3">
@@ -88,7 +90,7 @@ export function DashboardHomeView() {
             <Card className="border-border/80">
               <CardHeader>
                 <CardTitle className="text-base font-semibold">
-                  Recent parent requests
+                  {t("dashboard.home.recentRequests")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -109,7 +111,7 @@ export function DashboardHomeView() {
             <Card className="border-border/80">
               <CardHeader>
                 <CardTitle className="text-base font-semibold">
-                  Recent reviews
+                  {t("dashboard.home.recentReviews")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -131,14 +133,17 @@ export function DashboardHomeView() {
           <QuickActionsCard />
           <Card className="border-border/80">
             <CardHeader>
-              <CardTitle className="text-base font-semibold">Notifications</CardTitle>
+              <CardTitle className="text-base font-semibold">{t("dashboard.home.notifications")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               {notifications.map((note) => (
                 <div key={note.id} className="rounded-lg border border-border/70 px-3 py-2">
                   <div className="flex items-center justify-between gap-2">
                     <p className="font-medium">{note.title}</p>
-                    <StatusBadge status={note.read ? "inactive" : "pending"} label={note.read ? "Read" : "New"} />
+                    <StatusBadge
+                      status={note.read ? "inactive" : "pending"}
+                      label={note.read ? t("dashboard.home.read") : t("dashboard.home.new")}
+                    />
                   </div>
                   <p className="text-sm text-muted-foreground">{note.body}</p>
                 </div>

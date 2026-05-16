@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useT } from "@/i18n/use-t";
 import { useAuthStore } from "@/store/auth-store";
 
 const profileSchema = z.object({
@@ -29,32 +30,30 @@ const profileSchema = z.object({
 type ProfileValues = z.infer<typeof profileSchema>;
 
 export function ProfileView() {
+  const t = useT();
   const session = useAuthStore((s) => s.session);
 
   const form = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     values: {
-      name: session?.name ?? "Admin User",
-      jobTitle: "Transport safety lead",
-      phone: "+966 50 000 0000",
+      name: session?.name ?? t("profilePage.demoName"),
+      jobTitle: t("profilePage.demoJobTitle"),
+      phone: t("profilePage.demoPhone"),
     },
   });
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Profile"
-        description="Administrative identity surfaced to other operators (mock form)."
-      />
+      <PageHeader title={t("profilePage.title")} description={t("profilePage.description")} />
       <Card className="border-border/80">
         <CardHeader className="flex flex-row items-center gap-4 space-y-0">
           <Avatar className="h-14 w-14">
             <AvatarFallback>
-              {session?.name?.slice(0, 2).toUpperCase() ?? "SA"}
+              {session?.name?.slice(0, 2).toUpperCase() ?? t("profilePage.avatarFallback")}
             </AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle>{session?.name ?? "Administrator"}</CardTitle>
+            <CardTitle>{session?.name ?? t("profilePage.fallbackName")}</CardTitle>
             <p className="text-sm text-muted-foreground">{session?.email}</p>
           </div>
         </CardHeader>
@@ -63,7 +62,7 @@ export function ProfileView() {
             <form
               className="grid gap-4 md:grid-cols-2"
               onSubmit={form.handleSubmit(() => {
-                toast.success("Profile updated (mock).");
+                toast.success(t("profilePage.toastSaved"));
               })}
             >
               <FormField
@@ -71,7 +70,7 @@ export function ProfileView() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full name</FormLabel>
+                    <FormLabel>{t("profilePage.fullName")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -84,7 +83,7 @@ export function ProfileView() {
                 name="jobTitle"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Role title</FormLabel>
+                    <FormLabel>{t("profilePage.roleTitle")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -97,7 +96,7 @@ export function ProfileView() {
                 name="phone"
                 render={({ field }) => (
                   <FormItem className="md:col-span-2">
-                    <FormLabel>Phone</FormLabel>
+                    <FormLabel>{t("profilePage.phone")}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -106,7 +105,7 @@ export function ProfileView() {
                 )}
               />
               <div className="md:col-span-2">
-                <Button type="submit">Save profile</Button>
+                <Button type="submit">{t("profilePage.saveProfile")}</Button>
               </div>
             </form>
           </Form>

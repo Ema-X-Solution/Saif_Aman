@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
+import { useT } from "@/i18n/use-t";
 
 export interface DataTableToolbarProps {
   searchPlaceholder: string;
@@ -18,6 +19,7 @@ export function DataTableToolbar({
   onSearchChange,
   filtersSlot,
 }: DataTableToolbarProps) {
+  const t = useT();
   return (
     <div className="flex flex-col gap-3 border-b border-border/80 bg-card px-4 py-3 lg:flex-row lg:items-center lg:justify-between">
       <div className="relative w-full lg:max-w-sm">
@@ -27,7 +29,7 @@ export function DataTableToolbar({
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder={searchPlaceholder}
           className="ps-9"
-          aria-label="Search table"
+          aria-label={t("common.search")}
         />
       </div>
       {filtersSlot ? (

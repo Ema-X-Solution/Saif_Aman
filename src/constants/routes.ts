@@ -3,9 +3,11 @@ export const ROUTES = {
   login: "/login",
   dashboard: "/dashboard",
   schools: "/schools",
+  buses: "/buses",
+  /** Supervisors + drivers (`?tab=`). */
+  users: "/users",
   drivers: "/drivers",
   supervisors: "/supervisors",
-  buses: "/buses",
   areas: "/areas",
   parentRequests: "/parent-requests",
   reviews: "/reviews",

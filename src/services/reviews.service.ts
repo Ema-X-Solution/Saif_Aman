@@ -1,9 +1,9 @@
-import { MOCK_REVIEWS } from "@/mock/reviews";
-import { withMockLatency } from "@/services/mock-delay";
+import { http } from "@/services/http";
 import type { Review } from "@/types/review";
 
 export const reviewsService = {
-  list(): Promise<Review[]> {
-    return withMockLatency([...MOCK_REVIEWS]);
+  async list(): Promise<Review[]> {
+    const res = await http.get<{ data: Review[] }>("/reviews");
+    return res.data?.data ?? [];
   },
 };

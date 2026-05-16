@@ -11,6 +11,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 
 import { DataTablePagination } from "@/components/tables/data-table-pagination";
 import { DataTableToolbar } from "@/components/tables/data-table-toolbar";
@@ -24,6 +25,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { matchesSearch } from "@/lib/table-helpers";
 import { cn } from "@/lib/utils";
 
@@ -46,12 +48,17 @@ export function DataTable<TData extends object>({
   searchPlaceholder,
   globalSearchAccessor,
   isLoading,
-  emptyMessage = "No records found.",
+  emptyMessage: emptyMessageProp,
   filtersSlot,
   initialPageSize = 10,
   getRowId,
   className,
 }: DataTableProps<TData>) {
+  const t = useT();
+  const pathname = usePathname();
+  const locale = getLocaleFromPathname(pathname ?? null);
+  const tableDir = locale === "ar" ? "rtl" : "ltr";
+  const emptyMessage = emptyMessageProp ?? t("table.noRecords");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 220);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -81,6 +88,7 @@ export function DataTable<TData extends object>({
 
   return (
     <div
+      dir={tableDir}
       className={cn(
         "overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm",
         className,

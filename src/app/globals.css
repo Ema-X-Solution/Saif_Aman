@@ -1,48 +1,90 @@
 @import "tailwindcss";
 
+/* SAIF AMAN — Navy dominant, Amber accent (design system) */
 :root {
-  --background: #f8fafc;
-  --foreground: #0b1220;
+  /* Navy scale */
+  --navy-900: #091f3a;
+  --navy-800: #0e2a47;
+  --navy-700: #12395e;
+  --navy-600: #1a4a73;
+  --navy-500: #2c5f8f;
+
+  /* Amber scale */
+  --amber-500: #e3a825;
+  --amber-400: #f2b93b;
+  --amber-300: #f7cf6a;
+  --amber-200: #fae3a6;
+  --amber-100: #fff4d6;
+
+  /* Neutrals */
+  --background: #f7f9fc;
+  --foreground: #0f172a;
   --card: #ffffff;
-  --card-foreground: #0b1220;
+  --card-foreground: #0f172a;
   --popover: #ffffff;
-  --popover-foreground: #0b1220;
-  --primary: #0a3d91;
-  --primary-foreground: #f8fafc;
+  --popover-foreground: #0f172a;
+
+  /* Navy for structural emphasis & links (dominant brand) */
+  --primary: var(--navy-700);
+  --primary-foreground: #ffffff;
+
+  /* Amber CTAs */
+  --cta: var(--amber-500);
+  --cta-foreground: var(--navy-900);
+  --cta-hover: var(--amber-400);
+
   --secondary: #f1f5f9;
-  --secondary-foreground: #0b1220;
+  --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0b1220;
+  --muted-foreground: #475569;
+  --accent: var(--amber-100);
+  --accent-foreground: var(--navy-900);
+
   --destructive: #dc2626;
-  --destructive-foreground: #fafafa;
+  --destructive-foreground: #ffffff;
+
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --info: #2563eb;
+
   --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #1d5fd0;
+  --input: #cbd5e1;
+  --ring: var(--navy-500);
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: #0b1220;
-  --foreground: #f8fafc;
-  --card: #0f1b33;
-  --card-foreground: #f8fafc;
-  --popover: #0f1b33;
-  --popover-foreground: #f8fafc;
-  --primary: #1d5fd0;
-  --primary-foreground: #f8fafc;
-  --secondary: #132447;
-  --secondary-foreground: #f8fafc;
-  --muted: #132447;
+  --background: var(--navy-900);
+  --foreground: #f7f9fc;
+  --card: var(--navy-800);
+  --card-foreground: #f7f9fc;
+  --popover: var(--navy-800);
+  --popover-foreground: #f7f9fc;
+
+  --primary: var(--navy-500);
+  --primary-foreground: #ffffff;
+
+  --cta: var(--amber-500);
+  --cta-foreground: var(--navy-900);
+  --cta-hover: var(--amber-400);
+
+  --secondary: #12395e;
+  --secondary-foreground: #f7f9fc;
+  --muted: #12395e;
   --muted-foreground: #94a3b8;
-  --accent: #132447;
-  --accent-foreground: #f8fafc;
-  --destructive: #ef4444;
-  --destructive-foreground: #fafafa;
-  --border: rgba(148, 163, 184, 0.25);
-  --input: rgba(148, 163, 184, 0.25);
-  --ring: #f4b400;
+  --accent: rgba(227, 168, 37, 0.12);
+  --accent-foreground: var(--amber-200);
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --success: #22c55e;
+  --warning: #fbbf24;
+  --info: #3b82f6;
+
+  --border: rgba(203, 213, 225, 0.22);
+  --input: rgba(203, 213, 225, 0.28);
+  --ring: var(--amber-400);
 }
 
 @theme inline {
@@ -65,6 +107,11 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-cta: var(--cta);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);

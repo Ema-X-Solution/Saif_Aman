@@ -7,6 +7,6 @@ export interface Driver {
   schoolId: EntityId;
   schoolName: string;
   phone: string;
-  status: "active" | "on_leave" | "suspended";
+  status: "approved" | "pending" | "rejected";
   updatedAt: string;
 }

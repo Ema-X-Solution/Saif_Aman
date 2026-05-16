@@ -3,6 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { useT } from "@/i18n/use-t";
 import {
   Select,
   SelectContent,
@@ -28,6 +29,7 @@ export function DataTablePagination({
   onPageSizeChange,
   pageSizeOptions = [5, 10, 20, 50],
 }: DataTablePaginationProps) {
+  const t = useT();
   const pageCount = Math.max(1, Math.ceil(totalRows / pageSize));
   const canPrev = page > 1;
   const canNext = page < pageCount;
@@ -35,19 +37,20 @@ export function DataTablePagination({
   return (
     <div className="flex flex-col gap-3 border-t border-border/80 bg-muted/20 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
       <p className="text-sm text-muted-foreground" aria-live="polite">
-        Showing{" "}
+        {t("table.showing")}{" "}
         <span className="font-medium text-foreground">
           {totalRows === 0 ? 0 : (page - 1) * pageSize + 1}
         </span>{" "}
-        to{" "}
+        {t("table.to")}{" "}
         <span className="font-medium text-foreground">
           {Math.min(page * pageSize, totalRows)}
         </span>{" "}
-        of <span className="font-medium text-foreground">{totalRows}</span>
+        {t("table.of")}{" "}
+        <span className="font-medium text-foreground">{totalRows}</span>
       </p>
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-muted-foreground">Rows</span>
+          <span className="text-sm text-muted-foreground">{t("table.rows")}</span>
           <Select
             value={String(pageSize)}
             onValueChange={(v) => onPageSizeChange(Number(v))}
@@ -69,7 +72,7 @@ export function DataTablePagination({
             type="button"
             variant="outline"
             size="icon"
-            aria-label="Previous page"
+            aria-label={t("table.prevPage")}
             disabled={!canPrev}
             onClick={() => onPageChange(page - 1)}
           >
@@ -82,7 +85,7 @@ export function DataTablePagination({
             type="button"
             variant="outline"
             size="icon"
-            aria-label="Next page"
+            aria-label={t("table.nextPage")}
             disabled={!canNext}
             onClick={() => onPageChange(page + 1)}
           >

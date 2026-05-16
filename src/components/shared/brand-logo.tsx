@@ -1,6 +1,6 @@
-import { Bus } from "lucide-react";
 import Link from "next/link";
 
+import { APP_NAME_AR, APP_NAME_EN } from "@/constants/app";
 import { cn } from "@/lib/utils";
 
 interface BrandLogoProps {
@@ -9,26 +9,42 @@ interface BrandLogoProps {
   compact?: boolean;
 }
 
+/** Uses `/Logo.svg` from `public/` for login, sidebar, and browser chrome metadata. */
 export function BrandLogo({
   href = "/",
   className,
   compact = false,
 }: BrandLogoProps) {
+  const title = `${APP_NAME_EN} · ${APP_NAME_AR}`;
   return (
     <Link
       href={href}
-      className={cn("group inline-flex items-center gap-2", className)}
+      className={cn(
+        "group inline-flex items-center gap-3 rounded-lg outline-none ring-ring transition-opacity hover:opacity-95 focus-visible:ring-2 focus-visible:ring-offset-2",
+        className,
+      )}
+      aria-label={title}
     >
-      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/20 transition group-hover:bg-primary/90">
-        <Bus className="h-5 w-5" aria-hidden />
-      </span>
+      {/* eslint-disable-next-line @next/next/no-img-element -- SVG asset may be large/complex */}
+      <img
+        src="/Logo.svg"
+        alt=""
+        width={compact ? 132 : 176}
+        height={44}
+        className={cn(
+          "h-9 w-auto shrink-0 object-contain object-start transition-opacity group-hover:opacity-95 sm:h-10",
+          compact && "h-8 sm:h-8",
+        )}
+        decoding="async"
+      />
+      <span className="sr-only">{title}</span>
       {!compact ? (
-        <span className="flex flex-col leading-tight">
-          <span className="text-sm font-semibold tracking-wide text-foreground">
-            SAIF AMAN
+        <span className="hidden flex-col leading-tight sm:flex">
+          <span className="text-xs font-medium tracking-wide text-muted-foreground">
+            {APP_NAME_EN}
           </span>
-          <span className="text-xs text-muted-foreground" dir="rtl">
-            سيف أمان
+          <span className="text-[11px] text-muted-foreground/90" dir="rtl">
+            {APP_NAME_AR}
           </span>
         </span>
       ) : null}

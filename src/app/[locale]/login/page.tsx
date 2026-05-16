@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
 
 import { LoginForm } from "@/features/auth/components/login-form";
+import ar from "@/locales/ar.json";
+import en from "@/locales/en.json";
 
-export const metadata: Metadata = {
-  title: "Admin Login",
-  description: "Secure admin login for SAIF AMAN dashboard.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const messages = (locale === "ar" ? ar : en) as typeof en;
+  return {
+    title: messages.loginPage.metaTitle,
+    description: messages.loginPage.metaDescription,
+  };
+}
 
 export default function LoginPage() {
   return (

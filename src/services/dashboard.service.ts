@@ -1,9 +1,4 @@
-import {
-  MOCK_ACTIVITY_SERIES,
-  MOCK_DASHBOARD_STATS,
-  MOCK_LIVE_BUSES,
-} from "@/mock/dashboard";
-import { withMockLatency } from "@/services/mock-delay";
+import { http } from "@/services/http";
 import type {
   ActivityPoint,
   DashboardStat,
@@ -11,13 +6,16 @@ import type {
 } from "@/types/dashboard";
 
 export const dashboardService = {
-  stats(): Promise<DashboardStat[]> {
-    return withMockLatency([...MOCK_DASHBOARD_STATS]);
+  async stats(): Promise<DashboardStat[]> {
+    const res = await http.get<{ data: DashboardStat[] }>("/dashboard/stats");
+    return res.data?.data ?? [];
   },
-  activity(): Promise<ActivityPoint[]> {
-    return withMockLatency([...MOCK_ACTIVITY_SERIES]);
+  async activity(): Promise<ActivityPoint[]> {
+    const res = await http.get<{ data: ActivityPoint[] }>("/dashboard/activity");
+    return res.data?.data ?? [];
   },
-  liveBuses(): Promise<LiveBusPoint[]> {
-    return withMockLatency([...MOCK_LIVE_BUSES]);
+  async liveBuses(): Promise<LiveBusPoint[]> {
+    const res = await http.get<{ data: LiveBusPoint[] }>("/dashboard/live-buses");
+    return res.data?.data ?? [];
   },
 };

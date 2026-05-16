@@ -5,28 +5,27 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { School } from "@/types/school";
-import { toast } from "sonner";
 
-function rowActions(school: School) {
+function rowActions(school: School, t: (key: string) => string) {
   return [
     {
       id: "view",
-      label: "View details",
-      onSelect: () => toast.message(`View ${school.name}`),
+      label: t("common.viewDetails"),
+      onSelect: () => {},
     },
     {
       id: "edit",
-      label: "Edit school",
-      onSelect: () => toast.message(`Edit ${school.name}`),
+      label: t("common.edit"),
+      onSelect: () => {},
     },
   ];
 }
 
-export function buildSchoolColumns(): ColumnDef<School>[] {
+export function buildSchoolColumns(t: (key: string) => string): ColumnDef<School>[] {
   return [
     {
       accessorKey: "name",
-      header: "School",
+      header: t("schools.schoolName"),
       enableSorting: true,
       cell: ({ row }) => (
         <div className="font-medium">{row.original.name}</div>
@@ -34,22 +33,22 @@ export function buildSchoolColumns(): ColumnDef<School>[] {
     },
     {
       accessorKey: "city",
-      header: "City",
+      header: t("schools.city"),
       enableSorting: true,
     },
     {
       accessorKey: "studentCount",
-      header: "Students",
+      header: t("schools.studentCount"),
       enableSorting: true,
     },
     {
       accessorKey: "busCount",
-      header: "Buses",
+      header: t("schools.busCount"),
       enableSorting: true,
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("common.status"),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
       enableSorting: true,
     },
@@ -60,7 +59,7 @@ export function buildSchoolColumns(): ColumnDef<School>[] {
       cell: ({ row }) => (
         <EntityRowActions
           label={row.original.name}
-          actions={rowActions(row.original)}
+          actions={rowActions(row.original, t)}
         />
       ),
     },

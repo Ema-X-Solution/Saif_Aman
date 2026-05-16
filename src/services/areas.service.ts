@@ -1,9 +1,9 @@
-import { MOCK_AREAS } from "@/mock/areas";
-import { withMockLatency } from "@/services/mock-delay";
+import { http } from "@/services/http";
 import type { Area } from "@/types/area";
 
 export const areasService = {
-  list(): Promise<Area[]> {
-    return withMockLatency([...MOCK_AREAS]);
+  async list(): Promise<Area[]> {
+    const res = await http.get<{ data: Area[] }>("/areas");
+    return res.data?.data ?? [];
   },
 };

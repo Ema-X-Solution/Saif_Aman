@@ -7,15 +7,25 @@ import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { Supervisor } from "@/types/supervisor";
 
-export function buildSupervisorColumns(): ColumnDef<Supervisor>[] {
+export function buildSupervisorColumns(t: (key: string) => string): ColumnDef<Supervisor>[] {
   return [
-    { accessorKey: "fullName", header: "Supervisor", enableSorting: true },
-    { accessorKey: "schoolName", header: "School", enableSorting: true },
-    { accessorKey: "shift", header: "Shift", enableSorting: true },
-    { accessorKey: "phone", header: "Phone", enableSorting: false },
+    { accessorKey: "fullName", header: t("common.supervisor"), enableSorting: true },
+    { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
+    {
+      accessorKey: "shift",
+      header: t("common.shift"),
+      cell: ({ row }) => {
+        const raw = String(row.original.shift ?? "").toLowerCase();
+        if (raw === "full") return t("users.shiftFull");
+        if (raw === "part") return t("users.shiftPart");
+        return row.original.shift;
+      },
+      enableSorting: true,
+    },
+    { accessorKey: "phone", header: t("common.phone"), enableSorting: false },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("common.status"),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
       enableSorting: true,
     },
@@ -29,8 +39,8 @@ export function buildSupervisorColumns(): ColumnDef<Supervisor>[] {
           actions={[
             {
               id: "open",
-              label: "Open profile",
-              onSelect: () => toast.message(row.original.fullName),
+              label: t("users.openProfile"),
+              onSelect: () => {},
             },
           ]}
         />

@@ -1,9 +1,9 @@
-import { MOCK_REPORTS } from "@/mock/reports";
-import { withMockLatency } from "@/services/mock-delay";
+import { http } from "@/services/http";
 import type { ReportDefinition } from "@/types/report";
 
 export const reportsService = {
-  list(): Promise<ReportDefinition[]> {
-    return withMockLatency([...MOCK_REPORTS]);
+  async list(): Promise<ReportDefinition[]> {
+    const res = await http.get<{ data: ReportDefinition[] }>("/reports");
+    return res.data?.data ?? [];
   },
 };

@@ -1,13 +1,15 @@
-import { DashboardShell } from "@/components/layout/dashboard-shell";
-import { AuthGate } from "@/features/auth/components/auth-gate";
-import { SupervisorsView } from "@/features/supervisors/components/supervisors-view";
+import { DEFAULT_LOCALE } from "@/constants/app";
+import { redirect } from "next/navigation";
 
-export default function SupervisorsPage() {
-  return (
-    <AuthGate>
-      <DashboardShell title="Supervisors">
-        <SupervisorsView />
-      </DashboardShell>
-    </AuthGate>
+export default async function SupervisorsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  redirect(
+    locale === DEFAULT_LOCALE
+      ? "/users?tab=supervisors"
+      : `/${locale}/users?tab=supervisors`,
   );
 }

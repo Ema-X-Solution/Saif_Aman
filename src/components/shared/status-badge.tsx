@@ -1,5 +1,8 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import type { BadgeProps } from "@/components/ui/badge";
+import { useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 
 export type SemanticStatus =
@@ -37,6 +40,25 @@ const STATUS_TO_VARIANT: Record<SemanticStatus, BadgeProps["variant"]> = {
   neutral: "outline",
 };
 
+/** Maps API / semantic status values to message keys under `common.*`. */
+const STATUS_TO_MESSAGE_KEY: Partial<Record<SemanticStatus, string>> = {
+  active: "common.active",
+  approved: "common.approved",
+  inactive: "common.inactive",
+  pending: "common.pending",
+  rejected: "common.rejected",
+  maintenance: "common.maintenance",
+  offline: "common.offline",
+  on_leave: "common.onLeave",
+  suspended: "common.suspended",
+  invited: "common.invited",
+  disabled: "common.disabled",
+  success: "common.success",
+  warning: "common.warning",
+  info: "common.info",
+  neutral: "common.neutral",
+};
+
 export interface StatusBadgeProps {
   status: string;
   label?: string;
@@ -44,15 +66,22 @@ export interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status, label, className }: StatusBadgeProps) {
+  const t = useT();
   const key = status as SemanticStatus;
   const variant = STATUS_TO_VARIANT[key] ?? "outline";
+
+  const fromKey = STATUS_TO_MESSAGE_KEY[key];
+  const resolved =
+    label ?? (fromKey ? t(fromKey) : status.replaceAll("_", " "));
+  const useCapitalize = !label && !fromKey;
+
   return (
     <Badge
       variant={variant}
-      className={cn("capitalize", className)}
-      title={label ?? status}
+      className={cn(useCapitalize && "capitalize", className)}
+      title={resolved}
     >
-      {label ?? status.replaceAll("_", " ")}
+      {resolved}
     </Badge>
   );
 }

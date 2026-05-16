@@ -9,4 +9,15 @@ export interface ParentRequest {
   routeNote: string;
   status: "pending" | "approved" | "rejected";
   submittedAt: string;
+
+  // Extra fields from `/users?type=parent` payload (optional for backward compatibility)
+  email?: string | null;
+  phone?: string | null;
+  type?: string;
+  address?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  studentsCount?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }

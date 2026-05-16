@@ -1,9 +1,9 @@
-import { MOCK_ADMINS } from "@/mock/admins";
-import { withMockLatency } from "@/services/mock-delay";
+import { http } from "@/services/http";
 import type { AdminUser } from "@/types/admin";
 
 export const adminsService = {
-  list(): Promise<AdminUser[]> {
-    return withMockLatency([...MOCK_ADMINS]);
+  async list(): Promise<AdminUser[]> {
+    const res = await http.get<{ data: AdminUser[] }>("/admins");
+    return res.data?.data ?? [];
   },
 };

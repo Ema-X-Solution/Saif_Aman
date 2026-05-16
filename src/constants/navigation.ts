@@ -10,7 +10,6 @@ import {
   Shield,
   Star,
   UserCog,
-  UserRound,
   Users,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -18,23 +17,22 @@ import type { LucideIcon } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 
 export interface SidebarNavItem {
-  label: string;
+  labelKey: string;
   href: string;
   icon: LucideIcon;
 }
 
 export const SIDEBAR_NAV: SidebarNavItem[] = [
-  { label: "Dashboard", href: ROUTES.dashboard, icon: LayoutDashboard },
-  { label: "Schools", href: ROUTES.schools, icon: School },
-  { label: "Drivers", href: ROUTES.drivers, icon: Users },
-  { label: "Supervisors", href: ROUTES.supervisors, icon: UserRound },
-  { label: "Buses", href: ROUTES.buses, icon: Bus },
-  { label: "Areas", href: ROUTES.areas, icon: MapPin },
-  { label: "Parent Requests", href: ROUTES.parentRequests, icon: ClipboardList },
-  { label: "Reviews", href: ROUTES.reviews, icon: Star },
-  { label: "Notifications", href: ROUTES.notifications, icon: Bell },
-  { label: "Reports", href: ROUTES.reports, icon: Gauge },
-  { label: "Admins", href: ROUTES.admins, icon: Shield },
-  { label: "Settings", href: ROUTES.settings, icon: Cog },
-  { label: "Profile", href: ROUTES.profile, icon: UserCog },
+  { labelKey: "sidebar.dashboard", href: ROUTES.dashboard, icon: LayoutDashboard },
+  { labelKey: "sidebar.schools", href: ROUTES.schools, icon: School },
+  { labelKey: "sidebar.buses", href: ROUTES.buses, icon: Bus },
+  { labelKey: "sidebar.users", href: ROUTES.users, icon: Users },
+  { labelKey: "sidebar.areas", href: ROUTES.areas, icon: MapPin },
+  { labelKey: "sidebar.parentRequests", href: ROUTES.parentRequests, icon: ClipboardList },
+  { labelKey: "sidebar.reviews", href: ROUTES.reviews, icon: Star },
+  { labelKey: "sidebar.notifications", href: ROUTES.notifications, icon: Bell },
+  { labelKey: "sidebar.reports", href: ROUTES.reports, icon: Gauge },
+  { labelKey: "sidebar.admins", href: ROUTES.admins, icon: Shield },
+  { labelKey: "sidebar.settings", href: ROUTES.settings, icon: Cog },
+  { labelKey: "sidebar.profile", href: ROUTES.profile, icon: UserCog },
 ];

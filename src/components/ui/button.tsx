@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+          "bg-cta text-cta-foreground shadow-sm hover:bg-[var(--cta-hover)]",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         accent:
-          "bg-[#F4B400] text-[#0A1020] shadow-sm hover:bg-[#e0a300]",
+          "bg-primary text-primary-foreground shadow-sm hover:bg-[color-mix(in_oklab,var(--primary)_90%,black)] dark:hover:bg-[color-mix(in_oklab,var(--primary)_92%,white)]",
       },
       size: {
         default: "h-10 px-4 py-2",

@@ -4,18 +4,23 @@ import { useEffect, useMemo, useState } from "react";
 
 import { DataTable } from "@/components/tables/data-table";
 import { PageHeader } from "@/components/shared/page-header";
+import { AddUserDialog } from "@/features/users/components/add-user-dialog";
 import { buildSupervisorColumns } from "@/features/supervisors/lib/supervisors-columns";
 import { supervisorsService } from "@/services/supervisors.service";
 import type { Supervisor } from "@/types/supervisor";
+import { useT } from "@/i18n/use-t";
 
 export function SupervisorsView() {
+  const t = useT();
   const [data, setData] = useState<Supervisor[]>([]);
   const [loading, setLoading] = useState(true);
-  const columns = useMemo(() => buildSupervisorColumns(), []);
+  const [reloadKey, setReloadKey] = useState(0);
+  const columns = useMemo(() => buildSupervisorColumns(t), [t]);
 
   useEffect(() => {
     let c = false;
     (async () => {
+      setLoading(true);
       try {
         const rows = await supervisorsService.list();
         if (!c) setData(rows);
@@ -26,19 +31,25 @@ export function SupervisorsView() {
     return () => {
       c = true;
     };
-  }, []);
+  }, [reloadKey]);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Supervisors"
-        description="Supervisors are assigned per school to escort students and verify manifests."
+        title={t("users.supervisors")}
+        description={t("users.supervisorsDesc")}
+        actions={
+          <AddUserDialog
+            userType="supervisor"
+            onCreated={() => setReloadKey((k) => k + 1)}
+          />
+        }
       />
       <DataTable
         columns={columns}
         data={data}
         isLoading={loading}
-        searchPlaceholder="Search supervisors..."
+        searchPlaceholder={t("users.searchSupervisors")}
         globalSearchAccessor={(row) => `${row.fullName} ${row.schoolName}`}
       />
     </div>

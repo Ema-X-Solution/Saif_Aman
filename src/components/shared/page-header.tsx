@@ -1,5 +1,9 @@
-import type { ReactNode } from "react";
+"use client";
 
+import type { ReactNode } from "react";
+import { usePathname } from "next/navigation";
+
+import { getLocaleFromPathname } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 
 interface PageHeaderProps {
@@ -15,8 +19,13 @@ export function PageHeader({
   actions,
   className,
 }: PageHeaderProps) {
+  const pathname = usePathname();
+  const locale = getLocaleFromPathname(pathname ?? null);
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
   return (
     <div
+      dir={dir}
       className={cn(
         "flex flex-col gap-4 border-b border-border/80 pb-6 lg:flex-row lg:items-start lg:justify-between",
         className,
@@ -30,7 +39,11 @@ export function PageHeader({
           <p className="text-sm text-muted-foreground">{description}</p>
         ) : null}
       </div>
-      {actions ? <div className="flex shrink-0 flex-wrap gap-2">{actions}</div> : null}
+      {actions ? (
+        <div dir={dir} className="flex shrink-0 flex-wrap gap-2">
+          {actions}
+        </div>
+      ) : null}
     </div>
   );
 }

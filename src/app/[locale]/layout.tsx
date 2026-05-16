@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cairo, Inter } from "next/font/google";
 
-import { APP_NAME_AR, APP_NAME_EN } from "@/constants/app";
+import { APP_NAME_AR, APP_NAME_EN, BRAND } from "@/constants/app";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE_TEMPLATE, LANDING_KEYWORDS, SITE_URL } from "@/constants/seo";
 import { AppProviders } from "@/providers/app-providers";
 import "../globals.css";
@@ -16,8 +16,17 @@ const cairo = Cairo({
   subsets: ["arabic", "latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: BRAND.navy900,
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
+  icons: {
+    icon: [{ url: "/Logo.svg", type: "image/svg+xml" }],
+    shortcut: "/Logo.svg",
+    apple: "/Logo.svg",
+  },
   title: {
     default: `${APP_NAME_EN} | ${APP_NAME_AR}`,
     template: DEFAULT_TITLE_TEMPLATE,
@@ -44,12 +53,19 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode;
+  params: { locale: string };
 }>) {
+  const locale = params?.locale ?? "en";
+  const lang = locale === "ar" ? "ar" : "en";
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
   return (
     <html
-      lang="en"
+      lang={lang}
+      dir={dir}
       suppressHydrationWarning
       className={`${inter.variable} ${cairo.variable} h-full antialiased`}
     >

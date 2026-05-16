@@ -7,14 +7,14 @@ import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { AdminUser } from "@/types/admin";
 
-export function buildAdminColumns(): ColumnDef<AdminUser>[] {
+export function buildAdminColumns(t: (key: string) => string): ColumnDef<AdminUser>[] {
   return [
-    { accessorKey: "fullName", header: "Admin", enableSorting: true },
-    { accessorKey: "email", header: "Email", enableSorting: true },
-    { accessorKey: "role", header: "Role", enableSorting: true },
+    { accessorKey: "fullName", header: t("common.admin"), enableSorting: true },
+    { accessorKey: "email", header: t("common.email"), enableSorting: true },
+    { accessorKey: "role", header: t("common.role"), enableSorting: true },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("common.status"),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
       enableSorting: true,
     },
@@ -28,8 +28,8 @@ export function buildAdminColumns(): ColumnDef<AdminUser>[] {
           actions={[
             {
               id: "audit",
-              label: "Audit trail",
-              onSelect: () => toast.message(`Audit ${row.original.email}`),
+              label: t("admins.auditTrail"),
+              onSelect: () => {},
             },
           ]}
         />

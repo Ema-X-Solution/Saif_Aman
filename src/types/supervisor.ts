@@ -7,6 +7,6 @@ export interface Supervisor {
   schoolName: string;
   phone: string;
   shift: "morning" | "afternoon" | "full";
-  status: "active" | "inactive";
+  status: "approved" | "pending" | "rejected";
   updatedAt: string;
 }

@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AppLocale } from "@/constants/app";
+import { useT } from "@/i18n/use-t";
 import { useSettingsStore } from "@/store/settings-store";
 
 const generalSchema = z.object({
@@ -45,6 +46,7 @@ const securitySchema = z.object({
 type GeneralValues = z.infer<typeof generalSchema>;
 
 export function SettingsView() {
+  const t = useT();
   const { settings, setSettings, locale, setLocale } = useSettingsStore();
 
   const generalForm = useForm<GeneralValues>({
@@ -68,29 +70,26 @@ export function SettingsView() {
   const onLocaleChange = (next: AppLocale) => {
     setLocale(next);
     setSettings({ defaultLocale: next, rtlPreferred: next === "ar" });
-    toast.success("Language preference saved locally.");
+    toast.success(t("settings.toastLocaleSaved"));
   };
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Settings"
-        description="Control branding, localization, notifications, and security posture."
-      />
+      <PageHeader title={t("settings.title")} description={t("settings.description")} />
       <Tabs defaultValue="general" className="space-y-6">
         <TabsList className="w-full flex-wrap justify-start gap-1">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="theme">Theme</TabsTrigger>
-          <TabsTrigger value="language">Language</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="general">{t("settings.tabGeneral")}</TabsTrigger>
+          <TabsTrigger value="theme">{t("settings.tabTheme")}</TabsTrigger>
+          <TabsTrigger value="language">{t("settings.tabLanguage")}</TabsTrigger>
+          <TabsTrigger value="notifications">{t("settings.tabNotifications")}</TabsTrigger>
+          <TabsTrigger value="security">{t("settings.tabSecurity")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
           <Card className="border-border/80">
             <CardHeader>
-              <CardTitle>General</CardTitle>
-              <CardDescription>Platform name and identity placeholders.</CardDescription>
+              <CardTitle>{t("settings.generalHeading")}</CardTitle>
+              <CardDescription>{t("settings.generalCardDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...generalForm}>
@@ -98,7 +97,7 @@ export function SettingsView() {
                   className="space-y-4"
                   onSubmit={generalForm.handleSubmit((values) => {
                     setSettings({ platformName: values.platformName });
-                    toast.success("General settings saved.");
+                    toast.success(t("settings.toastGeneralSaved"));
                   })}
                 >
                   <FormField
@@ -106,7 +105,7 @@ export function SettingsView() {
                     name="platformName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Platform name</FormLabel>
+                        <FormLabel>{t("settings.platformName")}</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -114,17 +113,17 @@ export function SettingsView() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">Save changes</Button>
+                  <Button type="submit">{t("settings.saveChanges")}</Button>
                 </form>
               </Form>
               <Separator className="my-8" />
               <div>
-                <p className="text-sm font-medium">Logo placeholder</p>
+                <p className="text-sm font-medium">{t("settings.logoPlaceholder")}</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Upload pipeline hooks to your storage bucket—this frontend ships with a branded mark in the navigation.
+                  {t("settings.logoPlaceholderHint")}
                 </p>
                 <div className="mt-4 flex h-24 max-w-xs items-center justify-center rounded-xl border border-dashed border-border/80 bg-muted/30 text-sm text-muted-foreground">
-                  Logo slot
+                  {t("settings.logoSlot")}
                 </div>
               </div>
             </CardContent>
@@ -134,11 +133,11 @@ export function SettingsView() {
         <TabsContent value="theme">
           <Card className="border-border/80">
             <CardHeader>
-              <CardTitle>Theme</CardTitle>
-              <CardDescription>Light, dark, or follow the operating system.</CardDescription>
+              <CardTitle>{t("settings.themeHeading")}</CardTitle>
+              <CardDescription>{t("settings.themeCardDescription")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-muted-foreground">
-              <p>Use the toggle in the top navigation to experiment with themes—preference syncs via next-themes.</p>
+              <p>{t("settings.themeHint")}</p>
             </CardContent>
           </Card>
         </TabsContent>
@@ -146,8 +145,8 @@ export function SettingsView() {
         <TabsContent value="language">
           <Card className="border-border/80">
             <CardHeader>
-              <CardTitle>Language</CardTitle>
-              <CardDescription>Arabic & English interfaces with RTL support.</CardDescription>
+              <CardTitle>{t("settings.languageHeading")}</CardTitle>
+              <CardDescription>{t("settings.languageCardDescription")}</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-3">
               <Button
@@ -155,14 +154,14 @@ export function SettingsView() {
                 variant={locale === "en" ? "default" : "outline"}
                 onClick={() => onLocaleChange("en")}
               >
-                English
+                {t("settings.languageEnglish")}
               </Button>
               <Button
                 type="button"
                 variant={locale === "ar" ? "default" : "outline"}
                 onClick={() => onLocaleChange("ar")}
               >
-                العربية
+                {t("settings.languageArabic")}
               </Button>
             </CardContent>
           </Card>
@@ -171,8 +170,8 @@ export function SettingsView() {
         <TabsContent value="notifications">
           <Card className="border-border/80">
             <CardHeader>
-              <CardTitle>Notifications</CardTitle>
-              <CardDescription>Choose how administrators receive operational notices.</CardDescription>
+              <CardTitle>{t("settings.notificationsHeading")}</CardTitle>
+              <CardDescription>{t("settings.notificationsCardDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...notificationForm}>
@@ -180,25 +179,20 @@ export function SettingsView() {
                   className="space-y-6"
                   onSubmit={notificationForm.handleSubmit((values) => {
                     setSettings(values);
-                    toast.success("Notification preferences saved.");
+                    toast.success(t("settings.toastNotificationsSaved"));
                   })}
                 >
                   <FormField
                     control={notificationForm.control}
                     name="notifyEmail"
                     render={({ field }) => (
-                      <FormItem className="flex items-center justify-between rounded-lg border border-border/70 p-4">
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border/70 p-4">
                         <div>
-                          <FormLabel className="text-base">Email digests</FormLabel>
-                          <p className="text-sm text-muted-foreground">
-                            Morning summary of alerts and SLA breaches.
-                          </p>
+                          <FormLabel className="text-base">{t("settings.notifyEmail")}</FormLabel>
+                          <p className="text-sm text-muted-foreground">{t("settings.notifyEmailHint")}</p>
                         </div>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                       </FormItem>
                     )}
@@ -207,23 +201,18 @@ export function SettingsView() {
                     control={notificationForm.control}
                     name="notifyPush"
                     render={({ field }) => (
-                      <FormItem className="flex items-center justify-between rounded-lg border border-border/70 p-4">
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border border-border/70 p-4">
                         <div>
-                          <FormLabel className="text-base">Push notifications</FormLabel>
-                          <p className="text-sm text-muted-foreground">
-                            Realtime prompts for critical safety events.
-                          </p>
+                          <FormLabel className="text-base">{t("settings.notifyPush")}</FormLabel>
+                          <p className="text-sm text-muted-foreground">{t("settings.notifyPushHint")}</p>
                         </div>
                         <FormControl>
-                          <Switch
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
+                          <Switch checked={field.value} onCheckedChange={field.onChange} />
                         </FormControl>
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">Save preferences</Button>
+                  <Button type="submit">{t("settings.savePreferences")}</Button>
                 </form>
               </Form>
             </CardContent>
@@ -233,8 +222,8 @@ export function SettingsView() {
         <TabsContent value="security">
           <Card className="border-border/80">
             <CardHeader>
-              <CardTitle>Security</CardTitle>
-              <CardDescription>Session policy for this workstation.</CardDescription>
+              <CardTitle>{t("settings.securityHeading")}</CardTitle>
+              <CardDescription>{t("settings.securityCardDescription")}</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...securityForm}>
@@ -242,7 +231,7 @@ export function SettingsView() {
                   className="space-y-4"
                   onSubmit={securityForm.handleSubmit((values) => {
                     setSettings(values);
-                    toast.success("Security settings saved.");
+                    toast.success(t("settings.toastSecuritySaved"));
                   })}
                 >
                   <FormField
@@ -250,7 +239,7 @@ export function SettingsView() {
                     name="sessionTimeoutMinutes"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Session timeout (minutes)</FormLabel>
+                        <FormLabel>{t("settings.sessionTimeout")}</FormLabel>
                         <FormControl>
                           <Input type="number" {...field} />
                         </FormControl>
@@ -258,7 +247,7 @@ export function SettingsView() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit">Update policy</Button>
+                  <Button type="submit">{t("settings.updatePolicy")}</Button>
                 </form>
               </Form>
             </CardContent>

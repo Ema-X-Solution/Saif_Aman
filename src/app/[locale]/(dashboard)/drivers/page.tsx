@@ -1,13 +1,15 @@
-import { DashboardShell } from "@/components/layout/dashboard-shell";
-import { AuthGate } from "@/features/auth/components/auth-gate";
-import { DriversView } from "@/features/drivers/components/drivers-view";
+import { DEFAULT_LOCALE } from "@/constants/app";
+import { redirect } from "next/navigation";
 
-export default function DriversPage() {
-  return (
-    <AuthGate>
-      <DashboardShell title="Drivers">
-        <DriversView />
-      </DashboardShell>
-    </AuthGate>
+export default async function DriversPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  redirect(
+    locale === DEFAULT_LOCALE
+      ? "/users?tab=drivers"
+      : `/${locale}/users?tab=drivers`,
   );
 }

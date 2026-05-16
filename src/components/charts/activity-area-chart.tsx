@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 
 import { ChartCard } from "@/components/charts/chart-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useT } from "@/i18n/use-t";
 import type { ActivityPoint } from "@/types/dashboard";
 
 const ActivityAreaChartInner = dynamic(
@@ -19,10 +20,11 @@ interface ActivityAreaChartProps {
 }
 
 export function ActivityAreaChart({ data }: ActivityAreaChartProps) {
+  const t = useT();
   return (
     <ChartCard
-      title="Operational pulse"
-      description="Trips vs alerts across the week."
+      title={t("dashboard.chart.title")}
+      description={t("dashboard.chart.description")}
     >
       <div className="h-[280px] w-full min-w-0">
         <ActivityAreaChartInner data={data} />

@@ -1,43 +1,54 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowRight, Bus, ClipboardList, School } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ROUTES } from "@/constants/routes";
+import { getLocaleFromPathname, useT } from "@/i18n/use-t";
+import { localizedHref } from "@/lib/localized-href";
 
-const ACTIONS = [
+const ACTION_KEYS = [
   {
-    title: "Register school",
+    titleKey: "dashboard.quickActions.registerSchool",
+    hintKey: "dashboard.quickActions.registerSchoolHint",
     href: ROUTES.schools,
     icon: School,
-    hint: "Onboard campuses and fleet policies.",
   },
   {
-    title: "Review requests",
+    titleKey: "dashboard.quickActions.reviewRequests",
+    hintKey: "dashboard.quickActions.reviewRequestsHint",
     href: ROUTES.parentRequests,
     icon: ClipboardList,
-    hint: "Approve transport changes from parents.",
   },
   {
-    title: "Fleet roster",
+    titleKey: "dashboard.quickActions.fleetRoster",
+    hintKey: "dashboard.quickActions.fleetRosterHint",
     href: ROUTES.buses,
     icon: Bus,
-    hint: "Audit drivers, supervisors, and areas.",
   },
-];
+] as const;
 
 export function QuickActionsCard() {
+  const t = useT();
+  const pathname = usePathname();
+  const locale = getLocaleFromPathname(pathname ?? null);
+
   return (
     <Card className="border-border/80">
       <CardHeader>
-        <CardTitle className="text-base font-semibold">Quick actions</CardTitle>
+        <CardTitle className="text-base font-semibold">
+          {t("dashboard.quickActions.title")}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
-        {ACTIONS.map((action) => {
+        {ACTION_KEYS.map((action) => {
           const Icon = action.icon;
           return (
             <div
-              key={action.href}
+              key={action.titleKey}
               className="flex flex-col gap-2 rounded-lg border border-border/70 bg-muted/20 p-3 sm:flex-row sm:items-center sm:justify-between"
             >
               <div className="flex items-start gap-3">
@@ -45,13 +56,13 @@ export function QuickActionsCard() {
                   <Icon className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="font-medium leading-none">{action.title}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{action.hint}</p>
+                  <p className="font-medium leading-none">{t(action.titleKey)}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{t(action.hintKey)}</p>
                 </div>
               </div>
               <Button asChild size="sm" variant="secondary" className="shrink-0">
-                <Link href={action.href}>
-                  Open
+                <Link href={localizedHref(locale, action.href)}>
+                  {t("dashboard.quickActions.open")}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>

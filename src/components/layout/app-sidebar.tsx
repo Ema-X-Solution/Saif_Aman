@@ -2,15 +2,25 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { SIDEBAR_NAV } from "@/constants/navigation";
 import { ROUTES } from "@/constants/routes";
+import { getLocaleFromPathname, useT } from "@/i18n/use-t";
+import { localizedHref } from "@/lib/localized-href";
 import { cn } from "@/lib/utils";
 import { useUiStore } from "@/store/ui-store";
+
+/** Supports locale-prefixed paths (e.g. `/ar/dashboard`) vs href `/dashboard`. */
+function pathMatchesNav(pathname: string, href: string) {
+  const pathOnly = href.split("?")[0].replace(/^\//, "") ?? "";
+  if (!pathOnly) {
+    return pathname === "/" || pathname.endsWith("/");
+  }
+  return pathname === `/${pathOnly}` || pathname.endsWith(`/${pathOnly}`);
+}
 
 interface AppSidebarProps {
   variant?: "desktop" | "mobile";
@@ -19,6 +29,9 @@ interface AppSidebarProps {
 
 export function AppSidebar({ variant = "desktop", onNavigate }: AppSidebarProps) {
   const pathname = usePathname();
+  const t = useT();
+  const locale = getLocaleFromPathname(pathname ?? null);
+  const asideDir = locale === "ar" ? "rtl" : "ltr";
   const { sidebarCollapsed, setSidebarCollapsed } = useUiStore();
 
   const widthClass =
@@ -30,6 +43,7 @@ export function AppSidebar({ variant = "desktop", onNavigate }: AppSidebarProps)
 
   return (
     <aside
+      dir={asideDir}
       className={cn(
         "flex h-full flex-col border-e border-border/80 bg-card/80 backdrop-blur-md transition-[width] duration-200",
         widthClass,
@@ -42,7 +56,7 @@ export function AppSidebar({ variant = "desktop", onNavigate }: AppSidebarProps)
         )}
       >
         <BrandLogo
-          href={ROUTES.dashboard}
+          href={localizedHref(locale, ROUTES.dashboard)}
           compact={variant === "mobile" ? false : sidebarCollapsed}
           className="min-w-0"
         />
@@ -59,31 +73,38 @@ export function AppSidebar({ variant = "desktop", onNavigate }: AppSidebarProps)
         ) : null}
       </div>
       <Separator />
-      <ScrollArea className="flex-1 py-3">
-        <nav className="flex flex-col gap-1 px-2" aria-label="Main navigation">
+      <ScrollArea dir={asideDir} className="flex-1 py-3">
+        <nav
+          dir={asideDir}
+          className="flex flex-col gap-1 px-2"
+          aria-label="Main navigation"
+        >
           {SIDEBAR_NAV.map((item) => {
             const Icon = item.icon;
+            const navHref = localizedHref(locale, item.href);
             const active =
-              pathname === item.href || pathname.startsWith(`${item.href}/`);
+              pathMatchesNav(pathname, item.href) ||
+              pathname.startsWith(localizedHref(locale, item.href.split("?")[0]));
             return (
               <Link
                 key={item.href}
-                href={item.href}
+                href={navHref}
+                dir={asideDir}
                 onClick={onNavigate}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                  "flex flex-row items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                   active
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                   sidebarCollapsed &&
-                    variant === "desktop" &&
-                    "justify-center px-0",
+                  variant === "desktop" &&
+                  "justify-center px-0",
                 )}
-                title={sidebarCollapsed && variant === "desktop" ? item.label : undefined}
+                title={sidebarCollapsed && variant === "desktop" ? t(item.labelKey) : undefined}
               >
                 <Icon className="h-4 w-4 shrink-0" />
                 {!(sidebarCollapsed && variant === "desktop") ? (
-                  <span>{item.label}</span>
+                  <span className="truncate">{t(item.labelKey)}</span>
                 ) : null}
               </Link>
             );
@@ -93,7 +114,7 @@ export function AppSidebar({ variant = "desktop", onNavigate }: AppSidebarProps)
       <Separator />
       <div className="p-3 text-xs text-muted-foreground">
         {!(sidebarCollapsed && variant === "desktop") ? (
-          <p>Admin console · SAIF AMAN</p>
+          <p>{t("sidebar.footer")}</p>
         ) : null}
       </div>
     </aside>

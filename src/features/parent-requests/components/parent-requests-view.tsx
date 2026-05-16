@@ -7,11 +7,24 @@ import { PageHeader } from "@/components/shared/page-header";
 import { buildParentRequestColumns } from "@/features/parent-requests/lib/parent-request-columns";
 import { parentRequestsService } from "@/services/parent-requests.service";
 import type { ParentRequest } from "@/types/parent-request";
+import { useT } from "@/i18n/use-t";
 
 export function ParentRequestsView() {
+  const t = useT();
   const [data, setData] = useState<ParentRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const columns = useMemo(() => buildParentRequestColumns(), []);
+  const columns = useMemo(() =>
+    buildParentRequestColumns(async (id, status) => {
+      try {
+        await parentRequestsService.updateStatus(id, status);
+        const rows = await parentRequestsService.list();
+        setData(rows);
+      } catch (err) {
+        // error handled in columns
+      }
+    }, t),
+    [t],
+  );
 
   useEffect(() => {
     let c = false;
@@ -31,16 +44,16 @@ export function ParentRequestsView() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Parent requests"
-        description="Structured intake for schedule tweaks, new stops, and safety notes."
+        title={t("parentRequests.title")}
+        description={t("parentRequests.description")}
       />
       <DataTable
         columns={columns}
         data={data}
         isLoading={loading}
-        searchPlaceholder="Search requests..."
+        searchPlaceholder={t("parentRequests.searchParents")}
         globalSearchAccessor={(row) =>
-          `${row.parentName} ${row.studentName} ${row.routeNote}`
+          `${row.id} ${row.parentName} ${row.email ?? ""} ${row.phone ?? ""} ${row.type ?? ""} ${row.address ?? ""} ${row.studentsCount ?? ""} ${row.schoolName} ${row.createdAt ?? ""} ${row.status}`
         }
       />
     </div>

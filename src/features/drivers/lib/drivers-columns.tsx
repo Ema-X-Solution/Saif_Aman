@@ -7,25 +7,25 @@ import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { Driver } from "@/types/driver";
 
-function actions(driver: Driver) {
+function actions(driver: Driver, t: (key: string) => string) {
   return [
     {
       id: "profile",
-      label: "Open profile",
-      onSelect: () => toast.message(driver.fullName),
+      label: t("users.openProfile"),
+      onSelect: () => {},
     },
   ];
 }
 
-export function buildDriverColumns(): ColumnDef<Driver>[] {
+export function buildDriverColumns(t: (key: string) => string): ColumnDef<Driver>[] {
   return [
-    { accessorKey: "fullName", header: "Driver", enableSorting: true },
-    { accessorKey: "licenseNumber", header: "License", enableSorting: true },
-    { accessorKey: "schoolName", header: "School", enableSorting: true },
-    { accessorKey: "phone", header: "Phone", enableSorting: false },
+    { accessorKey: "fullName", header: t("common.driver"), enableSorting: true },
+    { accessorKey: "licenseNumber", header: t("common.license"), enableSorting: true },
+    { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
+    { accessorKey: "phone", header: t("common.phone"), enableSorting: false },
     {
       accessorKey: "status",
-      header: "Status",
+      header: t("common.status"),
       cell: ({ row }) => <StatusBadge status={row.original.status} />,
       enableSorting: true,
     },
@@ -34,7 +34,7 @@ export function buildDriverColumns(): ColumnDef<Driver>[] {
       header: "",
       enableSorting: false,
       cell: ({ row }) => (
-        <EntityRowActions label={row.original.fullName} actions={actions(row.original)} />
+        <EntityRowActions label={row.original.fullName} actions={actions(row.original, t)} />
       ),
     },
   ];

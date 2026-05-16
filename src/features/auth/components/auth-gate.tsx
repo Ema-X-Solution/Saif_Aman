@@ -1,11 +1,13 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { Skeleton } from "@/components/ui/skeleton";
+import { LoginPageSkeleton } from "@/features/auth/components/login-page-skeleton";
 import { ROUTES } from "@/constants/routes";
+import { getLocaleFromPathname } from "@/i18n/use-t";
+import { localizedHref } from "@/lib/localized-href";
 import { useAuthStore } from "@/store/auth-store";
 
 interface AuthGateProps {
@@ -15,6 +17,7 @@ interface AuthGateProps {
 export function AuthGate({ children }: AuthGateProps) {
   const session = useAuthStore((s) => s.session);
   const router = useRouter();
+  const pathname = usePathname();
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -25,17 +28,13 @@ export function AuthGate({ children }: AuthGateProps) {
   useEffect(() => {
     if (!ready) return;
     if (!session) {
-      router.replace(ROUTES.login);
+      const locale = getLocaleFromPathname(pathname ?? null);
+      router.replace(localizedHref(locale, ROUTES.login));
     }
-  }, [ready, session, router]);
+  }, [ready, session, router, pathname]);
 
   if (!ready || !session) {
-    return (
-      <div className="flex min-h-[50vh] flex-col gap-4 p-6">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-64 w-full max-w-3xl" />
-      </div>
-    );
+    return <LoginPageSkeleton />;
   }
 
   return children;

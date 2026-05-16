@@ -5,10 +5,12 @@ import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/tables/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { buildReportColumns } from "@/features/reports/lib/report-columns";
+import { useT } from "@/i18n/use-t";
 import { reportsService } from "@/services/reports.service";
 import type { ReportDefinition } from "@/types/report";
 
 export function ReportsView() {
+  const t = useT();
   const [data, setData] = useState<ReportDefinition[]>([]);
   const [loading, setLoading] = useState(true);
   const columns = useMemo(() => buildReportColumns(), []);
@@ -31,14 +33,14 @@ export function ReportsView() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Reports"
-        description="Operational, safety, and finance exports with audit-friendly timestamps."
+        title={t("reports.title")}
+        description={t("reports.description")}
       />
       <DataTable
         columns={columns}
         data={data}
         isLoading={loading}
-        searchPlaceholder="Search reports..."
+        searchPlaceholder={t("reports.searchPlaceholder")}
         globalSearchAccessor={(row) => `${row.name} ${row.category}`}
       />
     </div>

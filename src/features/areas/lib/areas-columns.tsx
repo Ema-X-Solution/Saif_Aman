@@ -6,12 +6,12 @@ import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import type { Area } from "@/types/area";
 import { toast } from "sonner";
 
-export function buildAreaColumns(): ColumnDef<Area>[] {
+export function buildAreaColumns(t: (key: string) => string): ColumnDef<Area>[] {
   return [
-    { accessorKey: "name", header: "Area", enableSorting: true },
-    { accessorKey: "schoolName", header: "School", enableSorting: true },
-    { accessorKey: "district", header: "District", enableSorting: true },
-    { accessorKey: "stops", header: "Stops", enableSorting: true },
+    { accessorKey: "name", header: t("common.area"), enableSorting: true },
+    { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
+    { accessorKey: "district", header: t("areas.district"), enableSorting: true },
+    { accessorKey: "stops", header: t("areas.stops"), enableSorting: true },
     {
       id: "actions",
       header: "",
@@ -22,8 +22,8 @@ export function buildAreaColumns(): ColumnDef<Area>[] {
           actions={[
             {
               id: "edit",
-              label: "Edit geometry",
-              onSelect: () => toast.message(row.original.name),
+              label: t("areas.editGeometry"),
+              onSelect: () => {},
             },
           ]}
         />
