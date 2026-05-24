@@ -12,3 +12,4 @@ export { reviewsService } from "./reviews.service";
 export { notificationsService } from "./notifications.service";
 export { reportsService } from "./reports.service";
 export { dashboardService } from "./dashboard.service";
+export { settingPagesService } from "./setting-pages.service";

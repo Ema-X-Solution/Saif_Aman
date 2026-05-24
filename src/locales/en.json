@@ -265,7 +265,8 @@
     "securityCardDescription": "Session policy for this workstation.",
     "sessionTimeout": "Session timeout (minutes)",
     "updatePolicy": "Update policy",
-    "toastSecuritySaved": "Security settings saved."
+    "toastSecuritySaved": "Security settings saved.",
+    "tabPages": "App Pages"
   },
   "validation": {
     "atLeast6": "At least 6 characters",
@@ -342,6 +343,14 @@
       "speedUnit": "km/h"
     }
   },
+  "publicPage": {
+    "backHome": "Back to home",
+    "legalDocument": "Legal document",
+    "loading": "Loading page...",
+    "notFound": "Page not found",
+    "notFoundDescription": "The page you are looking for could not be loaded or does not exist.",
+    "subtitle": "Please read this document carefully."
+  },
   "landing": {
     "login": "Login",
     "openDashboard": "Open dashboard",
@@ -365,5 +374,26 @@
     "demoJobTitle": "Transport safety lead",
     "demoPhone": "+966 50 000 0000",
     "avatarFallback": "SA"
+  },
+  "pages": {
+    "search": "Search pages...",
+    "title": "Title",
+    "key": "Key",
+    "status": "Status",
+    "managerTitle": "Pages Manager",
+    "managerDesc": "Manage dynamic pages like Terms & Conditions, FAQ.",
+    "addPage": "Add Page",
+    "editPage": "Edit Page",
+    "dialogDesc": "Configure dynamic app pages. Key is used by mobile app to fetch content.",
+    "content": "Content",
+    "saveDetails": "Save Details",
+    "deletePrompt": "Are you sure?",
+    "toastLoadError": "Failed to load pages",
+    "toastDeleteSuccess": "Page deleted successfully.",
+    "toastDeleteError": "Failed to delete page.",
+    "toastUpdateSuccess": "Page updated successfully.",
+    "toastCreateSuccess": "Page created successfully.",
+    "privacyPlaceholder": "Privacy Policy",
+    "contentPlaceholder": "Content in Markdown/HTML/Text"
   }
 }

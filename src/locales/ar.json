@@ -265,7 +265,8 @@
     "securityCardDescription": "سياسة الجلسة لهذا الجهاز.",
     "sessionTimeout": "انتهاء الجلسة (بالدقائق)",
     "updatePolicy": "تحديث السياسة",
-    "toastSecuritySaved": "تم حفظ إعدادات الأمان."
+    "toastSecuritySaved": "تم حفظ إعدادات الأمان.",
+    "tabPages": "صفحات التطبيق"
   },
   "validation": {
     "atLeast6": "ستة أحرف على الأقل",
@@ -342,6 +343,14 @@
       "speedUnit": "كم/س"
     }
   },
+  "publicPage": {
+    "backHome": "العودة للرئيسية",
+    "legalDocument": "مستند قانوني",
+    "loading": "جاري تحميل الصفحة...",
+    "notFound": "الصفحة غير موجودة",
+    "notFoundDescription": "تعذر تحميل الصفحة المطلوبة أو أنها غير موجودة.",
+    "subtitle": "يرجى قراءة هذا المستند بعناية."
+  },
   "landing": {
     "login": "تسجيل الدخول",
     "openDashboard": "فتح لوحة التحكم",
@@ -365,5 +374,26 @@
     "demoJobTitle": "مسؤول سلامة النقل",
     "demoPhone": "+966 50 000 0000",
     "avatarFallback": "سا"
+  },
+  "pages": {
+    "search": "البحث في الصفحات...",
+    "title": "العنوان",
+    "key": "المفتاح",
+    "status": "الحالة",
+    "managerTitle": "إدارة الصفحات",
+    "managerDesc": "إدارة الصفحات الديناميكية مثل الشروط والأحكام والأسئلة الشائعة.",
+    "addPage": "إضافة صفحة",
+    "editPage": "تعديل الصفحة",
+    "dialogDesc": "إعداد صفحات التطبيق الديناميكية. يتم استخدام المفتاح من قبل التطبيق لتحديد المحتوى.",
+    "content": "المحتوى",
+    "saveDetails": "حفظ التفاصيل",
+    "deletePrompt": "هل أنت متأكد؟",
+    "toastLoadError": "فشل في تحميل الصفحات",
+    "toastDeleteSuccess": "تم حذف الصفحة بنجاح.",
+    "toastDeleteError": "فشل في حذف الصفحة.",
+    "toastUpdateSuccess": "تم تحديث الصفحة بنجاح.",
+    "toastCreateSuccess": "تم إنشاء الصفحة بنجاح.",
+    "privacyPlaceholder": "سياسة الخصوصية",
+    "contentPlaceholder": "المحتوى بصيغة Markdown/HTML/Text"
   }
 }

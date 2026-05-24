@@ -9,3 +9,11 @@ export interface PlatformSettings {
   notifyPush: boolean;
   sessionTimeoutMinutes: number;
 }
+
+export interface SettingPage {
+  id: number;
+  key: string;
+  title: string;
+  content: string;
+  active: boolean;
+}

@@ -1,6 +1,7 @@
 import {
   Bus,
   ClipboardList,
+  Cog,
   LayoutDashboard,
   School,
   Users,
@@ -26,6 +27,6 @@ export const SIDEBAR_NAV: SidebarNavItem[] = [
   // { labelKey: "sidebar.notifications", href: ROUTES.notifications, icon: Bell },
   // { labelKey: "sidebar.reports", href: ROUTES.reports, icon: Gauge },
   // { labelKey: "sidebar.admins", href: ROUTES.admins, icon: Shield },
-  // { labelKey: "sidebar.settings", href: ROUTES.settings, icon: Cog },
+  { labelKey: "sidebar.settings", href: ROUTES.settings, icon: Cog },
   // { labelKey: "sidebar.profile", href: ROUTES.profile, icon: UserCog },
 ];

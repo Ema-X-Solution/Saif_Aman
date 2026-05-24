@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AppLocale } from "@/constants/app";
 import { useT } from "@/i18n/use-t";
 import { useSettingsStore } from "@/store/settings-store";
+import { SettingPagesTab } from "./setting-pages-tab";
 
 const generalSchema = z.object({
   platformName: z.string().min(2),
@@ -81,6 +82,7 @@ export function SettingsView() {
           <TabsTrigger value="general">{t("settings.tabGeneral")}</TabsTrigger>
           <TabsTrigger value="theme">{t("settings.tabTheme")}</TabsTrigger>
           <TabsTrigger value="language">{t("settings.tabLanguage")}</TabsTrigger>
+          <TabsTrigger value="pages">{t("settings.tabPages") || "App Pages"}</TabsTrigger>
           <TabsTrigger value="notifications">{t("settings.tabNotifications")}</TabsTrigger>
           <TabsTrigger value="security">{t("settings.tabSecurity")}</TabsTrigger>
         </TabsList>
@@ -163,6 +165,14 @@ export function SettingsView() {
               >
                 {t("settings.languageArabic")}
               </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="pages">
+          <Card className="border-border/80">
+            <CardContent className="pt-6">
+              <SettingPagesTab />
             </CardContent>
           </Card>
         </TabsContent>
