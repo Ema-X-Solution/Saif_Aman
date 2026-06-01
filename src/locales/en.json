@@ -395,5 +395,19 @@
     "toastCreateSuccess": "Page created successfully.",
     "privacyPlaceholder": "Privacy Policy",
     "contentPlaceholder": "Content in Markdown/HTML/Text"
+  },
+  "deleteAccountPage": {
+    "title": "Delete Account",
+    "description": "If you wish to delete your account, please enter your credentials below.",
+    "button": "Delete My Account",
+    "identityLabel": "Identity (Phone/Email)",
+    "passwordLabel": "Password",
+    "loginToVerify": "Login to verify your identity",
+    "confirmDelete": "Are you sure you want to delete your account? This action cannot be undone.",
+    "yesDelete": "Yes, delete my account",
+    "cancel": "Cancel",
+    "deleting": "Deleting...",
+    "success": "Your account has been deleted successfully.",
+    "error": "Failed to delete account."
   }
 }

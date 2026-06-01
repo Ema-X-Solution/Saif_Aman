@@ -395,5 +395,19 @@
     "toastCreateSuccess": "تم إنشاء الصفحة بنجاح.",
     "privacyPlaceholder": "سياسة الخصوصية",
     "contentPlaceholder": "المحتوى بصيغة Markdown/HTML/Text"
+  },
+  "deleteAccountPage": {
+    "title": "حذف الحساب",
+    "description": "إذا كنت ترغب في حذف حسابك، يرجى إدخال بيانات الاعتماد الخاصة بك أدناه.",
+    "button": "حذف حسابي",
+    "identityLabel": "الهوية (رقم الهاتف/البريد الإلكتروني)",
+    "passwordLabel": "كلمة المرور",
+    "loginToVerify": "تسجيل الدخول للتحقق من هويتك",
+    "confirmDelete": "هل أنت متأكد أنك تريد حذف حسابك؟ لا يمكن التراجع عن هذا الإجراء.",
+    "yesDelete": "نعم، احذف حسابي",
+    "cancel": "إلغاء",
+    "deleting": "جاري الحذف...",
+    "success": "تم حذف حسابك بنجاح.",
+    "error": "فشل في حذف الحساب."
   }
 }
