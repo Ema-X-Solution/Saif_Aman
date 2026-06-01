@@ -5,14 +5,15 @@ import { http } from "@/services/http";
 export const accountService = {
   async userLogin(identity: string, password: string): Promise<string> {
     try {
-      const res = await http.post<any>("/auth/login", {
+      const res = await http.post<unknown>("/auth/login", {
         identity,
         password,
         token: "web",
         device: "web",
       });
       
-      const token = res.data?.token || res.data?.data?.token;
+      const data = res.data as Record<string, unknown>;
+      const token = (data?.token as string) || ((data?.data as Record<string, unknown>)?.token as string);
       if (!token) {
         throw new Error("No token returned from login.");
       }
