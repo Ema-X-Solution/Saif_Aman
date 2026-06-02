@@ -38,7 +38,7 @@ export const parentRequestsService = {
     const user = await usersAdminService.get(id);
     if (!user) throw new Error("User not found");
 
-    const payload: Record<string, any> = {
+    const payload: Record<string, unknown> = {
       name: user.name,
       type: "parent",
       phone: user.phone ?? "",
@@ -51,6 +51,6 @@ export const parentRequestsService = {
     if (user.latitude !== null && user.latitude !== undefined) payload.latitude = user.latitude;
     if (user.longitude !== null && user.longitude !== undefined) payload.longitude = user.longitude;
 
-    return usersAdminService.update(user.id, payload as any);
+    return usersAdminService.update(user.id, payload as Parameters<typeof usersAdminService.update>[1]);
   },
 };

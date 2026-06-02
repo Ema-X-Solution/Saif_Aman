@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Plus, Edit2, Trash2 } from "lucide-react";
 import { ColumnDef } from "@tanstack/react-table";
@@ -39,9 +39,9 @@ export function SettingPagesTab() {
     return () => {
       cancelled = true;
     };
-  }, [reloadKey]);
+  }, [reloadKey, t]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = useCallback(async (id: number) => {
     try {
       await settingPagesService.remove(id);
       toast.success(t("pages.toastDeleteSuccess"));
@@ -49,7 +49,7 @@ export function SettingPagesTab() {
     } catch {
       toast.error(t("pages.toastDeleteError"));
     }
-  };
+  }, [t]);
 
   const columns = useMemo<ColumnDef<SettingPage>[]>(
     () => [
@@ -105,7 +105,7 @@ export function SettingPagesTab() {
         },
       },
     ],
-    [t]
+    [t, handleDelete]
   );
 
   return (
