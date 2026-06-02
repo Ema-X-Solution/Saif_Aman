@@ -82,7 +82,7 @@ export function SettingPageDialog({
   useEffect(() => {
     if (open) {
       if (page) {
-        let faqs = [];
+        let faqs: NonNullable<FormValues["faqs"]> = [];
         let content = page.content;
         
         try {
