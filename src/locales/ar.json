@@ -357,9 +357,22 @@
     "badge": "نظام تتبع حافلات المدارس",
     "subhead": "منصة ذكية لإدارة نقل الطلاب، ومتابعة أولياء الأمور، وتحليلات سلامة الأسطول المباشرة.",
     "startDemo": "ابدأ العرض التجريبي",
-    "adminLogin": "دخول المشرف",
+    "adminLogin": "دخول الإدارة",
     "cardTitle": "وحدة جاهزة للمؤسسات",
-    "cardHint": "مصممة لعمليات نقل متقدمة على مستوى الخدمات السحابية."
+    "cardHint": "مبنية لعمليات النقل المتميزة والآمنة.",
+    "downloadAppStore": "حمل من متجر آبل",
+    "getGooglePlay": "احصل عليه من جوجل بلاي",
+    "featureLiveMap": "تتبع حي للرحلات",
+    "featureLiveMapHint": "رؤية فورية لموقع الباص ومسار الرحلة في الوقت الفعلي.",
+    "featureNotifications": "إشعارات فورية",
+    "featureNotificationsHint": "تلقي تنبيهات عند الوصول والمغادرة وأي تأخير.",
+    "featureSecure": "منصة آمنة",
+    "featureSecureHint": "تشفير كامل للبيانات وملفات موثقة للسائقين والمشرفين.",
+    "downloadCtaTitle": "هل أنت مستعد لمتابعة رحلة طفلك؟",
+    "downloadCtaDesc": "حمل تطبيق سيف أمان لأولياء الأمور اليوم.",
+    "terms": "الشروط والأحكام",
+    "faq": "الأسئلة الشائعة",
+    "privacy": "سياسة الخصوصية"
   },
   "profilePage": {
     "title": "الملف الشخصي",
@@ -394,7 +407,11 @@
     "toastUpdateSuccess": "تم تحديث الصفحة بنجاح.",
     "toastCreateSuccess": "تم إنشاء الصفحة بنجاح.",
     "privacyPlaceholder": "سياسة الخصوصية",
-    "contentPlaceholder": "المحتوى بصيغة Markdown/HTML/Text"
+    "contentPlaceholder": "المحتوى بصيغة Markdown/HTML/Text",
+    "addSection": "إضافة قسم",
+    "sectionTitle": "عنوان القسم",
+    "sectionContent": "محتوى القسم",
+    "removeSection": "حذف"
   },
   "deleteAccountPage": {
     "title": "حذف الحساب",

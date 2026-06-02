@@ -1,11 +1,11 @@
-
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
+import { Plus, Trash2 } from "lucide-react";
 
 import {
   Dialog,
@@ -35,7 +35,13 @@ import { useT } from "@/i18n/use-t";
 const pageSchema = z.object({
   key: z.string().min(1, "Key is required"),
   title: z.string().min(1, "Title is required"),
-  content: z.string().min(1, "Content is required"),
+  content: z.string().optional(),
+  faqs: z.array(z.object({
+    title_ar: z.string().optional(),
+    title_en: z.string().optional(),
+    content_ar: z.string().optional(),
+    content_en: z.string().optional()
+  })).optional(),
   active: z.boolean(),
 });
 
@@ -63,17 +69,44 @@ export function SettingPageDialog({
       key: "",
       title: "",
       content: "",
+      faqs: [],
       active: true,
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "faqs",
+  });
+
+  const watchKey = form.watch("key");
+
   useEffect(() => {
     if (open) {
       if (page) {
+        let faqs = [];
+        let content = page.content;
+        
+        try {
+          const parsed = JSON.parse(page.content);
+          if (Array.isArray(parsed)) {
+            faqs = parsed.map((item: any) => ({
+              title_ar: item.title_ar || item.title || "",
+              title_en: item.title_en || "",
+              content_ar: item.content_ar || item.content || "",
+              content_en: item.content_en || ""
+            }));
+          }
+          content = "";
+        } catch {
+          // fallback if not valid JSON
+        }
+        
         form.reset({
           key: page.key,
           title: page.title,
-          content: page.content,
+          content: content,
+          faqs: faqs,
           active: page.active,
         });
       } else {
@@ -81,6 +114,7 @@ export function SettingPageDialog({
           key: "",
           title: "",
           content: "",
+          faqs: [],
           active: true,
         });
       }
@@ -89,11 +123,20 @@ export function SettingPageDialog({
 
   const onSubmit = async (values: FormValues) => {
     try {
+      let finalContent = JSON.stringify(values.faqs || []);
+
+      const payload = {
+        key: values.key,
+        title: values.title,
+        content: finalContent,
+        active: values.active,
+      };
+
       if (isEditing) {
-        await settingPagesService.update(page.id, values);
+        await settingPagesService.update(page.id, payload);
         toast.success(t("pages.toastUpdateSuccess"));
       } else {
-        await settingPagesService.create(values);
+        await settingPagesService.create(payload);
         toast.success(t("pages.toastCreateSuccess"));
       }
       onSaved();
@@ -105,7 +148,7 @@ export function SettingPageDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{isEditing ? t("pages.editPage") : t("pages.addPage")}</DialogTitle>
           <DialogDescription>
@@ -115,47 +158,130 @@ export function SettingPageDialog({
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("pages.title")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder={t("pages.privacyPlaceholder")} {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="key"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("pages.key")}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="privacy_policy, terms_conditions, etc." {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("pages.title")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("pages.privacyPlaceholder")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <FormField
+                control={form.control}
+                name="key"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("pages.key")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder="faq, privacy_policy, etc." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("pages.content")}</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder={t("pages.contentPlaceholder")} className="min-h-[150px]" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
+            <div className="space-y-4 border p-4 rounded-lg bg-muted/10">
+              <div className="flex items-center justify-between">
+                <div className="text-base font-medium">{t("pages.content")}</div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => append({ title_ar: "", title_en: "", content_ar: "", content_en: "" })}
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t("pages.addSection") || "Add Section"}
+                </Button>
+              </div>
+              
+              {fields.length === 0 && (
+                <div className="text-center text-sm text-muted-foreground py-4">
+                  {t("table.noRecords")}
+                </div>
               )}
-            />
+              
+              {fields.map((field, index) => (
+                <div key={field.id} className="flex flex-col gap-3 p-4 bg-background border rounded-md">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="grid grid-cols-2 gap-4 flex-1">
+                      <FormField
+                        control={form.control}
+                        name={`faqs.${index}.title_ar`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("pages.sectionTitle")} (AR)</FormLabel>
+                            <FormControl>
+                              <Input placeholder="..." dir="rtl" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`faqs.${index}.title_en`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>{t("pages.sectionTitle")} (EN)</FormLabel>
+                            <FormControl>
+                              <Input placeholder="..." dir="ltr" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="mt-8 text-destructive hover:bg-destructive/10 shrink-0"
+                      onClick={() => remove(index)}
+                      title={t("pages.removeSection") || "Remove"}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name={`faqs.${index}.content_ar`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("pages.sectionContent")} (AR)</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="..." className="min-h-[80px]" dir="rtl" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`faqs.${index}.content_en`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("pages.sectionContent")} (EN)</FormLabel>
+                          <FormControl>
+                            <Textarea placeholder="..." className="min-h-[80px]" dir="ltr" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
 
             <FormField
               control={form.control}

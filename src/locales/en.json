@@ -359,7 +359,20 @@
     "startDemo": "Start demo",
     "adminLogin": "Admin login",
     "cardTitle": "Enterprise-ready module",
-    "cardHint": "Built for premium SaaS-grade transportation operations."
+    "cardHint": "Built for premium SaaS-grade transportation operations.",
+    "downloadAppStore": "Download on the App Store",
+    "getGooglePlay": "Get it on Google Play",
+    "featureLiveMap": "Live Fleet Tracking",
+    "featureLiveMapHint": "Real-time visibility of bus locations and route progress.",
+    "featureNotifications": "Instant Alerts",
+    "featureNotificationsHint": "Receive push notifications for arrivals, delays, and boarding.",
+    "featureSecure": "Secure Platform",
+    "featureSecureHint": "End-to-end encryption and verified driver profiles.",
+    "downloadCtaTitle": "Ready to track your child's journey?",
+    "downloadCtaDesc": "Download the SAIF AMAN parent app today.",
+    "terms": "Terms & Conditions",
+    "faq": "FAQ",
+    "privacy": "Privacy Policy"
   },
   "profilePage": {
     "title": "Profile",
@@ -394,7 +407,11 @@
     "toastUpdateSuccess": "Page updated successfully.",
     "toastCreateSuccess": "Page created successfully.",
     "privacyPlaceholder": "Privacy Policy",
-    "contentPlaceholder": "Content in Markdown/HTML/Text"
+    "contentPlaceholder": "Content in Markdown/HTML/Text",
+    "addSection": "Add Section",
+    "sectionTitle": "Section Title",
+    "sectionContent": "Section Content",
+    "removeSection": "Remove"
   },
   "deleteAccountPage": {
     "title": "Delete Account",

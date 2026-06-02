@@ -70,7 +70,7 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${inter.variable} ${cairo.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body suppressHydrationWarning className="min-h-full flex flex-col">
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

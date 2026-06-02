@@ -7,11 +7,12 @@ import type { LucideIcon } from "lucide-react";
 
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { Button } from "@/components/ui/button";
-import { APP_NAME_AR, APP_NAME_EN } from "@/constants/app";
-import { ROUTES } from "@/constants/routes";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { localizedHref } from "@/lib/localized-href";
+import { PublicHeader } from "@/components/layout/public-header";
+import { PublicFooter } from "@/components/layout/public-footer";
+import { ROUTES } from "@/constants/routes";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { SettingPage } from "@/types/settings";
 
@@ -26,9 +27,41 @@ function getPageIcon(key: string): LucideIcon {
   return PAGE_ICONS[key] ?? FileText;
 }
 
-function formatPageContent(content: string): string {
+function formatPageContent(content: string, locale: string): string {
   const trimmed = content.trim();
   if (!trimmed) return "";
+
+  // Try parsing as JSON array (new format)
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (Array.isArray(parsed)) {
+      return parsed
+        .map((item) => {
+          const title = locale === "ar" ? (item.title_ar || item.title) : (item.title_en || item.title);
+          const itemContent = locale === "ar" ? (item.content_ar || item.content) : (item.content_en || item.content);
+
+          if (!title && !itemContent) return "";
+          let html = "";
+          if (title) {
+            html += `<h2>${title}</h2>\n`;
+          }
+          if (itemContent) {
+            const contentHtml = itemContent
+              .split(/\n{2,}/)
+              .map((p: string) => p.trim())
+              .filter(Boolean)
+              .map((p: string) => `<p>${p.replace(/\n/g, "<br />")}</p>`)
+              .join("");
+            html += contentHtml;
+          }
+          return html;
+        })
+        .join("\n");
+    }
+  } catch {
+    // Ignore and fallback to raw text/html parsing
+  }
+
   if (/<[a-z][\s\S]*>/i.test(trimmed)) return trimmed;
 
   return trimmed
@@ -61,17 +94,7 @@ export function PublicSettingPageView({
       <ShellBackground />
 
       <div className="relative flex min-h-screen flex-col">
-        <header className="sticky top-0 z-20 border-b border-border/40 bg-background/80 backdrop-blur-md supports-[backdrop-filter]:bg-background/60">
-          <PageContainer className="flex h-16 items-center justify-between">
-            <BrandLogo href={homeHref} />
-            <div className="flex items-center gap-2">
-              <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-                <Link href={localizedHref(locale, ROUTES.login)}>{t("landing.login")}</Link>
-              </Button>
-              <ThemeToggle />
-            </div>
-          </PageContainer>
-        </header>
+        <PublicHeader />
 
         <main className="flex-1">
           <PageContainer className="py-10 md:py-14">
@@ -121,23 +144,14 @@ export function PublicSettingPageView({
                     </div>
                   </div>
 
-                  <PageContent html={formatPageContent(page.content)} />
+                  <PageContent html={formatPageContent(page.content, locale)} />
                 </div>
               </article>
             )}
           </PageContainer>
         </main>
 
-        <footer className="mt-auto border-t border-border/40 bg-background/60 py-6">
-          <PageContainer className="flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-start">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} {APP_NAME_EN} · {APP_NAME_AR}
-            </p>
-            <Button asChild variant="link" size="sm" className="h-auto p-0 text-muted-foreground">
-              <Link href={homeHref}>{t("publicPage.backHome")}</Link>
-            </Button>
-          </PageContainer>
-        </footer>
+        <PublicFooter />
       </div>
     </div>
   );
