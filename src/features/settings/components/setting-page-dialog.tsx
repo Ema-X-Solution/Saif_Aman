@@ -79,8 +79,6 @@ export function SettingPageDialog({
     name: "faqs",
   });
 
-  const watchKey = form.watch("key");
-
   useEffect(() => {
     if (open) {
       if (page) {
@@ -90,6 +88,7 @@ export function SettingPageDialog({
         try {
           const parsed = JSON.parse(page.content);
           if (Array.isArray(parsed)) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             faqs = parsed.map((item: any) => ({
               title_ar: item.title_ar || item.title || "",
               title_en: item.title_en || "",
@@ -123,7 +122,7 @@ export function SettingPageDialog({
 
   const onSubmit = async (values: FormValues) => {
     try {
-      let finalContent = JSON.stringify(values.faqs || []);
+      const finalContent = JSON.stringify(values.faqs || []);
 
       const payload = {
         key: values.key,

@@ -18,13 +18,13 @@ export function PublicFooter() {
           © {new Date().getFullYear()} {APP_NAME_EN} · {APP_NAME_AR}
         </p>
         <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-          <Link href={localizedHref(locale, "terms_conditions" as any)} className="hover:text-foreground transition-colors">
+          <Link href={localizedHref(locale, "terms_conditions")} className="hover:text-foreground transition-colors">
             {t("landing.terms") || "Terms & Conditions"}
           </Link>
-          <Link href={localizedHref(locale, "privacy_policy" as any)} className="hover:text-foreground transition-colors">
+          <Link href={localizedHref(locale, "privacy_policy")} className="hover:text-foreground transition-colors">
             {t("landing.privacy") || "Privacy Policy"}
           </Link>
-          <Link href={localizedHref(locale, "faq" as any)} className="hover:text-foreground transition-colors">
+          <Link href={localizedHref(locale, "faq")} className="hover:text-foreground transition-colors">
             {t("landing.faq") || "FAQ"}
           </Link>
         </div>

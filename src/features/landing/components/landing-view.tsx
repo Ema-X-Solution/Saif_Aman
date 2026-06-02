@@ -2,24 +2,19 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { BellRing, MapPin, Shield, Smartphone } from "lucide-react";
 import Image from "next/image";
 
-import { BrandLogo } from "@/components/shared/brand-logo";
 import { PublicHeader } from "@/components/layout/public-header";
 import { PublicFooter } from "@/components/layout/public-footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ROUTES } from "@/constants/routes";
 import { APP_NAME_AR, APP_NAME_EN } from "@/constants/app";
-import { getLocaleFromPathname, useT } from "@/i18n/use-t";
-import { localizedHref } from "@/lib/localized-href";
+import { useT } from "@/i18n/use-t";
 
 export function LandingView() {
   const t = useT();
-  const pathname = usePathname();
-  const locale = getLocaleFromPathname(pathname ?? null);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 font-sans overflow-hidden">
@@ -66,7 +61,7 @@ export function LandingView() {
               <div className="flex -space-x-3 rtl:space-x-reverse">
                 {[1, 2, 3, 4].map((i) => (
                   <div key={i} className="inline-block h-10 w-10 rounded-full ring-2 ring-background bg-muted overflow-hidden">
-                    <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=parent${i}`} alt="Avatar" className="w-full h-full object-cover" />
+                    <Image src={`https://api.dicebear.com/7.x/avataaars/svg?seed=parent${i}`} alt="Avatar" className="w-full h-full object-cover" width={40} height={40} unoptimized />
                   </div>
                 ))}
               </div>

@@ -5,8 +5,6 @@ import { usePathname } from "next/navigation";
 import { ArrowLeft, FileText, Loader2, Shield } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-import { BrandLogo } from "@/components/shared/brand-logo";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { localizedHref } from "@/lib/localized-href";
 import { PublicHeader } from "@/components/layout/public-header";
