@@ -38,16 +38,19 @@ export const parentRequestsService = {
     const user = await usersAdminService.get(id);
     if (!user) throw new Error("User not found");
 
-    return usersAdminService.update(user.id, {
+    const payload: Record<string, any> = {
       name: user.name,
       type: "parent",
       phone: user.phone ?? "",
       status,
-      email: user.email ?? null,
-      school_id: user.school ? user.school.id : null,
-      address: user.address ?? null,
-      latitude: user.latitude ?? null,
-      longitude: user.longitude ?? null,
-    });
+    };
+
+    if (user.email) payload.email = user.email;
+    if (user.school?.id) payload.school_id = user.school.id;
+    if (user.address) payload.address = user.address;
+    if (user.latitude !== null && user.latitude !== undefined) payload.latitude = user.latitude;
+    if (user.longitude !== null && user.longitude !== undefined) payload.longitude = user.longitude;
+
+    return usersAdminService.update(user.id, payload as any);
   },
 };

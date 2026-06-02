@@ -28,8 +28,9 @@ export const usersAdminService = {
   },
 
   async get(id: number | string): Promise<ApiUserRow> {
-    const res = await http.get<ApiUserRow>(`/users/${id}`);
-    return res.data;
+    const res = await http.get<{ data: ApiUserRow } | ApiUserRow>(`/users/${id}`);
+    const data = res.data;
+    return "data" in data ? data.data : data;
   },
 
   async update(id: number | string, payload: UserWritePayload): Promise<unknown> {
