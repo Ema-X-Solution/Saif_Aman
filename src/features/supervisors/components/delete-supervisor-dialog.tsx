@@ -36,7 +36,7 @@ export function DeleteSupervisorDialog({ supervisor, onClose, onDeleted }: Delet
     if (!supervisor) return;
     setIsDeleting(true);
     try {
-      await usersAdminService.remove(supervisor.id);
+      await usersAdminService.removeVendor(String(supervisor.id));
       toast.success(t("common.delete") + " " + t("common.success"));
       onClose();
       onDeleted?.();

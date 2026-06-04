@@ -36,7 +36,7 @@ export function DeleteDriverDialog({ driver, onClose, onDeleted }: DeleteDriverD
     if (!driver) return;
     setIsDeleting(true);
     try {
-      await usersAdminService.remove(driver.id);
+      await usersAdminService.removeVendor(String(driver.id));
       toast.success(t("common.delete") + " " + t("common.success"));
       onClose();
       onDeleted?.();
