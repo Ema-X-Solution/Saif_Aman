@@ -6,22 +6,35 @@ import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { School } from "@/types/school";
 
-function rowActions(school: School, t: (key: string) => string) {
+import { toast } from "sonner";
+
+function rowActions(school: School, t: (key: string) => string, onEdit: (s: School) => void, onView: (s: School) => void, onDelete: (s: School) => void) {
   return [
     {
       id: "view",
       label: t("common.viewDetails"),
-      onSelect: () => {},
+      onSelect: () => onView(school),
     },
     {
       id: "edit",
       label: t("common.edit"),
-      onSelect: () => {},
+      onSelect: () => onEdit(school),
+    },
+    {
+      id: "delete",
+      label: t("common.delete") || "Delete",
+      onSelect: () => onDelete(school),
+      destructive: true,
     },
   ];
 }
 
-export function buildSchoolColumns(t: (key: string) => string): ColumnDef<School>[] {
+export function buildSchoolColumns(
+  t: (key: string) => string,
+  onEdit: (s: School) => void,
+  onView: (s: School) => void,
+  onDelete: (s: School) => void
+): ColumnDef<School>[] {
   return [
     {
       accessorKey: "name",
@@ -59,7 +72,7 @@ export function buildSchoolColumns(t: (key: string) => string): ColumnDef<School
       cell: ({ row }) => (
         <EntityRowActions
           label={row.original.name}
-          actions={rowActions(row.original, t)}
+          actions={rowActions(row.original, t, onEdit, onView, onDelete)}
         />
       ),
     },

@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/tables/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { AddUserDialog } from "@/features/users/components/add-user-dialog";
+import { EditSupervisorDialog } from "@/features/supervisors/components/edit-supervisor-dialog";
+import { SupervisorDetailsDialog } from "@/features/supervisors/components/supervisor-details-dialog";
 import { buildSupervisorColumns } from "@/features/supervisors/lib/supervisors-columns";
 import { supervisorsService } from "@/services/supervisors.service";
 import type { Supervisor } from "@/types/supervisor";
@@ -15,7 +17,13 @@ export function SupervisorsView() {
   const [data, setData] = useState<Supervisor[]>([]);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
-  const columns = useMemo(() => buildSupervisorColumns(t), [t]);
+  const [editingSupervisor, setEditingSupervisor] = useState<Supervisor | null>(null);
+  const [viewingSupervisor, setViewingSupervisor] = useState<Supervisor | null>(null);
+
+  const columns = useMemo(
+    () => buildSupervisorColumns(t, setEditingSupervisor, setViewingSupervisor),
+    [t]
+  );
 
   useEffect(() => {
     let c = false;
@@ -51,6 +59,16 @@ export function SupervisorsView() {
         isLoading={loading}
         searchPlaceholder={t("users.searchSupervisors")}
         globalSearchAccessor={(row) => `${row.fullName} ${row.schoolName}`}
+      />
+      
+      <EditSupervisorDialog
+        supervisor={editingSupervisor}
+        onClose={() => setEditingSupervisor(null)}
+        onUpdated={() => setReloadKey((k) => k + 1)}
+      />
+      <SupervisorDetailsDialog
+        supervisor={viewingSupervisor}
+        onClose={() => setViewingSupervisor(null)}
       />
     </div>
   );

@@ -75,13 +75,13 @@ export function LandingView() {
             transition={{ duration: 0.7, delay: 0.2 }}
             className="relative mx-auto flex w-full max-w-md items-center justify-center lg:max-w-none"
           >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-primary/20 via-primary/5 to-transparent rounded-full blur-[100px] -z-10" />
+            {/* <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-gradient-to-tr from-primary/20 via-primary/5 to-transparent rounded-full -z-10" /> */}
             <Image
-              src="/images/mockup.png"
+              src="/images/mockup1.png"
               alt="SAIF AMAN App Mockup"
               width={500}
               height={700}
-              className="object-contain drop-shadow-[0_35px_35px_rgba(0,0,0,0.25)] hover:-translate-y-2 transition-transform duration-700 ease-out"
+              className="rounded-xl  hover:-translate-y-2 transition-transform duration-700 ease-out  "
               priority
             />
           </motion.div>

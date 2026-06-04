@@ -17,6 +17,10 @@ function mapSchoolBus(row: ApiSchoolBusRow): Bus {
   return {
     id: String(row.id),
     plateNumber: row.plate_number,
+    code: row.code,
+    label: row.label,
+    model: row.model,
+    color: row.color,
     schoolId: row.school ? String(row.school.id) : "",
     schoolName: row.school?.name ?? "—",
     mainDriverId: row.driver ? String(row.driver.id) : "",

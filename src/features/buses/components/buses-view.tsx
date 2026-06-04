@@ -5,6 +5,9 @@ import { useEffect, useMemo, useState } from "react";
 import { DataTable } from "@/components/tables/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { AddBusDialog } from "@/features/buses/components/add-bus-dialog";
+import { EditBusDialog } from "@/features/buses/components/edit-bus-dialog";
+import { BusDetailsDialog } from "@/features/buses/components/bus-details-dialog";
+import { DeleteBusDialog } from "@/features/buses/components/delete-bus-dialog";
 import { buildBusColumns } from "@/features/buses/lib/buses-columns";
 import { busesService } from "@/services/buses.service";
 import type { Bus } from "@/types/bus";
@@ -15,7 +18,14 @@ export function BusesView() {
   const [data, setData] = useState<Bus[]>([]);
   const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
-  const columns = useMemo(() => buildBusColumns(t), [t]);
+  const [editingBus, setEditingBus] = useState<Bus | null>(null);
+  const [viewingBus, setViewingBus] = useState<Bus | null>(null);
+  const [deletingBus, setDeletingBus] = useState<Bus | null>(null);
+
+  const columns = useMemo(
+    () => buildBusColumns(t, setEditingBus, setViewingBus, setDeletingBus),
+    [t]
+  );
 
   useEffect(() => {
     let c = false;
@@ -48,6 +58,20 @@ export function BusesView() {
         globalSearchAccessor={(row) =>
           `${row.plateNumber} ${row.schoolName} ${row.areaLabels.join(" ")}`
         }
+      />
+      <EditBusDialog
+        bus={editingBus}
+        onClose={() => setEditingBus(null)}
+        onUpdated={() => setReloadKey((k) => k + 1)}
+      />
+      <BusDetailsDialog
+        bus={viewingBus}
+        onClose={() => setViewingBus(null)}
+      />
+      <DeleteBusDialog
+        bus={deletingBus}
+        onClose={() => setDeletingBus(null)}
+        onDeleted={() => setReloadKey((k) => k + 1)}
       />
     </div>
   );

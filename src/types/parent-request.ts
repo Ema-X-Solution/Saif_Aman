@@ -20,4 +20,6 @@ export interface ParentRequest {
   studentsCount?: number;
   createdAt?: string;
   updatedAt?: string;
+  image?: string | null;
+  homeImage?: string | null;
 }

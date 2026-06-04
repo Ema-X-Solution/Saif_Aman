@@ -20,7 +20,9 @@ function openMap(lat?: number | null, lng?: number | null) {
 
 export function buildParentRequestColumns(
   onUpdateStatus: (id: string, status: "approved" | "rejected" | "pending") => Promise<void>,
-  t: (key: string) => string
+  t: (key: string) => string,
+  onEdit: (p: ParentRequest) => void,
+  onView: (p: ParentRequest) => void
 ): ColumnDef<ParentRequest>[] {
   return [
     { accessorKey: "id", header: t("common.id"), enableSorting: true },
@@ -69,22 +71,35 @@ export function buildParentRequestColumns(
       enableSorting: false,
       cell: ({ row }) => {
         const status = row.original.status;
-        if (status === "approved") return null;
 
-        const actions: { id: string; label: string; onSelect: () => Promise<void> }[] = [];
+        const actions: { id: string; label: string; onSelect: () => Promise<void> | void }[] = [];
 
         actions.push({
-          id: "approve",
-          label: t("common.approved"),
-          onSelect: async () => {
-            try {
-              await onUpdateStatus(row.original.id, "approved");
-              toast.success("Request approved.");
-            } catch {
-              toast.error("Failed to approve request.");
-            }
-          },
+          id: "view",
+          label: t("common.viewDetails"),
+          onSelect: () => onView(row.original),
         });
+
+        actions.push({
+          id: "edit",
+          label: t("common.edit"),
+          onSelect: () => onEdit(row.original),
+        });
+
+        if (status !== "approved") {
+          actions.push({
+            id: "approve",
+            label: t("common.approved"),
+            onSelect: async () => {
+              try {
+                await onUpdateStatus(row.original.id, "approved");
+                toast.success("Request approved.");
+              } catch {
+                toast.error("Failed to approve request.");
+              }
+            },
+          });
+        }
 
         if (status !== "rejected") {
           actions.push({

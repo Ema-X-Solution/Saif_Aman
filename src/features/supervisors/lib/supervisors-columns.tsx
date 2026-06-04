@@ -6,7 +6,13 @@ import
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { Supervisor } from "@/types/supervisor";
 
-export function buildSupervisorColumns(t: (key: string) => string): ColumnDef<Supervisor>[] {
+import { toast } from "sonner";
+
+export function buildSupervisorColumns(
+  t: (key: string) => string,
+  onEdit: (s: Supervisor) => void,
+  onView: (s: Supervisor) => void
+): ColumnDef<Supervisor>[] {
   return [
     { accessorKey: "fullName", header: t("common.supervisor"), enableSorting: true },
     { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
@@ -39,7 +45,12 @@ export function buildSupervisorColumns(t: (key: string) => string): ColumnDef<Su
             {
               id: "open",
               label: t("users.openProfile"),
-              onSelect: () => {},
+              onSelect: () => onView(row.original),
+            },
+            {
+              id: "edit",
+              label: t("common.edit"),
+              onSelect: () => onEdit(row.original),
             },
           ]}
         />

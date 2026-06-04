@@ -5,7 +5,14 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { Bus } from "@/types/bus";
-export function buildBusColumns(t: (key: string) => string): ColumnDef<Bus>[] {
+import { toast } from "sonner";
+
+export function buildBusColumns(
+  t: (key: string) => string,
+  onEdit: (b: Bus) => void,
+  onView: (b: Bus) => void,
+  onDelete: (b: Bus) => void
+): ColumnDef<Bus>[] {
   return [
     { accessorKey: "plateNumber", header: t("common.plate"), enableSorting: true },
     { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
@@ -37,7 +44,23 @@ export function buildBusColumns(t: (key: string) => string): ColumnDef<Bus>[] {
             {
               id: "map",
               label: t("buses.openLiveMap"),
-              onSelect: () => {},
+              onSelect: () => onView(row.original),
+            },
+            {
+              id: "view",
+              label: t("common.viewDetails"),
+              onSelect: () => onView(row.original),
+            },
+            {
+              id: "edit",
+              label: t("common.edit"),
+              onSelect: () => onEdit(row.original),
+            },
+            {
+              id: "delete",
+              label: t("common.delete") || "Delete",
+              onSelect: () => onDelete(row.original),
+              destructive: true,
             },
           ]}
         />

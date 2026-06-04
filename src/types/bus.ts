@@ -3,6 +3,10 @@ import type { EntityId } from "@/types/common";
 export interface Bus {
   id: EntityId;
   plateNumber: string;
+  code: string;
+  label: string;
+  model: string;
+  color: string;
   schoolId: EntityId;
   schoolName: string;
   mainDriverId: EntityId;

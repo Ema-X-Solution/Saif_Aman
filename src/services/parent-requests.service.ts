@@ -22,6 +22,8 @@ function mapUserToParentRequest(u: ApiUserRow): ParentRequest {
     studentsCount: u.students_count,
     createdAt: u.created_at,
     updatedAt: u.updated_at,
+    image: u.image,
+    homeImage: u.home_image,
   };
 }
 
