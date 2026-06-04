@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
@@ -95,6 +95,7 @@ export function EditDriverDialog({ driver, onClose, onUpdated }: EditDriverDialo
       const lat = values.latitude.trim() === "" ? null : Number(values.latitude);
       const lng = values.longitude.trim() === "" ? null : Number(values.longitude);
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         name: values.name,
         type: "driver",

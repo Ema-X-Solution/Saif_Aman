@@ -138,6 +138,7 @@ export function EditSupervisorDialog({ supervisor, onClose, onUpdated }: EditSup
       const lat = values.latitude.trim() === "" ? null : Number(values.latitude);
       const lng = values.longitude.trim() === "" ? null : Number(values.longitude);
       
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
         school_id: values.school_id ? Number(values.school_id) : null,
         name: values.name,

@@ -6,8 +6,6 @@ import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { School } from "@/types/school";
 
-import { toast } from "sonner";
-
 function rowActions(school: School, t: (key: string) => string, onEdit: (s: School) => void, onView: (s: School) => void, onDelete: (s: School) => void) {
   return [
     {

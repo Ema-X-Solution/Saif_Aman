@@ -6,8 +6,6 @@ import
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { Supervisor } from "@/types/supervisor";
 
-import { toast } from "sonner";
-
 export function buildSupervisorColumns(
   t: (key: string) => string,
   onEdit: (s: Supervisor) => void,

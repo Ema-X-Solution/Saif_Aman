@@ -5,7 +5,6 @@ import type { ColumnDef } from "@tanstack/react-table";
 import { EntityRowActions } from "@/components/tables/entity-row-actions";
 import { StatusBadge } from "@/components/shared/status-badge";
 import type { Bus } from "@/types/bus";
-import { toast } from "sonner";
 
 export function buildBusColumns(
   t: (key: string) => string,
