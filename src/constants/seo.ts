@@ -1,7 +1,7 @@
 import { APP_NAME_EN } from "@/constants/app";
 
 export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://saif-aman.example.com";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://saif-aman.vercel.app";
 
 export const DEFAULT_TITLE_TEMPLATE = `%s | ${APP_NAME_EN}`;
 
