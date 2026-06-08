@@ -75,3 +75,27 @@ export interface ApiSchoolBusRow {
   created_at: string;
   updated_at: string;
 }
+
+export interface ApiStudentRef {
+  id: number;
+  name: string;
+}
+
+export interface ApiStudentBusRef {
+  id: number;
+  label: string;
+}
+
+export interface ApiStudentRow {
+  id: number;
+  name: string;
+  grade: string;
+  age: number | null;
+  notes: string | null;
+  image: string | null;
+  parent: ApiStudentRef | null;
+  school: ApiStudentRef | null;
+  school_bus: ApiStudentBusRef | null;
+  created_at: string;
+  updated_at: string;
+}

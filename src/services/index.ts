@@ -5,6 +5,7 @@ export { schoolsService } from "./schools.service";
 export { driversService } from "./drivers.service";
 export { supervisorsService } from "./supervisors.service";
 export { busesService } from "./buses.service";
+export { studentsService } from "./students.service";
 export { areasService } from "./areas.service";
 export { parentRequestsService } from "./parent-requests.service";
 export { adminsService } from "./admins.service";

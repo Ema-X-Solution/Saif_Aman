@@ -4,6 +4,7 @@ export const ROUTES = {
   dashboard: "/dashboard",
   schools: "/schools",
   buses: "/buses",
+  students: "/students",
   /** Supervisors + drivers (`?tab=`). */
   users: "/users",
   drivers: "/drivers",
