@@ -97,10 +97,10 @@ export function SupervisorDetailsDialog({ supervisor, onClose }: SupervisorDetai
                 <p className="text-muted-foreground">{t("common.status")}</p>
                 <p className="font-medium capitalize">{details.status || "—"}</p>
               </div>
-              {(details as any).supervisor_school_bus && (
+              {details.supervisor_school_bus && (
                 <div className="col-span-2 sm:col-span-1">
                   <p className="text-muted-foreground">{t("buses.bus")}</p>
-                  <p className="font-medium">{(details as any).supervisor_school_bus.label || "—"}</p>
+                  <p className="font-medium">{details.supervisor_school_bus.label || "—"}</p>
                 </div>
               )}
             </div>

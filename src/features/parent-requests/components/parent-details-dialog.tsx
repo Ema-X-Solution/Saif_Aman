@@ -99,11 +99,11 @@ export function ParentDetailsDialog({ parent, onClose }: ParentDetailsDialogProp
               </div>
             </div>
 
-            {(details as any).students && (details as any).students.length > 0 && (
+            {details.students && details.students.length > 0 && (
               <div className="pt-4 border-t space-y-2">
                 <p className="text-sm text-muted-foreground">{t("schools.students") || "Students"}</p>
                 <div className="flex flex-wrap gap-2">
-                  {(details as any).students.map((student: any) => (
+                  {details.students.map((student) => (
                     <span key={student.id} className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
                       {student.name}
                     </span>

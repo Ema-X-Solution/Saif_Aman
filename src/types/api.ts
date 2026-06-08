@@ -30,6 +30,9 @@ export interface ApiUserRow {
   updated_at: string;
   school: ApiUserSchoolRef | null;
   students_count: number;
+  driver_school_bus?: { id: number; label: string } | null;
+  supervisor_school_bus?: { id: number; label: string } | null;
+  students?: { id: number; name: string }[] | null;
 }
 
 export interface ApiSchoolRow {

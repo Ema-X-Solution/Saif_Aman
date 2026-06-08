@@ -98,10 +98,10 @@ export function DriverDetailsDialog({ driver, onClose }: DriverDetailsDialogProp
                 <p className="text-muted-foreground">{t("common.status")}</p>
                 <p className="font-medium capitalize">{details.status || "—"}</p>
               </div>
-              {(details as any).driver_school_bus && (
+              {details.driver_school_bus && (
                 <div className="col-span-2 sm:col-span-1">
                   <p className="text-muted-foreground">{t("buses.bus")}</p>
-                  <p className="font-medium">{(details as any).driver_school_bus.label || "—"}</p>
+                  <p className="font-medium">{details.driver_school_bus.label || "—"}</p>
                 </div>
               )}
             </div>
