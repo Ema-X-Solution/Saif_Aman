@@ -1,8 +1,9 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { User as UserIcon } from "lucide-react";
+import { User as UserIcon, Loader2 } from "lucide-react";
 
 import {
   Dialog,
@@ -12,6 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import type { ParentRequest } from "@/types/parent-request";
+import { usersAdminService } from "@/services/users-admin.service";
+import type { ApiUserRow } from "@/types/api";
 
 interface ParentDetailsDialogProps {
   parent: ParentRequest | null;
@@ -23,6 +26,31 @@ export function ParentDetailsDialog({ parent, onClose }: ParentDetailsDialogProp
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname ?? null);
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
+
+  const [details, setDetails] = useState<ApiUserRow | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    if (parent?.id) {
+      setLoading(true);
+      usersAdminService.get(parent.id).then((data) => {
+        if (mounted) {
+          setDetails(data);
+          setLoading(false);
+        }
+      }).catch(() => {
+        if (mounted) {
+          setLoading(false);
+        }
+      });
+    } else {
+      setDetails(null);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [parent]);
 
   return (
     <Dialog open={!!parent} onOpenChange={(open) => !open && onClose()}>
@@ -38,52 +66,69 @@ export function ParentDetailsDialog({ parent, onClose }: ParentDetailsDialogProp
           </div>
         </DialogHeader>
         
-        {parent && (
+        {loading ? (
+          <div className="flex justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : details ? (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.name")}</p>
-                <p className="font-medium">{parent.parentName}</p>
+                <p className="font-medium">{details.name}</p>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.phone")}</p>
-                <p className="font-medium" dir="ltr">{parent.phone || "—"}</p>
+                <p className="font-medium" dir="ltr">{details.phone || "—"}</p>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.email")}</p>
-                <p className="font-medium truncate">{parent.email || "—"}</p>
+                <p className="font-medium truncate">{details.email || "—"}</p>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("schools.studentCount")}</p>
-                <p className="font-medium">{parent.studentsCount ?? "—"}</p>
+                <p className="font-medium">{details.students_count ?? "—"}</p>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.address")}</p>
-                <p className="font-medium">{parent.address || "—"}</p>
+                <p className="font-medium">{details.address || "—"}</p>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.status")}</p>
-                <p className="font-medium capitalize">{parent.status}</p>
+                <p className="font-medium capitalize">{details.status}</p>
               </div>
             </div>
 
-            {(parent.image || parent.homeImage) && (
+            {(details as any).students && (details as any).students.length > 0 && (
+              <div className="pt-4 border-t space-y-2">
+                <p className="text-sm text-muted-foreground">{t("schools.students") || "Students"}</p>
+                <div className="flex flex-wrap gap-2">
+                  {(details as any).students.map((student: any) => (
+                    <span key={student.id} className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
+                      {student.name}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(details.image || details.home_image) && (
               <div className="pt-4 border-t space-y-4">
-                {parent.image && (
+                {details.image && (
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">{t("common.image") || "Image"}</p>
                     <img 
-                      src={parent.image} 
+                      src={details.image} 
                       alt="Parent" 
                       className="w-full h-auto rounded-md border object-cover max-h-64"
                     />
                   </div>
                 )}
-                {parent.homeImage && (
+                {details.home_image && (
                   <div className="space-y-2">
                     <p className="text-sm text-muted-foreground">{t("common.homeImage") || "Home Image"}</p>
                     <img 
-                      src={parent.homeImage} 
+                      src={details.home_image} 
                       alt="Home" 
                       className="w-full h-auto rounded-md border object-cover max-h-64"
                     />
@@ -92,7 +137,7 @@ export function ParentDetailsDialog({ parent, onClose }: ParentDetailsDialogProp
               </div>
             )}
           </div>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );

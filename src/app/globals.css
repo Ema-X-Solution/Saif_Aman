@@ -115,8 +115,8 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
-  --font-sans: var(--font-inter);
-  --font-arabic: var(--font-cairo);
+  --font-sans: var(--font-noto-kufi);
+  --font-arabic: var(--font-noto-kufi);
 }
 
 @layer base {

@@ -9,6 +9,7 @@ import type { Driver } from "@/types/driver";
 function actions(
   driver: Driver,
   t: (key: string) => string,
+  onView: (d: Driver) => void,
   onEdit: (d: Driver) => void,
   onDelete: (d: Driver) => void
 ) {
@@ -16,7 +17,7 @@ function actions(
     {
       id: "profile",
       label: t("users.openProfile"),
-      onSelect: () => {},
+      onSelect: () => onView(driver),
     },
     {
       id: "edit",
@@ -34,6 +35,7 @@ function actions(
 
 export function buildDriverColumns(
   t: (key: string) => string,
+  onView: (d: Driver) => void,
   onEdit: (d: Driver) => void,
   onDelete: (d: Driver) => void
 ): ColumnDef<Driver>[] {
@@ -53,7 +55,7 @@ export function buildDriverColumns(
       header: "",
       enableSorting: false,
       cell: ({ row }) => (
-        <EntityRowActions label={row.original.fullName} actions={actions(row.original, t, onEdit, onDelete)} />
+        <EntityRowActions label={row.original.fullName} actions={actions(row.original, t, onView, onEdit, onDelete)} />
       ),
     },
   ];

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cairo, Inter } from "next/font/google";
+import { Noto_Kufi_Arabic, Inter } from "next/font/google";
 
 import { APP_NAME_AR, APP_NAME_EN, BRAND } from "@/constants/app";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE_TEMPLATE, LANDING_KEYWORDS, SITE_URL } from "@/constants/seo";
@@ -11,8 +11,8 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
-const cairo = Cairo({
-  variable: "--font-cairo",
+const notoKufiArabic = Noto_Kufi_Arabic({
+  variable: "--font-noto-kufi",
   subsets: ["arabic", "latin"],
 });
 
@@ -77,7 +77,7 @@ export default async function RootLayout({
       lang={lang}
       dir={dir}
       suppressHydrationWarning
-      className={`${inter.variable} ${cairo.variable} h-full antialiased`}
+      className={`${inter.variable} ${notoKufiArabic.variable} h-full antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col">
         <AppProviders>{children}</AppProviders>

@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+"use strict";
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,16 +13,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
-import type { Supervisor } from "@/types/supervisor";
+import type { Driver } from "@/types/driver";
 import { usersAdminService } from "@/services/users-admin.service";
 import type { ApiUserRow } from "@/types/api";
 
-interface SupervisorDetailsDialogProps {
-  supervisor: Supervisor | null;
+interface DriverDetailsDialogProps {
+  driver: Driver | null;
   onClose: () => void;
 }
 
-export function SupervisorDetailsDialog({ supervisor, onClose }: SupervisorDetailsDialogProps) {
+export function DriverDetailsDialog({ driver, onClose }: DriverDetailsDialogProps) {
   const t = useT();
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname ?? null);
@@ -32,9 +33,9 @@ export function SupervisorDetailsDialog({ supervisor, onClose }: SupervisorDetai
 
   useEffect(() => {
     let mounted = true;
-    if (supervisor?.id) {
+    if (driver?.id) {
       setLoading(true);
-      usersAdminService.get(supervisor.id).then((data) => {
+      usersAdminService.get(driver.id).then((data) => {
         if (mounted) {
           setDetails(data);
           setLoading(false);
@@ -50,10 +51,10 @@ export function SupervisorDetailsDialog({ supervisor, onClose }: SupervisorDetai
     return () => {
       mounted = false;
     };
-  }, [supervisor]);
+  }, [driver]);
 
   return (
-    <Dialog open={!!supervisor} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={!!driver} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md overflow-y-auto max-h-[90vh]" dir={dialogDir}>
         <DialogHeader className="mb-4">
           <div className="flex items-center gap-3">
@@ -97,10 +98,10 @@ export function SupervisorDetailsDialog({ supervisor, onClose }: SupervisorDetai
                 <p className="text-muted-foreground">{t("common.status")}</p>
                 <p className="font-medium capitalize">{details.status || "—"}</p>
               </div>
-              {(details as any).supervisor_school_bus && (
+              {(details as any).driver_school_bus && (
                 <div className="col-span-2 sm:col-span-1">
                   <p className="text-muted-foreground">{t("buses.bus")}</p>
-                  <p className="font-medium">{(details as any).supervisor_school_bus.label || "—"}</p>
+                  <p className="font-medium">{(details as any).driver_school_bus.label || "—"}</p>
                 </div>
               )}
             </div>
@@ -112,7 +113,7 @@ export function SupervisorDetailsDialog({ supervisor, onClose }: SupervisorDetai
                     <p className="text-sm text-muted-foreground">{t("common.image") || "Image"}</p>
                     <img 
                       src={details.image} 
-                      alt="Supervisor" 
+                      alt="Driver" 
                       className="w-full h-auto rounded-md border object-cover max-h-64"
                     />
                   </div>
