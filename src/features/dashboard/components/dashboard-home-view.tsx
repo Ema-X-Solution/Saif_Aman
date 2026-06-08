@@ -1,57 +1,65 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LayoutDashboard } from "lucide-react";
 
-import { ActivityAreaChart } from "@/components/charts/activity-area-chart";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { PageHeader } from "@/components/shared/page-header";
-import { StatusBadge } from "@/components/shared/status-badge";
 import { useT } from "@/i18n/use-t";
+import { DashboardStatsSection } from "@/features/dashboard/components/dashboard-stats-section";
+import { LiveBusMapCard } from "@/features/dashboard/components/live-bus-map-card";
+import { MovingBusesCard } from "@/features/dashboard/components/moving-buses-card";
+import { NewRequestsTableCard } from "@/features/dashboard/components/new-requests-table-card";
+import { NotificationsAlertsCard } from "@/features/dashboard/components/notifications-alerts-card";
+import { StudentStatsDonut } from "@/features/dashboard/components/student-stats-donut";
+import { SubscriptionStatusCard } from "@/features/dashboard/components/subscription-status-card";
+import { TodaysTripsCard } from "@/features/dashboard/components/todays-trips-card";
 import {
   dashboardService,
   notificationsService,
   parentRequestsService,
-  reviewsService,
 } from "@/services";
-import { DashboardStatsSection } from "@/features/dashboard/components/dashboard-stats-section";
-import { LiveTrackingCard } from "@/features/dashboard/components/live-tracking-card";
-import { QuickActionsCard } from "@/features/dashboard/components/quick-actions-card";
-import type { ActivityPoint, DashboardStat, LiveBusPoint } from "@/types/dashboard";
+import type {
+  DashboardStat,
+  LiveBusPoint,
+  SchoolStudentStat,
+  SubscriptionStatus,
+  TodayTripsSummary,
+} from "@/types/dashboard";
 import type { AppNotification } from "@/types/notification";
 import type { ParentRequest } from "@/types/parent-request";
-import type { Review } from "@/types/review";
 
 export function DashboardHomeView() {
   const t = useT();
   const [stats, setStats] = useState<DashboardStat[]>([]);
-  const [activity, setActivity] = useState<ActivityPoint[]>([]);
   const [live, setLive] = useState<LiveBusPoint[]>([]);
   const [requests, setRequests] = useState<ParentRequest[]>([]);
-  const [reviews, setReviews] = useState<Review[]>([]);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [schoolStats, setSchoolStats] = useState<SchoolStudentStat[]>([]);
+  const [subscriptions, setSubscriptions] = useState<SubscriptionStatus | null>(null);
+  const [todayTrips, setTodayTrips] = useState<TodayTripsSummary | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const [s, a, l, r, rv, n] = await Promise.all([
+        const [s, l, r, n, ss, sub, trips] = await Promise.all([
           dashboardService.stats(),
-          dashboardService.activity(),
           dashboardService.liveBuses(),
           parentRequestsService.list(),
-          reviewsService.list(),
           notificationsService.list(),
+          dashboardService.schoolStats(),
+          dashboardService.subscriptions(),
+          dashboardService.todayTrips(),
         ]);
         if (!cancelled) {
           setStats(s);
-          setActivity(a);
           setLive(l);
-          setRequests(r.slice(0, 4));
-          setReviews(rv.slice(0, 4));
-          setNotifications(n.slice(0, 4));
+          setRequests(r.slice(0, 5));
+          setNotifications(n.slice(0, 6));
+          setSchoolStats(ss);
+          setSubscriptions(sub);
+          setTodayTrips(trips);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -66,93 +74,57 @@ export function DashboardHomeView() {
     return (
       <div className="space-y-6">
         <Skeleton className="h-10 w-72" />
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          {Array.from({ length: 6 }).map((_, i) => (
             <Skeleton key={i} className="h-28 w-full rounded-xl" />
           ))}
         </div>
-        <Skeleton className="h-80 w-full rounded-xl" />
+        <div className="grid gap-6 lg:grid-cols-12">
+          <Skeleton className="h-80 rounded-xl lg:col-span-3" />
+          <Skeleton className="h-80 rounded-xl lg:col-span-6" />
+          <Skeleton className="h-80 rounded-xl lg:col-span-3" />
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Skeleton key={i} className="h-64 w-full rounded-xl" />
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        title={t("dashboard.home.title")}
-        description={t("dashboard.home.description")}
-      />
-      <DashboardStatsSection stats={stats} />
-      <div className="grid gap-6 xl:grid-cols-3">
-        <div className="space-y-6 xl:col-span-2">
-          <ActivityAreaChart data={activity} />
-          <div className="grid gap-6 lg:grid-cols-2">
-            <Card className="border-border/80">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t("dashboard.home.recentRequests")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {requests.map((req) => (
-                  <div
-                    key={req.id}
-                    className="rounded-lg border border-border/70 px-3 py-2"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium">{req.parentName}</p>
-                      <StatusBadge status={req.status} />
-                    </div>
-                    <p className="text-sm text-muted-foreground">{req.schoolName}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-            <Card className="border-border/80">
-              <CardHeader>
-                <CardTitle className="text-base font-semibold">
-                  {t("dashboard.home.recentReviews")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {reviews.map((rev) => (
-                  <div key={rev.id} className="rounded-lg border border-border/70 px-3 py-2">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-medium">{rev.parentName}</p>
-                      <span className="text-sm text-amber-600">{rev.rating.toFixed(1)} ★</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{rev.comment}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
+    <div className="space-y-6">
+      <div>
+        <div className="flex items-center gap-2">
+          <LayoutDashboard className="h-5 w-5 text-primary" />
+          <h1 className="text-xl font-bold">{t("dashboard.home.mainTitle")}</h1>
         </div>
-        <div className="space-y-6">
-          <LiveTrackingCard buses={live} />
-          <QuickActionsCard />
-          <Card className="border-border/80">
-            <CardHeader>
-              <CardTitle className="text-base font-semibold">{t("dashboard.home.notifications")}</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              {notifications.map((note) => (
-                <div key={note.id} className="rounded-lg border border-border/70 px-3 py-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-medium">{note.title}</p>
-                    <StatusBadge
-                      status={note.read ? "inactive" : "pending"}
-                      label={note.read ? t("dashboard.home.read") : t("dashboard.home.new")}
-                    />
-                  </div>
-                  <p className="text-sm text-muted-foreground">{note.body}</p>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {t("dashboard.home.description")}
+        </p>
+      </div>
+
+      <DashboardStatsSection stats={stats} />
+
+      <div className="grid gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-3">
+          <NotificationsAlertsCard notifications={notifications} />
+        </div>
+        <div className="lg:col-span-6">
+          <LiveBusMapCard buses={live} />
+        </div>
+        <div className="lg:col-span-3">
+          <MovingBusesCard buses={live} />
         </div>
       </div>
-      <Separator />
+
+      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <NewRequestsTableCard requests={requests} />
+        <StudentStatsDonut data={schoolStats} />
+        {subscriptions ? <SubscriptionStatusCard data={subscriptions} /> : null}
+        {todayTrips ? <TodaysTripsCard data={todayTrips} /> : null}
+      </div>
     </div>
   );
 }
