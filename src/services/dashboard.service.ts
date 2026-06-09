@@ -1,50 +1,97 @@
-import {
-  DEMO_ACTIVITY,
-  DEMO_LIVE_BUSES,
-  DEMO_SCHOOL_STATS,
-  DEMO_STATS,
-  DEMO_SUBSCRIPTIONS,
-  DEMO_TODAY_TRIPS,
-} from "@/features/dashboard/data/dashboard-demo";
 import { http } from "@/services/http";
+import type { ApiDashboardResponse } from "@/types/api";
 import type {
-  ActivityPoint,
   DashboardStat,
   LiveBusPoint,
   SchoolStudentStat,
-  SubscriptionStatus,
   TodayTripsSummary,
 } from "@/types/dashboard";
 
-async function fetchOrFallback<T>(path: string, fallback: T): Promise<T> {
-  try {
-    const res = await http.get<{ data: T }>(path);
-    const data = res.data?.data;
-    if (data === undefined || data === null) return fallback;
-    if (Array.isArray(data) && data.length === 0) return fallback;
-    return data;
-  } catch {
-    return fallback;
-  }
+export interface DashboardData {
+  stats: DashboardStat[];
+  schoolStats: SchoolStudentStat[];
+  todayTrips: TodayTripsSummary;
+  liveBuses: LiveBusPoint[];
 }
 
 export const dashboardService = {
-  async stats(): Promise<DashboardStat[]> {
-    return fetchOrFallback("/dashboard/stats", DEMO_STATS);
-  },
-  async activity(): Promise<ActivityPoint[]> {
-    return fetchOrFallback("/dashboard/activity", DEMO_ACTIVITY);
-  },
-  async liveBuses(): Promise<LiveBusPoint[]> {
-    return fetchOrFallback("/dashboard/live-buses", DEMO_LIVE_BUSES);
-  },
-  async schoolStats(): Promise<SchoolStudentStat[]> {
-    return fetchOrFallback("/dashboard/school-stats", DEMO_SCHOOL_STATS);
-  },
-  async subscriptions(): Promise<SubscriptionStatus> {
-    return fetchOrFallback("/dashboard/subscriptions", DEMO_SUBSCRIPTIONS);
-  },
-  async todayTrips(): Promise<TodayTripsSummary> {
-    return fetchOrFallback("/dashboard/today-trips", DEMO_TODAY_TRIPS);
+  async getDashboardData(): Promise<DashboardData> {
+    const res = await http.get<{ data: ApiDashboardResponse }>("/dashboard");
+    const data = res.data.data;
+
+    // Build the stats array based on data.statistics
+    const stats: DashboardStat[] = [
+      {
+        id: "students",
+        label: "students",
+        value: String(data.statistics.students),
+        icon: "students",
+      },
+      {
+        id: "parents",
+        label: "requests", // corresponds to dashboard.stats.requests
+        value: String(data.statistics.users.parents.total),
+        icon: "requests",
+      },
+      {
+        id: "schools",
+        label: "schools",
+        value: String(data.statistics.schools),
+        icon: "schools",
+      },
+      {
+        id: "buses",
+        label: "buses",
+        value: String(data.statistics.buses),
+        icon: "buses",
+      },
+      {
+        id: "drivers",
+        label: "drivers",
+        value: String(data.statistics.users.drivers.total),
+        icon: "drivers",
+      },
+      {
+        id: "supervisors",
+        label: "supervisors",
+        value: String(data.statistics.users.supervisors.total),
+        icon: "supervisors",
+      },
+    ];
+
+    // Build school stats array
+    const schoolStats: SchoolStudentStat[] = data.statistics.top_schools.map((school) => ({
+      school: school.name,
+      students: school.students_count,
+      color: "hsl(var(--chart-1))", // You can use a dynamic color map if desired
+    }));
+
+    // Today's trips
+    const todayTrips: TodayTripsSummary = {
+      started: data.today.trips.started,
+      active: data.today.trips.active,
+      ended: data.today.trips.ended,
+      going: data.today.trips.going,
+      back: data.today.trips.back,
+    };
+
+    const liveBuses: LiveBusPoint[] = (data.active_trips as Record<string, unknown>[]).map((trip) => ({
+      id: String(trip.id || Math.random()),
+      plate: String(trip.plate || "N/A"),
+      schoolName: String(trip.schoolName || "N/A"),
+      speedKmh: Number(trip.speed || 0),
+      route: String(trip.route || "N/A"),
+      busNumber: String(trip.busNumber || "N/A"),
+      color: "#000",
+      mapX: Number(trip.mapX || 0),
+      mapY: Number(trip.mapY || 0),
+    }));
+
+    return {
+      stats,
+      schoolStats,
+      todayTrips,
+      liveBuses,
+    };
   },
 };

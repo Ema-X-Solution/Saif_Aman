@@ -1,6 +1,4 @@
 /* eslint-disable @next/next/no-img-element */
-"use client";
-
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { User as UserIcon, Loader2 } from "lucide-react";
@@ -15,6 +13,7 @@ import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import type { ParentRequest } from "@/types/parent-request";
 import { usersAdminService } from "@/services/users-admin.service";
 import type { ApiUserRow } from "@/types/api";
+import { StudentInlineDetails } from "@/features/students/components/student-inline-details";
 
 interface ParentDetailsDialogProps {
   parent: ParentRequest | null;
@@ -79,7 +78,7 @@ export function ParentDetailsDialog({ parent, onClose }: ParentDetailsDialogProp
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.phone")}</p>
-                <p className="font-medium" dir="ltr">{details.phone || "—"}</p>
+                <p className="font-medium">{details.phone || "—"}</p>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.email")}</p>
@@ -100,13 +99,11 @@ export function ParentDetailsDialog({ parent, onClose }: ParentDetailsDialogProp
             </div>
 
             {details.students && details.students.length > 0 && (
-              <div className="pt-4 border-t space-y-2">
-                <p className="text-sm text-muted-foreground">{t("schools.students") || "Students"}</p>
-                <div className="flex flex-wrap gap-2">
+              <div className="pt-4 border-t space-y-4">
+                <p className="text-sm text-muted-foreground font-semibold">{t("schools.students") || "Students"}</p>
+                <div className="space-y-4">
                   {details.students.map((student) => (
-                    <span key={student.id} className="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">
-                      {student.name}
-                    </span>
+                    <StudentInlineDetails key={student.id} studentId={student.id} />
                   ))}
                 </div>
               </div>

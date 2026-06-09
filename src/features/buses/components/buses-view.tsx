@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { AddBusDialog } from "@/features/buses/components/add-bus-dialog";
 import { EditBusDialog } from "@/features/buses/components/edit-bus-dialog";
 import { BusDetailsDialog } from "@/features/buses/components/bus-details-dialog";
+import { AssignBackupCrewDialog } from "@/features/buses/components/assign-backup-crew-dialog";
 import { DeleteBusDialog } from "@/features/buses/components/delete-bus-dialog";
 import { buildBusColumns } from "@/features/buses/lib/buses-columns";
 import { busesService } from "@/services/buses.service";
@@ -20,10 +21,19 @@ export function BusesView() {
   const [reloadKey, setReloadKey] = useState(0);
   const [editingBus, setEditingBus] = useState<Bus | null>(null);
   const [viewingBus, setViewingBus] = useState<Bus | null>(null);
+  const [backupCrewBus, setBackupCrewBus] = useState<Bus | null>(null);
   const [deletingBus, setDeletingBus] = useState<Bus | null>(null);
+  const [detailsRefreshKey, setDetailsRefreshKey] = useState(0);
 
   const columns = useMemo(
-    () => buildBusColumns(t, setEditingBus, setViewingBus, setDeletingBus),
+    () =>
+      buildBusColumns(
+        t,
+        setEditingBus,
+        setViewingBus,
+        setBackupCrewBus,
+        setDeletingBus
+      ),
     [t]
   );
 
@@ -66,7 +76,17 @@ export function BusesView() {
       />
       <BusDetailsDialog
         bus={viewingBus}
+        refreshKey={detailsRefreshKey}
         onClose={() => setViewingBus(null)}
+        onAssignBackupCrew={setBackupCrewBus}
+      />
+      <AssignBackupCrewDialog
+        bus={backupCrewBus}
+        onClose={() => setBackupCrewBus(null)}
+        onUpdated={() => {
+          setReloadKey((k) => k + 1);
+          setDetailsRefreshKey((k) => k + 1);
+        }}
       />
       <DeleteBusDialog
         bus={deletingBus}

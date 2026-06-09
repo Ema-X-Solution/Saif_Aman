@@ -46,7 +46,7 @@ export function SchoolDetailsDialog({ school, onClose }: SchoolDetailsDialogProp
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.phone")}</p>
-                <p className="font-medium" dir="ltr">{school.phone || "—"}</p>
+                <p className="font-medium">{school.phone || "—"}</p>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <p className="text-muted-foreground">{t("common.email")}</p>

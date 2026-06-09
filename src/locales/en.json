@@ -148,7 +148,20 @@
     "selectDriver": "Select driver",
     "selectSupervisor": "Select supervisor",
     "createBus": "Create bus",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "backupCrew": "Backup crew",
+    "assignBackupCrew": "Assign backup crew",
+    "backupCrewUpdated": "Backup crew updated",
+    "selectBackupDriver": "Select backup driver",
+    "selectBackupSupervisor": "Select backup supervisor",
+    "noneAssigned": "None",
+    "backupDriver": "Backup driver",
+    "backupSupervisor": "Backup supervisor",
+    "assignedStudents": "Assigned students",
+    "noStudents": "No students assigned",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "bus": "Bus"
   },
   "students": {
     "title": "Students",
@@ -374,6 +387,11 @@
       "morningTrips": "Morning trips",
       "afternoonTrips": "Afternoon trips",
       "eveningTrips": "Evening trips",
+      "startedTrips": "Started Trips",
+      "activeTrips": "Active Trips",
+      "endedTrips": "Ended Trips",
+      "goingTrips": "Going Trips",
+      "backTrips": "Return Trips",
       "read": "Read",
       "new": "New",
       "keyMetricsAria": "Key metrics"

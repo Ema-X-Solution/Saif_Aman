@@ -1,7 +1,9 @@
 "use client";
 
 import { MoreHorizontal } from "lucide-react";
+import { usePathname } from "next/navigation";
 
+import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -25,15 +27,20 @@ interface EntityRowActionsProps {
 }
 
 export function EntityRowActions({ label, actions }: EntityRowActionsProps) {
+  const t = useT();
+  const pathname = usePathname();
+  const locale = getLocaleFromPathname(pathname ?? null);
+  const dir = locale === "ar" ? "rtl" : "ltr";
+
   return (
-    <DropdownMenu>
+    <DropdownMenu dir={dir}>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={`Actions for ${label}`}>
+        <Button variant="ghost" size="icon" aria-label={`${t("common.actions")} ${label}`}>
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {actions.map((action) => (
           <DropdownMenuItem

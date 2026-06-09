@@ -29,7 +29,7 @@ export function buildParentRequestColumns(
     { accessorKey: "parentName", header: t("common.name"), enableSorting: true },
     { accessorKey: "email", header: t("common.email"), enableSorting: true },
     { accessorKey: "phone", header: t("common.phone"), enableSorting: true },
-    { accessorKey: "type", header: t("common.type"), enableSorting: true },
+
     { accessorKey: "address", header: t("common.address"), enableSorting: true },
     {
       id: "location",
@@ -57,8 +57,7 @@ export function buildParentRequestColumns(
         return typeof v === "number" ? v : "—";
       },
     },
-    { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
-    { accessorKey: "createdAt", header: t("parentRequests.created"), enableSorting: true },
+
     {
       accessorKey: "status",
       header: t("common.status"),

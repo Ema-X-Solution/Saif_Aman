@@ -49,8 +49,9 @@ export interface SubscriptionStatus {
 }
 
 export interface TodayTripsSummary {
-  total: number;
-  morning: number;
-  afternoon: number;
-  evening: number;
+  started: number;
+  active: number;
+  ended: number;
+  going: number;
+  back: number;
 }

@@ -71,6 +71,9 @@ export interface ApiSchoolBusRow {
   school: ApiSchoolBusSchoolRef | null;
   driver: ApiSchoolBusPersonRef | null;
   supervisor: ApiSchoolBusPersonRef | null;
+  backup_driver?: ApiSchoolBusPersonRef | null;
+  backup_supervisor?: ApiSchoolBusPersonRef | null;
+  students?: ApiStudentRef[];
   students_count: number;
   created_at: string;
   updated_at: string;
@@ -98,4 +101,57 @@ export interface ApiStudentRow {
   school_bus: ApiStudentBusRef | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface ApiDashboardResponse {
+  statistics: {
+    users: {
+      parents: { total: number; approved: number; pending: number; rejected: number };
+      drivers: { total: number };
+      supervisors: { total: number };
+      admins: number;
+    };
+    students: number;
+    schools: number;
+    buses: number;
+    top_schools: { id: number; name: string; students_count: number }[];
+    top_buses: { id: number; label: string; code: string; students_count: number }[];
+    assignments: {
+      students_with_bus: string | number;
+      students_without_bus: string | number;
+      students_with_school: string | number;
+      students_without_school: string | number;
+    };
+    bus_staffing: {
+      with_driver: string | number;
+      without_driver: string | number;
+      with_supervisor: string | number;
+      without_supervisor: string | number;
+      with_backup_driver: string | number;
+      with_backup_supervisor: string | number;
+    };
+    backup_assignments: unknown[];
+  };
+  today: {
+    trips: {
+      started: number;
+      active: number;
+      ended: number;
+      going: number;
+      back: number;
+    };
+    attendance: {
+      attend: number | null;
+      absent: number | null;
+      skipped: number | null;
+      pending: number | null;
+    };
+    parent_confirmations: {
+      confirmed: number | null;
+      declined: number | null;
+      pending: number | null;
+    };
+  };
+  active_trips: unknown[];
+  recent_trips: unknown[];
 }

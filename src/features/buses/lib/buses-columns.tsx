@@ -10,6 +10,7 @@ export function buildBusColumns(
   t: (key: string) => string,
   onEdit: (b: Bus) => void,
   onView: (b: Bus) => void,
+  onAssignBackupCrew: (b: Bus) => void,
   onDelete: (b: Bus) => void
 ): ColumnDef<Bus>[] {
   return [
@@ -49,6 +50,11 @@ export function buildBusColumns(
               id: "view",
               label: t("common.viewDetails"),
               onSelect: () => onView(row.original),
+            },
+            {
+              id: "backup-crew",
+              label: t("buses.assignBackupCrew"),
+              onSelect: () => onAssignBackupCrew(row.original),
             },
             {
               id: "edit",

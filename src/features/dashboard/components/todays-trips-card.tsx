@@ -15,23 +15,37 @@ export function TodaysTripsCard({ data }: TodaysTripsCardProps) {
 
   const items = [
     {
-      key: "morning",
-      label: t("dashboard.home.morningTrips"),
-      value: data.morning,
+      key: "started",
+      label: t("dashboard.home.startedTrips") || "Started",
+      value: data.started,
+      icon: Sun,
+      color: "bg-blue-500/15 text-blue-600 dark:text-blue-400",
+    },
+    {
+      key: "active",
+      label: t("dashboard.home.activeTrips") || "Active",
+      value: data.active,
+      icon: Cloud,
+      color: "bg-green-500/15 text-green-600 dark:text-green-400",
+    },
+    {
+      key: "ended",
+      label: t("dashboard.home.endedTrips") || "Ended",
+      value: data.ended,
+      icon: Moon,
+      color: "bg-gray-500/15 text-gray-600 dark:text-gray-400",
+    },
+    {
+      key: "going",
+      label: t("dashboard.home.goingTrips") || "Going",
+      value: data.going,
       icon: Sun,
       color: "bg-amber-500/15 text-amber-600 dark:text-amber-400",
     },
     {
-      key: "afternoon",
-      label: t("dashboard.home.afternoonTrips"),
-      value: data.afternoon,
-      icon: Cloud,
-      color: "bg-sky-500/15 text-sky-600 dark:text-sky-400",
-    },
-    {
-      key: "evening",
-      label: t("dashboard.home.eveningTrips"),
-      value: data.evening,
+      key: "back",
+      label: t("dashboard.home.backTrips") || "Returning",
+      value: data.back,
       icon: Moon,
       color: "bg-violet-500/15 text-violet-600 dark:text-violet-400",
     },
@@ -47,7 +61,7 @@ export function TodaysTripsCard({ data }: TodaysTripsCardProps) {
       <CardContent className="space-y-4">
         <div className="rounded-xl border border-border/60 bg-muted/30 px-4 py-3 text-center">
           <p className="text-sm text-muted-foreground">{t("dashboard.home.totalTrips")}</p>
-          <p className="text-3xl font-bold">{data.total}</p>
+          <p className="text-3xl font-bold">{data.started + data.active + data.ended}</p>
         </div>
         <ul className="space-y-2">
           {items.map((item) => {

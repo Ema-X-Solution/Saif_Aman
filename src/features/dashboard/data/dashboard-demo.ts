@@ -148,8 +148,9 @@ export const DEMO_SUBSCRIPTIONS: SubscriptionStatus = {
 };
 
 export const DEMO_TODAY_TRIPS: TodayTripsSummary = {
-  total: 128,
-  morning: 64,
-  afternoon: 12,
-  evening: 52,
+  started: 24,
+  active: 12,
+  ended: 92,
+  going: 64,
+  back: 64,
 };

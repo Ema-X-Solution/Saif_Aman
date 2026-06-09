@@ -31,6 +31,11 @@ function mapStudent(row: ApiStudentRow): Student {
 }
 
 export const studentsService = {
+  async get(id: number | string): Promise<Student> {
+    const res = await http.get<{ data: ApiStudentRow }>(`/students/${id}`);
+    return mapStudent(res.data.data);
+  },
+
   async list(): Promise<Student[]> {
     const res = await http.get<LaravelPaginator<ApiStudentRow>>("/students");
     return (res.data?.data ?? []).map(mapStudent);

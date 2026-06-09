@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Loader2 } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -12,20 +13,46 @@ import {
 } from "@/components/ui/dialog";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import type { Student } from "@/types/student";
+import { studentsService } from "@/services/students.service";
 
 interface StudentDetailsDialogProps {
-  student: Student | null;
+  studentId: string | number | null;
   onClose: () => void;
 }
 
-export function StudentDetailsDialog({ student, onClose }: StudentDetailsDialogProps) {
+export function StudentDetailsDialog({ studentId, onClose }: StudentDetailsDialogProps) {
   const t = useT();
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname ?? null);
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
 
+  const [student, setStudent] = useState<Student | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    if (studentId) {
+      setLoading(true);
+      studentsService.get(studentId).then((data) => {
+        if (mounted) {
+          setStudent(data);
+          setLoading(false);
+        }
+      }).catch(() => {
+        if (mounted) {
+          setLoading(false);
+        }
+      });
+    } else {
+      setStudent(null);
+    }
+    return () => {
+      mounted = false;
+    };
+  }, [studentId]);
+
   return (
-    <Dialog open={!!student} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={!!studentId} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-md" dir={dialogDir}>
         <DialogHeader className="mb-4">
           <div className="flex items-center gap-3">
@@ -38,7 +65,11 @@ export function StudentDetailsDialog({ student, onClose }: StudentDetailsDialogP
           </div>
         </DialogHeader>
 
-        {student && (
+        {loading ? (
+          <div className="flex justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : student ? (
           <div className="space-y-4">
             {student.image ? (
               <div className="flex justify-center">
@@ -87,7 +118,7 @@ export function StudentDetailsDialog({ student, onClose }: StudentDetailsDialogP
               ) : null}
             </div>
           </div>
-        )}
+        ) : null}
       </DialogContent>
     </Dialog>
   );

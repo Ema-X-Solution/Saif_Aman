@@ -231,7 +231,7 @@ export function SettingPageDialog({
                           <FormItem>
                             <FormLabel>{t("pages.sectionTitle")} (EN)</FormLabel>
                             <FormControl>
-                              <Input placeholder="..." dir="ltr" {...field} />
+                              <Input placeholder="..." {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -271,7 +271,7 @@ export function SettingPageDialog({
                         <FormItem>
                           <FormLabel>{t("pages.sectionContent")} (EN)</FormLabel>
                           <FormControl>
-                            <Textarea placeholder="..." className="min-h-[80px]" dir="ltr" {...field} />
+                            <Textarea placeholder="..." className="min-h-[80px]" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

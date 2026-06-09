@@ -65,7 +65,7 @@ export function StudentsView() {
         onUpdated={() => setReloadKey((k) => k + 1)}
       />
       <StudentDetailsDialog
-        student={viewingStudent}
+        studentId={viewingStudent?.id ?? null}
         onClose={() => setViewingStudent(null)}
       />
       <DeleteStudentDialog

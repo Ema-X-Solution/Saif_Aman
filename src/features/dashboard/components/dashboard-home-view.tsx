@@ -43,23 +43,19 @@ export function DashboardHomeView() {
     let cancelled = false;
     (async () => {
       try {
-        const [s, l, r, n, ss, sub, trips] = await Promise.all([
-          dashboardService.stats(),
-          dashboardService.liveBuses(),
+        const [dashboardData, r, n] = await Promise.all([
+          dashboardService.getDashboardData(),
           parentRequestsService.list(),
           notificationsService.list(),
-          dashboardService.schoolStats(),
-          dashboardService.subscriptions(),
-          dashboardService.todayTrips(),
         ]);
         if (!cancelled) {
-          setStats(s);
-          setLive(l);
+          setStats(dashboardData.stats);
+          setLive(dashboardData.liveBuses);
           setRequests(r.slice(0, 5));
           setNotifications(n.slice(0, 6));
-          setSchoolStats(ss);
-          setSubscriptions(sub);
-          setTodayTrips(trips);
+          setSchoolStats(dashboardData.schoolStats);
+          setSubscriptions(null);
+          setTodayTrips(dashboardData.todayTrips);
         }
       } finally {
         if (!cancelled) setLoading(false);

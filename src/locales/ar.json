@@ -148,7 +148,20 @@
     "selectDriver": "اختر السائق",
     "selectSupervisor": "اختر المشرف",
     "createBus": "إضافة باص",
-    "saving": "جاري الحفظ..."
+    "saving": "جاري الحفظ...",
+    "backupCrew": "الطاقم الاحتياطي",
+    "assignBackupCrew": "تعيين الطاقم الاحتياطي",
+    "backupCrewUpdated": "تم تحديث الطاقم الاحتياطي",
+    "selectBackupDriver": "اختر السائق الاحتياطي",
+    "selectBackupSupervisor": "اختر المشرف الاحتياطي",
+    "noneAssigned": "بدون تعيين",
+    "backupDriver": "السائق الاحتياطي",
+    "backupSupervisor": "المشرف الاحتياطي",
+    "assignedStudents": "الطلاب المعينون",
+    "noStudents": "لا يوجد طلاب معينون",
+    "createdAt": "تاريخ الإنشاء",
+    "updatedAt": "تاريخ التحديث",
+    "bus": "الباص"
   },
   "students": {
     "title": "الطلاب",
@@ -374,6 +387,11 @@
       "morningTrips": "رحلات الصباح",
       "afternoonTrips": "رحلات الظهر",
       "eveningTrips": "رحلات المساء",
+      "startedTrips": "الرحلات التي بدأت",
+      "activeTrips": "الرحلات النشطة",
+      "endedTrips": "الرحلات المنتهية",
+      "goingTrips": "رحلات الذهاب",
+      "backTrips": "رحلات العودة",
       "read": "مقروء",
       "new": "جديد",
       "keyMetricsAria": "المؤشرات الرئيسية"

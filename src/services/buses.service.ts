@@ -11,6 +11,8 @@ export interface SchoolBusWritePayload {
   school_id: number;
   driver_id: number;
   supervisor_id: number;
+  backup_driver_id?: number | null;
+  backup_supervisor_id?: number | null;
 }
 
 function mapSchoolBus(row: ApiSchoolBusRow): Bus {
@@ -25,12 +27,12 @@ function mapSchoolBus(row: ApiSchoolBusRow): Bus {
     schoolName: row.school?.name ?? "—",
     mainDriverId: row.driver ? String(row.driver.id) : "",
     mainDriverName: row.driver?.name ?? "—",
-    backupDriverId: "",
-    backupDriverName: "—",
+    backupDriverId: row.backup_driver ? String(row.backup_driver.id) : "",
+    backupDriverName: row.backup_driver?.name ?? "—",
     mainSupervisorId: row.supervisor ? String(row.supervisor.id) : "",
     mainSupervisorName: row.supervisor?.name ?? "—",
-    backupSupervisorId: "",
-    backupSupervisorName: "—",
+    backupSupervisorId: row.backup_supervisor ? String(row.backup_supervisor.id) : "",
+    backupSupervisorName: row.backup_supervisor?.name ?? "—",
     areaIds: [],
     areaLabels: [],
     gpsDeviceId: row.code || "",
@@ -45,6 +47,12 @@ export const busesService = {
     return (res.data?.data ?? []).map(mapSchoolBus);
   },
 
+  async get(id: number | string): Promise<ApiSchoolBusRow> {
+    const res = await http.get<{ data: ApiSchoolBusRow } | ApiSchoolBusRow>(`/school-buses/${id}`);
+    const data = res.data;
+    return "data" in data ? data.data : data;
+  },
+
   async create(payload: SchoolBusWritePayload): Promise<unknown> {
     const res = await http.post("/school-buses", payload);
     return res.data;
@@ -53,6 +61,28 @@ export const busesService = {
   async update(id: number | string, payload: SchoolBusWritePayload): Promise<unknown> {
     const res = await http.put(`/school-buses/${id}`, payload);
     return res.data;
+  },
+
+  async updateBackupCrew(
+    id: number | string,
+    payload: { backup_driver_id: number | null; backup_supervisor_id: number | null }
+  ): Promise<unknown> {
+    const bus = await this.get(id);
+    if (!bus.school?.id || !bus.driver?.id || !bus.supervisor?.id) {
+      throw new Error("Bus is missing required assignments");
+    }
+    return this.update(id, {
+      label: bus.label,
+      code: bus.code,
+      plate_number: bus.plate_number,
+      model: bus.model,
+      color: bus.color,
+      school_id: bus.school.id,
+      driver_id: bus.driver.id,
+      supervisor_id: bus.supervisor.id,
+      backup_driver_id: payload.backup_driver_id,
+      backup_supervisor_id: payload.backup_supervisor_id,
+    });
   },
 
   async remove(id: number | string): Promise<unknown> {
