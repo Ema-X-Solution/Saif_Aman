@@ -37,7 +37,7 @@ import { busesService } from "@/services/buses.service";
 import { studentsService } from "@/services/students.service";
 import type { Student } from "@/types/student";
 
-const getSchema = (t: ReturnType<typeof useT>) =>
+const getSchema = () =>
   z.object({
     school_bus_id: z.string().optional(),
   });
@@ -68,7 +68,7 @@ export function AssignBusDialog({
   const [buses, setBuses] = useState<Option[]>([]);
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(getSchema(t)),
+    resolver: zodResolver(getSchema()),
     defaultValues: {
       school_bus_id: "",
     },

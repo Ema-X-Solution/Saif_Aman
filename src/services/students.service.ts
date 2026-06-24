@@ -9,7 +9,7 @@ export interface StudentWritePayload {
   notes?: string | null;
   parent_id: number;
   school_id: number;
-  school_bus_id: number;
+  school_bus_id: number | null;
 }
 
 function mapStudent(row: ApiStudentRow): Student {
