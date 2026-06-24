@@ -45,7 +45,7 @@ export function LandingView() {
 
             <div className="flex flex-wrap items-center gap-4">
               <Button asChild size="lg" className="h-14 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                <Link href="#">
+                <Link href="https://apps.apple.com/eg/app/saif-aman/id6768245808" target="_blank" rel="noopener noreferrer">
                   <Smartphone className="me-2 h-5 w-5" />
                   {t("landing.downloadAppStore") || "Download on the App Store"}
                 </Link>
@@ -146,7 +146,7 @@ export function LandingView() {
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Button asChild size="lg" variant="secondary" className="h-14 px-8 rounded-full shadow-xl hover:scale-105 transition-transform text-primary font-semibold">
-                  <Link href="#">
+                  <Link href="https://apps.apple.com/eg/app/saif-aman/id6768245808" target="_blank" rel="noopener noreferrer">
                     <Smartphone className="me-2 h-5 w-5" />
                     App Store
                   </Link>
