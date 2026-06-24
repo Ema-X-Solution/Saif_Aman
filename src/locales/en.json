@@ -172,6 +172,7 @@
     "age": "Age",
     "bus": "Bus",
     "namePlaceholder": "Student name",
+    "agePlaceholder": "Student age",
     "notesPlaceholder": "Optional notes (allergies, special needs, etc.)",
     "selectGrade": "Select grade",
     "selectParent": "Select parent",
@@ -182,7 +183,11 @@
     "saving": "Saving...",
     "created": "Student created",
     "updated": "Student updated",
-    "deleted": "Student deleted"
+    "deleted": "Student deleted",
+    "assignBus": "Assign Bus",
+    "assignedBusSuccess": "Bus assigned successfully",
+    "removeBus": "Remove Bus",
+    "noBus": "No Bus"
   },
   "users": {
     "parentsPageDescription": "Parent accounts registered in the system.",

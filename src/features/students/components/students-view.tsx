@@ -8,6 +8,7 @@ import { AddStudentDialog } from "@/features/students/components/add-student-dia
 import { EditStudentDialog } from "@/features/students/components/edit-student-dialog";
 import { StudentDetailsDialog } from "@/features/students/components/student-details-dialog";
 import { DeleteStudentDialog } from "@/features/students/components/delete-student-dialog";
+import { AssignBusDialog } from "@/features/students/components/assign-bus-dialog";
 import { buildStudentColumns } from "@/features/students/lib/students-columns";
 import { studentsService } from "@/services/students.service";
 import type { Student } from "@/types/student";
@@ -21,9 +22,10 @@ export function StudentsView() {
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [viewingStudent, setViewingStudent] = useState<Student | null>(null);
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
+  const [assigningBusStudent, setAssigningBusStudent] = useState<Student | null>(null);
 
   const columns = useMemo(
-    () => buildStudentColumns(t, setEditingStudent, setViewingStudent, setDeletingStudent),
+    () => buildStudentColumns(t, setEditingStudent, setViewingStudent, setDeletingStudent, setAssigningBusStudent),
     [t]
   );
 
@@ -72,6 +74,11 @@ export function StudentsView() {
         student={deletingStudent}
         onClose={() => setDeletingStudent(null)}
         onDeleted={() => setReloadKey((k) => k + 1)}
+      />
+      <AssignBusDialog
+        student={assigningBusStudent}
+        onClose={() => setAssigningBusStudent(null)}
+        onAssigned={() => setReloadKey((k) => k + 1)}
       />
     </div>
   );

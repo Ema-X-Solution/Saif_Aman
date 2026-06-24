@@ -172,6 +172,7 @@
     "age": "العمر",
     "bus": "الباص",
     "namePlaceholder": "اسم الطالب",
+    "agePlaceholder": "عمر الطالب",
     "notesPlaceholder": "ملاحظات اختيارية (حساسية، احتياجات خاصة، إلخ)",
     "selectGrade": "اختر الصف",
     "selectParent": "اختر ولي الأمر",
@@ -182,7 +183,11 @@
     "saving": "جاري الحفظ...",
     "created": "تم إنشاء الطالب",
     "updated": "تم تحديث الطالب",
-    "deleted": "تم حذف الطالب"
+    "deleted": "تم حذف الطالب",
+    "assignBus": "تعيين باص",
+    "assignedBusSuccess": "تم تعيين الباص بنجاح",
+    "removeBus": "إزالة الباص",
+    "noBus": "بدون باص"
   },
   "users": {
     "parentsPageDescription": "حسابات أولياء الأمور المسجلة في النظام.",

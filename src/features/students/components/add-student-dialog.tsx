@@ -46,6 +46,7 @@ const getSchema = (t: ReturnType<typeof useT>) =>
   z.object({
     name: z.string().min(1, t("common.required")),
     grade: z.string().min(1, t("common.required")),
+    age: z.string().optional(),
     notes: z.string().optional(),
     parent_id: z.string().min(1, t("students.pickParent")),
     school_id: z.string().min(1, t("common.pickSchool")),
@@ -79,6 +80,7 @@ export function AddStudentDialog({ onCreated }: AddStudentDialogProps) {
     defaultValues: {
       name: "",
       grade: "",
+      age: "",
       notes: "",
       parent_id: "",
       school_id: "",
@@ -196,6 +198,19 @@ export function AddStudentDialog({ onCreated }: AddStudentDialogProps) {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("students.age")}</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder={t("students.agePlaceholder")} {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

@@ -5,6 +5,7 @@ import type { Student } from "@/types/student";
 export interface StudentWritePayload {
   name: string;
   grade: string;
+  age?: number | null;
   notes?: string | null;
   parent_id: number;
   school_id: number;

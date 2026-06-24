@@ -15,16 +15,21 @@ export function LoginPageSkeleton({ className }: { className?: string }) {
         "relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-[#0A3D91]/10 via-background to-[#1D5FD0]/10 px-4 py-12",
         className,
       )}
+      suppressHydrationWarning
     >
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(29,95,208,0.15),transparent_45%)]" />
+      <div 
+        className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(29,95,208,0.15),transparent_45%)]" 
+        suppressHydrationWarning
+      />
       <div
         className="relative z-10 w-full max-w-md"
         role="status"
         aria-busy="true"
         aria-live="polite"
+        suppressHydrationWarning
       >
         <span className="sr-only">Loading</span>
-        <div className="mb-8 flex flex-col items-center gap-4">
+        <div className="mb-8 flex flex-col items-center gap-4" suppressHydrationWarning>
           <Loader2
             className="h-9 w-9 shrink-0 animate-spin text-primary"
             aria-hidden

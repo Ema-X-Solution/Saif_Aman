@@ -46,6 +46,7 @@ const getSchema = (t: ReturnType<typeof useT>) =>
   z.object({
     name: z.string().min(1, t("common.required")),
     grade: z.string().min(1, t("common.required")),
+    age: z.string().optional(),
     notes: z.string().optional(),
     parent_id: z.string().min(1, t("students.pickParent")),
     school_id: z.string().min(1, t("common.pickSchool")),
@@ -80,6 +81,7 @@ export function EditStudentDialog({ student, onClose, onUpdated }: EditStudentDi
     defaultValues: {
       name: "",
       grade: "",
+      age: "",
       notes: "",
       parent_id: "",
       school_id: "",
@@ -142,6 +144,7 @@ export function EditStudentDialog({ student, onClose, onUpdated }: EditStudentDi
       await studentsService.update(student.id, {
         name: values.name,
         grade: values.grade,
+        age: values.age ? Number(values.age) : null,
         notes: values.notes?.trim() || null,
         parent_id: Number(values.parent_id),
         school_id: Number(values.school_id),
@@ -206,6 +209,19 @@ export function EditStudentDialog({ student, onClose, onUpdated }: EditStudentDi
                       ) : null}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="age"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("students.age")}</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder={t("students.agePlaceholder")} {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

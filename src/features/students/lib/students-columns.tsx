@@ -10,7 +10,8 @@ export function buildStudentColumns(
   t: (key: string) => string,
   onEdit: (s: Student) => void,
   onView: (s: Student) => void,
-  onDelete: (s: Student) => void
+  onDelete: (s: Student) => void,
+  onAssignBus: (s: Student) => void
 ): ColumnDef<Student>[] {
   return [
     {
@@ -74,6 +75,11 @@ export function buildStudentColumns(
               id: "edit",
               label: t("common.edit"),
               onSelect: () => onEdit(row.original),
+            },
+            {
+              id: "assign-bus",
+              label: t("students.assignBus"),
+              onSelect: () => onAssignBus(row.original),
             },
             {
               id: "delete",
