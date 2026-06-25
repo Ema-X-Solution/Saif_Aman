@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { LocationPicker } from "@/components/map";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { getAxiosErrorMessage } from "@/lib/http-error-message";
 import { schoolsService } from "@/services/schools.service";
@@ -67,8 +68,8 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
       website: "",
       notes: "",
       address: "",
-      latitude: 30.0444,
-      longitude: 31.2357,
+      latitude: 21.0,
+      longitude: 57.0,
     },
   });
 
@@ -218,6 +219,44 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
                   <MapPin className="h-4 w-4" aria-hidden />
                   {t("schools.useCurrentLocation")}
                 </Button>
+              </div>
+              <div className="space-y-2">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField
+                    control={form.control}
+                    name="latitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("common.latitude")}</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="any" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="longitude"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("common.longitude")}</FormLabel>
+                        <FormControl>
+                          <Input type="number" step="any" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <LocationPicker
+                  latitude={form.getValues("latitude")}
+                  longitude={form.getValues("longitude")}
+                  onPositionChange={(lat, lng) => {
+                    form.setValue("latitude", lat);
+                    form.setValue("longitude", lng);
+                  }}
+                />
               </div>
             </div>
             <FormField

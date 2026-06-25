@@ -79,7 +79,9 @@
     "success": "Success",
     "warning": "Warning",
     "info": "Info",
-    "neutral": "Neutral"
+    "neutral": "Neutral",
+    "latitude": "Latitude",
+    "longitude": "Longitude"
   },
   "table": {
     "showing": "Showing",

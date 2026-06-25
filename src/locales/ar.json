@@ -79,7 +79,9 @@
     "success": "نجاح",
     "warning": "تحذير",
     "info": "معلومات",
-    "neutral": "محايد"
+    "neutral": "محايد",
+    "latitude": "خط العرض",
+    "longitude": "خط الطول"
   },
   "table": {
     "showing": "عرض",
