@@ -4,6 +4,7 @@
     "schools": "المدارس",
     "buses": "الباصات",
     "students": "الطلاب",
+    "trips": "الرحلات",
     "users": "المشرفون والسائقون",
     "areas": "المناطق",
     "parentRequests": "طلبات أولياء الأمور",
@@ -188,6 +189,17 @@
     "assignedBusSuccess": "تم تعيين الباص بنجاح",
     "removeBus": "إزالة الباص",
     "noBus": "بدون باص"
+  },
+  "trips": {
+    "title": "الرحلات",
+    "description": "عرض جميع الرحلات",
+    "searchTrips": "البحث في الرحلات...",
+    "parentStatus": "حالة ولي الأمر",
+    "attendanceStatus": "حالة الحضور",
+    "pickedUpAt": "وقت الاستلام",
+    "absenceReason": "سبب الغياب",
+    "startedAt": "وقت البدء",
+    "endedAt": "وقت الانتهاء"
   },
   "users": {
     "parentsPageDescription": "حسابات أولياء الأمور المسجلة في النظام.",

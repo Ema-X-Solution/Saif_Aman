@@ -13,11 +13,21 @@ export const en = {
     settings: "Settings",
     profile: "Profile",
     footer: "Admin console · SAIF AMAN",
+    trips: "Trips",
   },
   header: {
     openMenu: "Open menu",
     administrator: "Administrator",
     profile: "Profile",
     logout: "Logout",
+  },
+  trips: {
+    title: "Trips",
+    description: "Manage and view all trips",
+    searchTrips: "Search trips...",
+    parentStatus: "Parent Status",
+    attendanceStatus: "Attendance Status",
+    pickedUpAt: "Picked Up At",
+    absenceReason: "Absence Reason",
   },
 } as const;

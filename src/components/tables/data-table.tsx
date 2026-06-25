@@ -1,13 +1,16 @@
 "use client";
 
 import type { ReactNode } from "react";
+import React from "react";
 import {
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
+  type ExpandedState,
   type SortingState,
 } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
@@ -40,6 +43,7 @@ export interface DataTableProps<TData extends object> {
   initialPageSize?: number;
   getRowId?: (row: TData, index: number) => string;
   className?: string;
+  renderSubComponent?: (props: { row: any }) => React.ReactElement; // eslint-disable-line @typescript-eslint/no-explicit-any
 }
 
 export function DataTable<TData extends object>({
@@ -53,6 +57,7 @@ export function DataTable<TData extends object>({
   initialPageSize = 10,
   getRowId,
   className,
+  renderSubComponent,
 }: DataTableProps<TData>) {
   const t = useT();
   const pathname = usePathname();
@@ -62,6 +67,7 @@ export function DataTable<TData extends object>({
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 220);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const filtered = useMemo(() => {
     if (!globalSearchAccessor || !debouncedSearch) {
@@ -75,11 +81,13 @@ export function DataTable<TData extends object>({
   const table = useReactTable({
     data: filtered,
     columns,
-    state: { sorting },
+    state: { sorting, expanded },
     onSortingChange: setSorting,
+    onExpandedChange: setExpanded,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     initialState: {
       pagination: { pageSize: initialPageSize, pageIndex: 0 },
     },
@@ -142,16 +150,37 @@ export function DataTable<TData extends object>({
               ))
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment key={row.id}>
+                  <TableRow
+                    data-state={row.getIsSelected() && "selected"}
+                    onClick={
+                      renderSubComponent
+                        ? () => row.toggleExpanded()
+                        : undefined
+                    }
+                    className={
+                      renderSubComponent ? "cursor-pointer hover:bg-accent/50" : ""
+                    }
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                  {row.getIsExpanded() && renderSubComponent && (
+                    <TableRow>
+                      <TableCell colSpan={columns.length} className="p-0">
+                        <div className="bg-muted/30 p-4">
+                          {renderSubComponent({ row })}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </React.Fragment>
               ))
             ) : (
               <TableRow>

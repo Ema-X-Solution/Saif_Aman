@@ -14,3 +14,4 @@ export { notificationsService } from "./notifications.service";
 export { reportsService } from "./reports.service";
 export { dashboardService } from "./dashboard.service";
 export { settingPagesService } from "./setting-pages.service";
+export { tripsService } from "./trips.service";

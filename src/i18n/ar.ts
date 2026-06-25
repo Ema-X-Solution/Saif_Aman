@@ -13,11 +13,21 @@ export const ar = {
     settings: "الإعدادات",
     profile: "الملف الشخصي",
     footer: "لوحة الإدارة · سيف أمان",
+    trips: "الرحلات",
   },
   header: {
     openMenu: "فتح القائمة",
     administrator: "المدير",
     profile: "الملف الشخصي",
     logout: "تسجيل الخروج",
+  },
+  trips: {
+    title: "الرحلات",
+    description: "إدارة وعرض جميع الرحلات",
+    searchTrips: "البحث في الرحلات...",
+    parentStatus: "حالة الوالد",
+    attendanceStatus: "حالة الحضور",
+    pickedUpAt: "وقت الاستلام",
+    absenceReason: "سبب الغياب",
   },
 } as const;

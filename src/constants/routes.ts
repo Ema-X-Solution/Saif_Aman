@@ -18,4 +18,5 @@ export const ROUTES = {
   settings: "/settings",
   profile: "/profile",
   deleteAccount: "/delete-account",
+  trips: "/trips",
 } as const;

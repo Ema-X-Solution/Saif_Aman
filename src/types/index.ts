@@ -12,3 +12,4 @@ export type * from "./notification";
 export type * from "./report";
 export type * from "./settings";
 export type * from "./dashboard";
+export type * from "./trip";
