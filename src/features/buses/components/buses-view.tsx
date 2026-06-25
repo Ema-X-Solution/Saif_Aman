@@ -11,19 +11,31 @@ import { AssignBackupCrewDialog } from "@/features/buses/components/assign-backu
 import { DeleteBusDialog } from "@/features/buses/components/delete-bus-dialog";
 import { buildBusColumns } from "@/features/buses/lib/buses-columns";
 import { busesService } from "@/services/buses.service";
+import { schoolsService } from "@/services/schools.service";
 import type { Bus } from "@/types/bus";
+import type { School } from "@/types/school";
 import { useT } from "@/i18n/use-t";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function BusesView() {
   const t = useT();
   const [data, setData] = useState<Bus[]>([]);
+  const [schools, setSchools] = useState<School[]>([]);
   const [loading, setLoading] = useState(true);
+  const [schoolsLoading, setSchoolsLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
   const [editingBus, setEditingBus] = useState<Bus | null>(null);
   const [viewingBus, setViewingBus] = useState<Bus | null>(null);
   const [backupCrewBus, setBackupCrewBus] = useState<Bus | null>(null);
   const [deletingBus, setDeletingBus] = useState<Bus | null>(null);
   const [detailsRefreshKey, setDetailsRefreshKey] = useState(0);
+  const [selectedSchool, setSelectedSchool] = useState<string>("all");
 
   const columns = useMemo(
     () =>
@@ -53,6 +65,29 @@ export function BusesView() {
     };
   }, [reloadKey]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      setSchoolsLoading(true);
+      try {
+        const rows = await schoolsService.list();
+        if (!cancelled) setSchools(rows);
+      } finally {
+        if (!cancelled) setSchoolsLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filterFn = useMemo(() => {
+    if (selectedSchool === "all") {
+      return () => true;
+    }
+    return (bus: Bus) => bus.schoolId === selectedSchool;
+  }, [selectedSchool]);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -67,6 +102,24 @@ export function BusesView() {
         searchPlaceholder={t("buses.searchBuses")}
         globalSearchAccessor={(row) =>
           `${row.plateNumber} ${row.schoolName} ${row.areaLabels.join(" ")}`
+        }
+        filterFn={filterFn}
+        filtersSlot={
+          <div className="flex items-center gap-3">
+            <Select value={selectedSchool} onValueChange={setSelectedSchool} disabled={schoolsLoading}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder={t("schools.selectSchool")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
+                {schools.map((school) => (
+                  <SelectItem key={school.id} value={school.id}>
+                    {school.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         }
       />
       <EditBusDialog

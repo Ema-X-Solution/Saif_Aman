@@ -44,6 +44,7 @@ export interface DataTableProps<TData extends object> {
   getRowId?: (row: TData, index: number) => string;
   className?: string;
   renderSubComponent?: (props: { row: any }) => React.ReactElement; // eslint-disable-line @typescript-eslint/no-explicit-any
+  filterFn?: (row: TData) => boolean;
 }
 
 export function DataTable<TData extends object>({
@@ -58,6 +59,7 @@ export function DataTable<TData extends object>({
   getRowId,
   className,
   renderSubComponent,
+  filterFn,
 }: DataTableProps<TData>) {
   const t = useT();
   const pathname = usePathname();
@@ -70,13 +72,17 @@ export function DataTable<TData extends object>({
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
   const filtered = useMemo(() => {
-    if (!globalSearchAccessor || !debouncedSearch) {
-      return data;
+    let result = data;
+    if (globalSearchAccessor && debouncedSearch) {
+      result = result.filter((row) =>
+        matchesSearch(globalSearchAccessor(row), debouncedSearch),
+      );
     }
-    return data.filter((row) =>
-      matchesSearch(globalSearchAccessor(row), debouncedSearch),
-    );
-  }, [data, debouncedSearch, globalSearchAccessor]);
+    if (filterFn) {
+      result = result.filter(filterFn);
+    }
+    return result;
+  }, [data, debouncedSearch, globalSearchAccessor, filterFn]);
 
   const table = useReactTable({
     data: filtered,

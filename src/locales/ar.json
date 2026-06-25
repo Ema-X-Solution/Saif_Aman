@@ -81,7 +81,8 @@
     "info": "معلومات",
     "neutral": "محايد",
     "latitude": "خط العرض",
-    "longitude": "خط الطول"
+    "longitude": "خط الطول",
+    "all": "الكل"
   },
   "table": {
     "showing": "عرض",

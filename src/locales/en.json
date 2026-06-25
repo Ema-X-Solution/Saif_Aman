@@ -81,7 +81,8 @@
     "info": "Info",
     "neutral": "Neutral",
     "latitude": "Latitude",
-    "longitude": "Longitude"
+    "longitude": "Longitude",
+    "all": "All"
   },
   "table": {
     "showing": "Showing",

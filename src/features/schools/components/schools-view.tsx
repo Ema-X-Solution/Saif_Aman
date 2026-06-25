@@ -12,6 +12,13 @@ import { buildSchoolColumns } from "@/features/schools/lib/schools-columns";
 import { schoolsService } from "@/services/schools.service";
 import type { School } from "@/types/school";
 import { useT } from "@/i18n/use-t";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function SchoolsView() {
   const t = useT();
@@ -21,6 +28,7 @@ export function SchoolsView() {
   const [editingSchool, setEditingSchool] = useState<School | null>(null);
   const [viewingSchool, setViewingSchool] = useState<School | null>(null);
   const [deletingSchool, setDeletingSchool] = useState<School | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string>("all");
 
   const columns = useMemo(
     () => buildSchoolColumns(t, setEditingSchool, setViewingSchool, setDeletingSchool),
@@ -43,6 +51,24 @@ export function SchoolsView() {
     };
   }, [reloadKey]);
 
+  // Get unique cities
+  const cities = useMemo(() => {
+    const uniqueCities = new Set<string>();
+    data.forEach((school) => {
+      if (school.city) {
+        uniqueCities.add(school.city);
+      }
+    });
+    return Array.from(uniqueCities);
+  }, [data]);
+
+  const filterFn = useMemo(() => {
+    if (selectedCity === "all") {
+      return () => true;
+    }
+    return (school: School) => school.city === selectedCity;
+  }, [selectedCity]);
+
   return (
     <div className="space-y-6">
       <PageHeader
@@ -59,6 +85,24 @@ export function SchoolsView() {
         searchPlaceholder={t("schools.searchSchools")}
         globalSearchAccessor={(row) =>
           `${row.name} ${row.city} ${row.status}`
+        }
+        filterFn={filterFn}
+        filtersSlot={
+          <div className="flex items-center gap-3">
+            <Select value={selectedCity} onValueChange={setSelectedCity}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder={t("schools.city")} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t("common.all")}</SelectItem>
+                {cities.map((city) => (
+                  <SelectItem key={city} value={city}>
+                    {city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         }
       />
       
