@@ -41,6 +41,7 @@ import { schoolsService } from "@/services/schools.service";
 import { studentsService } from "@/services/students.service";
 import { usersAdminService } from "@/services/users-admin.service";
 import type { Student } from "@/types/student";
+import type { Bus } from "@/types/bus";
 
 const getSchema = (t: ReturnType<typeof useT>) =>
   z.object({
@@ -78,7 +79,7 @@ export function EditStudentDialog({ student, onClose, onUpdated }: EditStudentDi
   const [loadingRefs, setLoadingRefs] = useState(false);
   const [parents, setParents] = useState<Option[]>([]);
   const [schools, setSchools] = useState<Option[]>([]);
-  const [allBuses, setAllBuses] = useState<any[]>([]);
+  const [allBuses, setAllBuses] = useState<Bus[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(getSchema(t)),
