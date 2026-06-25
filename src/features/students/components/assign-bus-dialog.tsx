@@ -44,7 +44,7 @@ const getSchema = () =>
 
 type FormValues = z.infer<ReturnType<typeof getSchema>>;
 
-interface Option {
+interface BusOption {
   id: number;
   label: string;
   plateNumber: string;
@@ -69,7 +69,7 @@ export function AssignBusDialog({
   const locale = getLocaleFromPathname(pathname ?? null);
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
   const [loadingBuses, setLoadingBuses] = useState(false);
-  const [buses, setBuses] = useState<Option[]>([]);
+  const [buses, setBuses] = useState<BusOption[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(getSchema()),

@@ -56,7 +56,12 @@ const getSchema = (t: ReturnType<typeof useT>) =>
 
 type FormValues = z.infer<ReturnType<typeof getSchema>>;
 
-interface Option {
+interface ParentOption {
+  id: number;
+  label: string;
+}
+
+interface BusOption {
   id: number;
   label: string;
   plateNumber: string;
@@ -77,8 +82,8 @@ export function EditStudentDialog({ student, onClose, onUpdated }: EditStudentDi
   const locale = getLocaleFromPathname(pathname ?? null);
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
   const [loadingRefs, setLoadingRefs] = useState(false);
-  const [parents, setParents] = useState<Option[]>([]);
-  const [schools, setSchools] = useState<Option[]>([]);
+  const [parents, setParents] = useState<ParentOption[]>([]);
+  const [schools, setSchools] = useState<ParentOption[]>([]);
   const [allBuses, setAllBuses] = useState<Bus[]>([]);
 
   const form = useForm<FormValues>({
@@ -109,7 +114,7 @@ export function EditStudentDialog({ student, onClose, onUpdated }: EditStudentDi
         mainDriverName: b.mainDriverName,
         mainSupervisorName: b.mainSupervisorName,
         studentsCount: b.studentsCount,
-      }));
+      })) as BusOption[];
   }, [allBuses, selectedSchoolId]);
 
   useEffect(() => {
