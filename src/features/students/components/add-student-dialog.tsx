@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GraduationCap, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
@@ -58,6 +58,10 @@ type FormValues = z.infer<ReturnType<typeof getSchema>>;
 interface Option {
   id: number;
   label: string;
+  plateNumber: string;
+  mainDriverName: string;
+  mainSupervisorName: string;
+  studentsCount: number;
 }
 
 interface AddStudentDialogProps {
@@ -73,7 +77,7 @@ export function AddStudentDialog({ onCreated }: AddStudentDialogProps) {
   const [loadingRefs, setLoadingRefs] = useState(false);
   const [parents, setParents] = useState<Option[]>([]);
   const [schools, setSchools] = useState<Option[]>([]);
-  const [buses, setBuses] = useState<Option[]>([]);
+  const [allBuses, setAllBuses] = useState<any[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(getSchema(t)),
@@ -87,6 +91,24 @@ export function AddStudentDialog({ onCreated }: AddStudentDialogProps) {
       school_bus_id: "",
     },
   });
+
+  // Watch for school_id changes
+  const selectedSchoolId = form.watch("school_id");
+
+  // Filter buses based on selected school
+  const buses = useMemo(() => {
+    if (!selectedSchoolId) return [];
+    return allBuses
+      .filter(b => String(b.schoolId) === selectedSchoolId)
+      .map((b) => ({
+        id: Number(b.id),
+        label: `${b.label} — ${b.schoolName}`,
+        plateNumber: b.plateNumber,
+        mainDriverName: b.mainDriverName,
+        mainSupervisorName: b.mainSupervisorName,
+        studentsCount: b.studentsCount,
+      }));
+  }, [allBuses, selectedSchoolId]);
 
   useEffect(() => {
     if (!open) return;
@@ -107,12 +129,7 @@ export function AddStudentDialog({ onCreated }: AddStudentDialogProps) {
           }))
         );
         setSchools(schoolRows.map((s) => ({ id: Number(s.id), label: s.name })));
-        setBuses(
-          busRows.map((b) => ({
-            id: Number(b.id),
-            label: `${b.label} — ${b.schoolName}`,
-          }))
-        );
+        setAllBuses(busRows); // Store all buses, filter later
       } catch (err) {
         if (!cancelled) toast.error(getAxiosErrorMessage(err));
       } finally {
@@ -123,6 +140,16 @@ export function AddStudentDialog({ onCreated }: AddStudentDialogProps) {
       cancelled = true;
     };
   }, [open]);
+
+  // Reset bus selection when school changes
+  useEffect(() => {
+    if (selectedSchoolId) {
+      const currentBus = buses.find(b => String(b.id) === form.getValues("school_bus_id"));
+      if (!currentBus) {
+        form.setValue("school_bus_id", "");
+      }
+    }
+  }, [selectedSchoolId, buses, form]);
 
   async function onSubmit(values: FormValues) {
     try {
@@ -290,7 +317,12 @@ export function AddStudentDialog({ onCreated }: AddStudentDialogProps) {
                     <SelectContent>
                       {buses.map((b) => (
                         <SelectItem key={b.id} value={String(b.id)}>
-                          {b.label}
+                          <div className="flex flex-col gap-0.5">
+                            <div className="font-medium">{b.label}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {b.plateNumber} • {b.mainDriverName} • {b.mainSupervisorName} • {b.studentsCount} {t("schools.students")}
+                            </div>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>

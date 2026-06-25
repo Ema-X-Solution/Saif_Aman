@@ -47,6 +47,10 @@ type FormValues = z.infer<ReturnType<typeof getSchema>>;
 interface Option {
   id: number;
   label: string;
+  plateNumber: string;
+  mainDriverName: string;
+  mainSupervisorName: string;
+  studentsCount: number;
 }
 
 interface AssignBusDialogProps {
@@ -82,10 +86,16 @@ export function AssignBusDialog({
       try {
         const busRows = await busesService.list();
         if (cancelled) return;
+        // Filter buses to only those that belong to the student's school
+        const filteredBuses = busRows.filter(b => b.schoolId === student.schoolId);
         setBuses(
-          busRows.map((b) => ({
+          filteredBuses.map((b) => ({
             id: Number(b.id),
             label: `${b.label} — ${b.schoolName}`,
+            plateNumber: b.plateNumber,
+            mainDriverName: b.mainDriverName,
+            mainSupervisorName: b.mainSupervisorName,
+            studentsCount: b.studentsCount,
           }))
         );
         if (student.schoolBusId) {
@@ -165,7 +175,12 @@ export function AssignBusDialog({
                       <SelectItem value="none">{t("students.noBus")}</SelectItem>
                       {buses.map((b) => (
                         <SelectItem key={b.id} value={String(b.id)}>
-                          {b.label}
+                          <div className="flex flex-col gap-0.5">
+                            <div className="font-medium">{b.label}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {b.plateNumber} • {b.mainDriverName} • {b.mainSupervisorName} • {b.studentsCount} {t("schools.students")}
+                            </div>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>

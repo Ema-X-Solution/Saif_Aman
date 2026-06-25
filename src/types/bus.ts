@@ -22,4 +22,5 @@ export interface Bus {
   gpsDeviceId: string;
   status: "active" | "maintenance" | "offline";
   updatedAt: string;
+  studentsCount: number;
 }

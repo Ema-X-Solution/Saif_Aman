@@ -38,6 +38,7 @@ function mapSchoolBus(row: ApiSchoolBusRow): Bus {
     gpsDeviceId: row.code || "",
     status: "active",
     updatedAt: row.updated_at,
+    studentsCount: row.students_count ?? 0,
   };
 }
 
