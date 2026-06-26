@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { School as SchoolIcon, MapPin, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useForm, useFieldArray, useWatch } from "react-hook-form";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -83,6 +83,16 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "grades",
+  });
+
+  const watchedLatitude = useWatch({
+    control: form.control,
+    name: "latitude",
+  });
+
+  const watchedLongitude = useWatch({
+    control: form.control,
+    name: "longitude",
   });
 
   useEffect(() => {
@@ -298,8 +308,8 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
                   />
                 </div>
                 <LocationPicker
-                  latitude={form.getValues("latitude")}
-                  longitude={form.getValues("longitude")}
+                  latitude={watchedLatitude}
+                  longitude={watchedLongitude}
                   onPositionChange={(lat, lng) => {
                     form.setValue("latitude", lat);
                     form.setValue("longitude", lng);

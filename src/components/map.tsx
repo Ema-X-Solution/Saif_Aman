@@ -105,7 +105,6 @@ export function LocationPicker({ latitude, longitude, onPositionChange, height =
   return (
     <div className="rounded-lg border overflow-hidden bg-white dark:bg-transparent" style={{ height, zIndex: 10 }} dir="ltr">
       <MapContainer
-        key={`${latitude}-${longitude}`}
         center={position}
         zoom={8}
         scrollWheelZoom={true}
