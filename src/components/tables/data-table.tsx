@@ -107,6 +107,7 @@ export function DataTable<TData extends object>({
         "overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm",
         className,
       )}
+      suppressHydrationWarning={true}
     >
       <DataTableToolbar
         searchPlaceholder={searchPlaceholder}

@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { School, MapPin, Plus } from "lucide-react";
+import { School, MapPin, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
+import dynamic from "next/dynamic";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { LocationPicker } from "@/components/map";
+const LocationPicker = dynamic(() => import("@/components/map").then(mod => mod.LocationPicker), { ssr: false });
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { getAxiosErrorMessage } from "@/lib/http-error-message";
 import { schoolsService } from "@/services/schools.service";
@@ -44,6 +45,9 @@ const getSchema = (t: ReturnType<typeof useT>) => z.object({
   longitude: z.coerce.number({
     invalid_type_error: t("common.required"),
   }),
+  grades: z.array(z.object({
+    name: z.string().min(1, t("common.required")),
+  })),
 });
 
 type FormValues = z.infer<ReturnType<typeof getSchema>>;
@@ -70,7 +74,13 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
       address: "",
       latitude: 21.0,
       longitude: 57.0,
+      grades: [],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "grades",
   });
 
   async function onSubmit(values: FormValues) {
@@ -86,6 +96,7 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
         address: values.address,
         latitude: values.latitude,
         longitude: values.longitude,
+        grades: values.grades,
       });
       toast.success(t("schools.created"));
       form.reset();
@@ -125,7 +136,7 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
         <Plus className="h-4 w-4 shrink-0" aria-hidden />
         {t("schools.addSchool")}
       </Button>
-      <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto" dir={dialogDir}>
+      <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto" dir={dialogDir} suppressHydrationWarning={true}>
         <DialogHeader className="mb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
@@ -259,6 +270,48 @@ export function AddSchoolDialog({ onCreated }: AddSchoolDialogProps) {
                 />
               </div>
             </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{t("students.grade")}</label>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => append({ name: "" })}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" aria-hidden />
+                  {t("common.add")}
+                </Button>
+              </div>
+              <div className="space-y-3">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex items-center gap-3">
+                    <FormField
+                      control={form.control}
+                      name={`grades.${index}.name`}
+                      render={({ field: inputField }) => (
+                        <FormItem className="flex-1 m-0">
+                          <FormControl>
+                            <Input placeholder="Grade name" {...inputField} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => remove(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <FormField
               control={form.control}
               name="notes"

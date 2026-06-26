@@ -35,6 +35,11 @@ export interface ApiUserRow {
   students?: { id: number; name: string }[] | null;
 }
 
+export interface ApiGradeRow {
+  id?: number;
+  name: string;
+}
+
 export interface ApiSchoolRow {
   id: number;
   name: string;
@@ -49,6 +54,7 @@ export interface ApiSchoolRow {
   school_buses_count: number;
   created_at: string;
   updated_at: string;
+  grades?: ApiGradeRow[];
 }
 
 export interface ApiSchoolBusSchoolRef {

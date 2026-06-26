@@ -30,6 +30,7 @@ export function PageHeader({
         "flex flex-col gap-4 border-b border-border/80 pb-6 lg:flex-row lg:items-start lg:justify-between",
         className,
       )}
+      suppressHydrationWarning={true}
     >
       <div className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">

@@ -70,7 +70,7 @@ export function SchoolsView() {
   }, [selectedCity]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" suppressHydrationWarning={true}>
       <PageHeader
         title={t("schools.title")}
         description={t("schools.description")}

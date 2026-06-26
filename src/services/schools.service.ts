@@ -1,6 +1,6 @@
 import { http } from "@/services/http";
 import type { ApiSchoolRow, LaravelPaginator } from "@/types/api";
-import type { School } from "@/types/school";
+import type { School, Grade } from "@/types/school";
 
 export interface SchoolWritePayload {
   name: string;
@@ -11,10 +11,15 @@ export interface SchoolWritePayload {
   address: string;
   latitude: number;
   longitude: number;
+  grades?: Grade[];
 }
 
 function mapSchool(row: ApiSchoolRow): School {
   const city = row.address?.trim() || "—";
+  const grades: Grade[] = row.grades?.map(g => ({
+    id: g.id ? String(g.id) : undefined,
+    name: g.name,
+  })) || [];
   return {
     id: String(row.id),
     name: row.name,
@@ -30,6 +35,7 @@ function mapSchool(row: ApiSchoolRow): School {
     busCount: row.school_buses_count,
     status: "active",
     updatedAt: row.updated_at,
+    grades,
   };
 }
 
@@ -37,6 +43,11 @@ export const schoolsService = {
   async list(): Promise<School[]> {
     const res = await http.get<LaravelPaginator<ApiSchoolRow>>("/schools");
     return (res.data?.data ?? []).map(mapSchool);
+  },
+
+  async get(id: number | string): Promise<School> {
+    const res = await http.get<{ data: ApiSchoolRow }>(`/schools/${id}`);
+    return mapSchool(res.data.data);
   },
 
   async create(payload: SchoolWritePayload): Promise<unknown> {

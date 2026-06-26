@@ -49,7 +49,7 @@ export function DeleteSchoolDialog({ school, onClose, onDeleted }: DeleteSchoolD
 
   return (
     <Dialog open={!!school} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-md" dir={dialogDir}>
+      <DialogContent className="max-w-md" dir={dialogDir} suppressHydrationWarning={true}>
         <DialogHeader className="mb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10">

@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { School as SchoolIcon, MapPin } from "lucide-react";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { School as SchoolIcon, MapPin, Plus, Trash2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 import { z } from "zod";
+import dynamic from "next/dynamic";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { LocationPicker } from "@/components/map";
+const LocationPicker = dynamic(() => import("@/components/map").then(mod => mod.LocationPicker), { ssr: false });
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { getAxiosErrorMessage } from "@/lib/http-error-message";
 import { schoolsService } from "@/services/schools.service";
@@ -45,6 +46,9 @@ const getSchema = (t: ReturnType<typeof useT>) => z.object({
   longitude: z.coerce.number({
     invalid_type_error: t("common.required"),
   }),
+  grades: z.array(z.object({
+    name: z.string().min(1, t("common.required")),
+  })),
 });
 
 type FormValues = z.infer<ReturnType<typeof getSchema>>;
@@ -60,6 +64,7 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname ?? null);
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(getSchema(t)),
@@ -71,23 +76,53 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
       address: "",
       latitude: 21.0,
       longitude: 57.0,
+      grades: [],
     },
   });
 
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "grades",
+  });
+
   useEffect(() => {
-    if (school) {
-      form.reset({
-        name: school.name || "",
-        phone: school.phone || "",
-        email: school.email || "",
-        website: school.website || "",
-        notes: school.notes || "",
-        address: school.address || "",
-        latitude: school.latitude !== null ? school.latitude : 30.0444,
-        longitude: school.longitude !== null ? school.longitude : 31.2357,
-      });
-    }
-  }, [school, form]);
+    let isMounted = true;
+    
+    const fetchSchool = async () => {
+      if (school) {
+        setIsLoading(true);
+        try {
+          const fetched = await schoolsService.get(school.id);
+          if (isMounted) {
+            form.reset({
+              name: fetched.name || "",
+              phone: fetched.phone || "",
+              email: fetched.email || "",
+              website: fetched.website || "",
+              notes: fetched.notes || "",
+              address: fetched.address || "",
+              latitude: fetched.latitude !== null ? fetched.latitude : 30.0444,
+              longitude: fetched.longitude !== null ? fetched.longitude : 31.2357,
+              grades: fetched.grades || [],
+            });
+          }
+        } catch (error) {
+          console.error("Failed to fetch school:", error);
+          toast.error(t("common.error"));
+        } finally {
+          if (isMounted) {
+            setIsLoading(false);
+          }
+        }
+      }
+    };
+
+    fetchSchool();
+    
+    return () => {
+      isMounted = false;
+    };
+  }, [school, form, t]);
 
   async function onSubmit(values: FormValues) {
     if (!school) return;
@@ -103,6 +138,7 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
         address: values.address,
         latitude: values.latitude,
         longitude: values.longitude,
+        grades: values.grades,
       });
       toast.success(t("common.edit") + " " + t("schools.created")); // Using available translation keys
       onClose();
@@ -133,7 +169,7 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
 
   return (
     <Dialog open={!!school} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto" dir={dialogDir}>
+      <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto" dir={dialogDir} suppressHydrationWarning={true}>
         <DialogHeader className="mb-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
@@ -144,6 +180,11 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
             </div>
           </div>
         </DialogHeader>
+        {isLoading ? (
+          <div className="flex justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          </div>
+        ) : (
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
@@ -266,6 +307,48 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
                 />
               </div>
             </div>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">{t("students.grade")}</label>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => append({ name: "" })}
+                  className="gap-2"
+                >
+                  <Plus className="h-4 w-4" aria-hidden />
+                  {t("common.add")}
+                </Button>
+              </div>
+              <div className="space-y-3">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex items-center gap-3">
+                    <FormField
+                      control={form.control}
+                      name={`grades.${index}.name`}
+                      render={({ field: inputField }) => (
+                        <FormItem className="flex-1 m-0">
+                          <FormControl>
+                            <Input placeholder="Grade name" {...inputField} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => remove(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <FormField
               control={form.control}
               name="notes"
@@ -293,6 +376,7 @@ export function EditSchoolDialog({ school, onClose, onUpdated }: EditSchoolDialo
             </DialogFooter>
           </form>
         </Form>
+        )}
       </DialogContent>
     </Dialog>
   );

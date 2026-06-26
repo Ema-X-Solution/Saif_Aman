@@ -1,6 +1,6 @@
 import { DashboardShell } from "@/components/layout/dashboard-shell";
 import { AuthGate } from "@/features/auth/components/auth-gate";
-import { SchoolsView } from "@/features/schools/components/schools-view";
+import { SchoolsPageClient } from "@/features/schools/components/schools-page-client";
 import { getMessages } from "@/lib/locale-messages";
 
 export default async function SchoolsPage({
@@ -13,7 +13,7 @@ export default async function SchoolsPage({
   return (
     <AuthGate>
       <DashboardShell title={messages.sidebar.schools}>
-        <SchoolsView />
+        <SchoolsPageClient />
       </DashboardShell>
     </AuthGate>
   );
