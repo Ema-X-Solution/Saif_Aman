@@ -120,9 +120,9 @@ export function EditBusDialog({ bus, onClose, onUpdated }: EditBusDialogProps) {
           plate_number: bus.plateNumber,
           model: bus.model || "",
           color: bus.color || "",
-          school_id: String(schoolRows.find(s => s.name === bus.schoolName)?.id || ""),
-          driver_id: String(rows.find(u => u.name === bus.mainDriverName)?.id || ""),
-          supervisor_id: String(rows.find(u => u.name === bus.mainSupervisorName)?.id || ""),
+          school_id: bus.schoolId ? String(bus.schoolId) : "",
+          driver_id: bus.mainDriverId ? String(bus.mainDriverId) : "",
+          supervisor_id: bus.mainSupervisorId ? String(bus.mainSupervisorId) : "",
         });
       } catch (err) {
         if (!cancelled) toast.error(getAxiosErrorMessage(err));
