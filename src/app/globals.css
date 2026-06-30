@@ -1,6 +1,26 @@
 @import "tailwindcss";
 @import "leaflet/dist/leaflet.css";
 
+/* Fix Leaflet z-index to stay below nav */
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+  z-index: 100;
+}
+.leaflet-control {
+  z-index: 200;
+}
+.leaflet-popup {
+  z-index: 300;
+}
+
 /* SAIF AMAN — Navy dominant, Amber accent (design system) */
 :root {
   /* Navy scale */

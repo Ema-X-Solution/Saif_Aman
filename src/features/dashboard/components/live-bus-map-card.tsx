@@ -1,117 +1,109 @@
 "use client";
 
-import { Bus, Minus, Plus } from "lucide-react";
+import { Bus, MapPin } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useT } from "@/i18n/use-t";
-import type { LiveBusPoint } from "@/types/dashboard";
+import { LiveMap } from "@/components/map";
+import type { School } from "@/types/school";
+import type { Bus as BusType } from "@/types/bus";
+import type { ApiTrip } from "@/types/trip";
 
 interface LiveBusMapCardProps {
-  buses: LiveBusPoint[];
+  schools: School[];
+  buses: BusType[];
+  trips: ApiTrip[];
 }
 
-export function LiveBusMapCard({ buses }: LiveBusMapCardProps) {
+export function LiveBusMapCard({ schools, buses, trips }: LiveBusMapCardProps) {
   const t = useT();
 
+  // Prepare bus map points - link with trips for location if available
+  const busMapPoints = buses.map((bus) => {
+    // Find active trip for this bus
+    const activeTrip = trips.find(trip =>
+      trip.bus.id === Number(bus.id) && trip.ended_at === null
+    );
+
+    // For now, use school location if available, or default to school's location
+    const school = schools.find(s => s.id === bus.schoolId);
+
+    // Generate coordinates around school in Oman
+    const baseLat = school?.latitude || 23.5880; // Default to Muscat
+    const baseLng = school?.longitude || 58.3920; // Default to Muscat
+    const offsetLat = activeTrip ? (Math.random() - 0.5) * 0.05 : 0; // Smaller offset
+    const offsetLng = activeTrip ? (Math.random() - 0.5) * 0.05 : 0;
+
+    return {
+      id: bus.id,
+      label: bus.label,
+      code: bus.code,
+      latitude: baseLat + offsetLat,
+      longitude: baseLng + offsetLng,
+      color: activeTrip ? "#22c55e" : "#94a3b8", // Green for active, gray for inactive
+      schoolName: bus.schoolName,
+      plateNumber: bus.plateNumber,
+      isActive: !!activeTrip,
+    };
+  });
+
+  // Prepare school map points
+  const schoolMapPoints = schools.filter(s => s.latitude && s.longitude).map((school) => ({
+    id: school.id,
+    name: school.name,
+    latitude: school.latitude!,
+    longitude: school.longitude!,
+    address: school.address,
+    studentsCount: school.studentCount,
+    busCount: school.busCount,
+  }));
+
+  const activeTripsCount = trips.filter(t => t.ended_at === null).length;
+
   return (
-    <Card className="h-full border-border/80">
+    <Card className="h-full border-border/80 bg-gradient-to-br from-card to-card/80 shadow-sm hover:shadow-md transition-all duration-300">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold">
-          {t("dashboard.liveTracking.mapTitle")}
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-green-500/15">
+              <MapPin className="h-5 w-5 text-green-600 dark:text-green-400" />
+            </div>
+            <CardTitle className="text-base font-semibold">
+              {t("dashboard.liveTracking.mapTitle")}
+            </CardTitle>
+          </div>
+          <div className="flex items-center gap-2 rounded-full bg-green-500/15 px-3 py-1">
+            <Bus className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <span className="text-sm font-bold text-green-600 dark:text-green-400">
+              {activeTripsCount}
+            </span>
+            <span className="text-xs text-muted-foreground">
+              {t("dashboard.liveTracking.activeBuses")}
+            </span>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="relative h-[280px] overflow-hidden rounded-xl border border-border/60 bg-[#e8f4fc] dark:bg-[#0e2a47]">
-          <svg
-            viewBox="0 0 100 100"
-            className="absolute inset-0 h-full w-full"
-            preserveAspectRatio="none"
-          >
-            <rect width="100" height="100" className="fill-[#d4eaf7] dark:fill-[#12395e]" />
-            <path
-              d="M0 75 Q30 70 50 78 T100 72 L100 100 L0 100 Z"
-              className="fill-[#a8d4f0] dark:fill-[#1a4a73]"
-            />
-            <path
-              d="M10 20 Q40 10 70 18 T100 12"
-              fill="none"
-              stroke="#94a3b8"
-              strokeWidth="0.4"
-              strokeDasharray="2 2"
-            />
-            <path
-              d="M15 45 Q35 55 55 48 T90 52"
-              fill="none"
-              stroke="#2563eb"
-              strokeWidth="0.8"
-              opacity="0.7"
-            />
-            <path
-              d="M20 60 Q45 50 65 62 T95 58"
-              fill="none"
-              stroke="#16a34a"
-              strokeWidth="0.8"
-              opacity="0.7"
-            />
-            <path
-              d="M5 35 Q30 42 50 35 T85 40"
-              fill="none"
-              stroke="#f59e0b"
-              strokeWidth="0.8"
-              opacity="0.7"
-            />
-            <path
-              d="M25 25 Q50 30 75 22"
-              fill="none"
-              stroke="#8b5cf6"
-              strokeWidth="0.8"
-              opacity="0.7"
-            />
-            <path
-              d="M40 70 Q60 65 80 72"
-              fill="none"
-              stroke="#dc2626"
-              strokeWidth="0.8"
-              opacity="0.7"
-            />
-          </svg>
-
-          {buses.map((bus) => (
-            <div
-              key={bus.id}
-              className="absolute flex h-8 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full text-xs font-bold text-white shadow-md"
-              style={{
-                left: `${bus.mapX}%`,
-                top: `${bus.mapY}%`,
-                backgroundColor: bus.color,
-              }}
-            >
-              {bus.busNumber}
-            </div>
-          ))}
-
-          <div className="absolute end-3 top-3 rounded-lg border border-border/60 bg-background/90 px-2 py-1.5 text-xs shadow-sm backdrop-blur-sm">
-            <div className="flex items-center gap-1.5 font-medium">
-              <Bus className="h-3.5 w-3.5 text-primary" />
-              {buses.length} {t("dashboard.liveTracking.activeBuses")}
-            </div>
+        <div className="h-[280px] rounded-xl border border-border/60 overflow-hidden">
+          <LiveMap
+            schools={schoolMapPoints}
+            buses={busMapPoints}
+            height="280px"
+            zoom={7}
+          />
+        </div>
+        <div className="mt-3 flex gap-6 justify-center flex-wrap">
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-blue-500" />
+            <span className="text-sm">School</span>
           </div>
-
-          <div className="absolute bottom-3 end-3 flex flex-col gap-1">
-            <button
-              type="button"
-              className="flex h-7 w-7 items-center justify-center rounded-md border border-border/60 bg-background/90 shadow-sm"
-              aria-label="Zoom in"
-            >
-              <Plus className="h-3.5 w-3.5" />
-            </button>
-            <button
-              type="button"
-              className="flex h-7 w-7 items-center justify-center rounded-md border border-border/60 bg-background/90 shadow-sm"
-              aria-label="Zoom out"
-            >
-              <Minus className="h-3.5 w-3.5" />
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-green-500" />
+            <span className="text-sm">Active Trip</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-4 h-4 rounded-full bg-gray-400" />
+            <span className="text-sm">Inactive Bus</span>
           </div>
         </div>
       </CardContent>

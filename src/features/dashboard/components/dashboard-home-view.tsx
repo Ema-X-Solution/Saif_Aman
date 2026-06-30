@@ -7,55 +7,50 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/i18n/use-t";
 import { DashboardStatsSection } from "@/features/dashboard/components/dashboard-stats-section";
 import { LiveBusMapCard } from "@/features/dashboard/components/live-bus-map-card";
-import { MovingBusesCard } from "@/features/dashboard/components/moving-buses-card";
 import { NewRequestsTableCard } from "@/features/dashboard/components/new-requests-table-card";
-import { NotificationsAlertsCard } from "@/features/dashboard/components/notifications-alerts-card";
 import { StudentStatsDonut } from "@/features/dashboard/components/student-stats-donut";
-import { SubscriptionStatusCard } from "@/features/dashboard/components/subscription-status-card";
 import { TodaysTripsCard } from "@/features/dashboard/components/todays-trips-card";
 import {
   dashboardService,
-  notificationsService,
   parentRequestsService,
 } from "@/services";
 import type {
   DashboardStat,
-  LiveBusPoint,
   SchoolStudentStat,
-  SubscriptionStatus,
   TodayTripsSummary,
 } from "@/types/dashboard";
-import type { AppNotification } from "@/types/notification";
 import type { ParentRequest } from "@/types/parent-request";
+import type { School } from "@/types/school";
+import type { Bus } from "@/types/bus";
+import type { ApiTrip } from "@/types/trip";
 
 export function DashboardHomeView() {
   const t = useT();
   const [stats, setStats] = useState<DashboardStat[]>([]);
-  const [live, setLive] = useState<LiveBusPoint[]>([]);
   const [requests, setRequests] = useState<ParentRequest[]>([]);
-  const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [schoolStats, setSchoolStats] = useState<SchoolStudentStat[]>([]);
-  const [subscriptions, setSubscriptions] = useState<SubscriptionStatus | null>(null);
   const [todayTrips, setTodayTrips] = useState<TodayTripsSummary | null>(null);
+  const [schools, setSchools] = useState<School[]>([]);
+  const [buses, setBuses] = useState<Bus[]>([]);
+  const [trips, setTrips] = useState<ApiTrip[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       try {
-        const [dashboardData, r, n] = await Promise.all([
+        const [dashboardData, r] = await Promise.all([
           dashboardService.getDashboardData(),
           parentRequestsService.list(),
-          notificationsService.list(),
         ]);
         if (!cancelled) {
           setStats(dashboardData.stats);
-          setLive(dashboardData.liveBuses);
           setRequests(r.slice(0, 5));
-          setNotifications(n.slice(0, 6));
           setSchoolStats(dashboardData.schoolStats);
-          setSubscriptions(null);
           setTodayTrips(dashboardData.todayTrips);
+          setSchools(dashboardData.schools);
+          setBuses(dashboardData.buses);
+          setTrips(dashboardData.trips);
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -75,13 +70,11 @@ export function DashboardHomeView() {
             <Skeleton key={i} className="h-28 w-full rounded-xl" />
           ))}
         </div>
-        <div className="grid gap-6 lg:grid-cols-12">
-          <Skeleton className="h-80 rounded-xl lg:col-span-3" />
-          <Skeleton className="h-80 rounded-xl lg:col-span-6" />
-          <Skeleton className="h-80 rounded-xl lg:col-span-3" />
+        <div className="grid gap-6 lg:grid-cols-1">
+          <Skeleton className="h-80 rounded-xl" />
         </div>
-        <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
             <Skeleton key={i} className="h-64 w-full rounded-xl" />
           ))}
         </div>
@@ -103,22 +96,13 @@ export function DashboardHomeView() {
 
       <DashboardStatsSection stats={stats} />
 
-      <div className="grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-3">
-          <NotificationsAlertsCard notifications={notifications} />
-        </div>
-        <div className="lg:col-span-6">
-          <LiveBusMapCard buses={live} />
-        </div>
-        <div className="lg:col-span-3">
-          <MovingBusesCard buses={live} />
-        </div>
+      <div className="grid gap-6 lg:grid-cols-1">
+        <LiveBusMapCard schools={schools} buses={buses} trips={trips} />
       </div>
 
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
         <NewRequestsTableCard requests={requests} />
         <StudentStatsDonut data={schoolStats} />
-        {subscriptions ? <SubscriptionStatusCard data={subscriptions} /> : null}
         {todayTrips ? <TodaysTripsCard data={todayTrips} /> : null}
       </div>
     </div>

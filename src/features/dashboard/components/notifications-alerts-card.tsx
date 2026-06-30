@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   AlertTriangle,
+  Bell,
   Clock,
   Shield,
   UserPlus,
@@ -44,23 +45,28 @@ export function NotificationsAlertsCard({ notifications }: NotificationsAlertsCa
   const dateLocale = locale === "ar" ? ar : enUS;
 
   return (
-    <Card className="h-full border-border/80">
+    <Card className="h-full border-border/80 bg-gradient-to-br from-card to-card/80 shadow-sm hover:shadow-md transition-all duration-300">
       <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold">
-          {t("dashboard.home.notificationsAlerts")}
-        </CardTitle>
+        <div className="flex items-center gap-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-rose-500/15">
+            <Bell className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+          </div>
+          <CardTitle className="text-base font-semibold">
+            {t("dashboard.home.notificationsAlerts")}
+          </CardTitle>
+        </div>
       </CardHeader>
-      <CardContent className="space-y-1">
+      <CardContent className="space-y-2">
         {notifications.map((note) => {
           const Icon = CHANNEL_ICONS[note.channel] ?? Wrench;
           return (
             <div
               key={note.id}
-              className="flex items-start gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-muted/50"
+              className="flex items-start gap-3 rounded-xl border border-border/60 bg-background px-3 py-2.5 transition-colors hover:bg-muted/30"
             >
               <span
                 className={cn(
-                  "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
+                  "mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
                   CHANNEL_COLORS[note.channel],
                 )}
               >
@@ -83,7 +89,7 @@ export function NotificationsAlertsCard({ notifications }: NotificationsAlertsCa
         })}
         <Link
           href={localizedHref(locale, ROUTES.notifications)}
-          className="mt-2 block text-center text-sm font-medium text-primary hover:underline"
+          className="mt-2 flex items-center justify-center gap-2 rounded-lg border border-border/60 bg-background px-4 py-2.5 text-sm font-medium text-primary hover:bg-muted/30 transition-colors"
         >
           {t("dashboard.home.viewAllNotifications")}
         </Link>
