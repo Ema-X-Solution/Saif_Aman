@@ -41,8 +41,6 @@ export function buildDriverColumns(
 ): ColumnDef<Driver>[] {
   return [
     { accessorKey: "fullName", header: t("common.driver"), enableSorting: true },
-    { accessorKey: "licenseNumber", header: t("common.license"), enableSorting: true },
-    { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
     { accessorKey: "phone", header: t("common.phone"), enableSorting: false },
     {
       accessorKey: "status",

@@ -60,7 +60,7 @@ export function SupervisorsView() {
         data={data}
         isLoading={loading}
         searchPlaceholder={t("users.searchSupervisors")}
-        globalSearchAccessor={(row) => `${row.fullName} ${row.schoolName}`}
+        globalSearchAccessor={(row) => `${row.fullName}`}
       />
       
       <EditSupervisorDialog

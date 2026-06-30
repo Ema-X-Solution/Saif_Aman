@@ -57,9 +57,7 @@ export function DriversView() {
         data={data}
         isLoading={loading}
         searchPlaceholder={t("users.searchDrivers")}
-        globalSearchAccessor={(row) =>
-          `${row.fullName} ${row.schoolName} ${row.licenseNumber}`
-        }
+        globalSearchAccessor={(row) => row.fullName}
       />
       
       <DriverDetailsDialog

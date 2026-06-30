@@ -41,18 +41,7 @@ export function buildSupervisorColumns(
 ): ColumnDef<Supervisor>[] {
   return [
     { accessorKey: "fullName", header: t("common.supervisor"), enableSorting: true },
-    { accessorKey: "schoolName", header: t("schools.school"), enableSorting: true },
-    {
-      accessorKey: "shift",
-      header: t("common.shift"),
-      cell: ({ row }) => {
-        const raw = String(row.original.shift ?? "").toLowerCase();
-        if (raw === "full") return t("users.shiftFull");
-        if (raw === "part") return t("users.shiftPart");
-        return row.original.shift;
-      },
-      enableSorting: true,
-    },
+
     { accessorKey: "phone", header: t("common.phone"), enableSorting: false },
     {
       accessorKey: "status",

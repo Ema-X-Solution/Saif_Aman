@@ -68,7 +68,7 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname ?? null);
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
-  const requireSchool = (userType === "driver" &&  userType === "supervisor") ;
+  const requireSchool = false;
 
   const schema = useMemo(
     () =>
