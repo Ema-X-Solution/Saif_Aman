@@ -38,9 +38,9 @@ export const usersAdminService = {
     return res.data;
   },
 
-  /** Backend exposes deletes under `/vendor/users/{id}`. */
+  /** Backend exposes deletes under `/users/{id}`. */
   async removeVendor(id: string): Promise<unknown> {
-    const res = await http.delete(`/vendor/users/${encodeURIComponent(id)}`);
+    const res = await http.delete(`/users/${encodeURIComponent(id)}`);
     return res.data;
   },
 };

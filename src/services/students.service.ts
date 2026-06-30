@@ -16,7 +16,7 @@ function mapStudent(row: ApiStudentRow): Student {
   return {
     id: String(row.id),
     name: row.name,
-    grade: row.grade,
+    grade: row.grade?.name ?? "—",
     age: row.age,
     notes: row.notes,
     image: row.image?.trim() || null,

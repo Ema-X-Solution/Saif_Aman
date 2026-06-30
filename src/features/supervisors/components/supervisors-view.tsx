@@ -6,6 +6,7 @@ import { DataTable } from "@/components/tables/data-table";
 import { PageHeader } from "@/components/shared/page-header";
 import { AddUserDialog } from "@/features/users/components/add-user-dialog";
 import { EditSupervisorDialog } from "@/features/supervisors/components/edit-supervisor-dialog";
+import { DeleteSupervisorDialog } from "@/features/supervisors/components/delete-supervisor-dialog";
 import { SupervisorDetailsDialog } from "@/features/supervisors/components/supervisor-details-dialog";
 import { buildSupervisorColumns } from "@/features/supervisors/lib/supervisors-columns";
 import { supervisorsService } from "@/services/supervisors.service";
@@ -19,9 +20,10 @@ export function SupervisorsView() {
   const [reloadKey, setReloadKey] = useState(0);
   const [editingSupervisor, setEditingSupervisor] = useState<Supervisor | null>(null);
   const [viewingSupervisor, setViewingSupervisor] = useState<Supervisor | null>(null);
+  const [deletingSupervisor, setDeletingSupervisor] = useState<Supervisor | null>(null);
 
   const columns = useMemo(
-    () => buildSupervisorColumns(t, setEditingSupervisor, setViewingSupervisor),
+    () => buildSupervisorColumns(t, setEditingSupervisor, setViewingSupervisor, setDeletingSupervisor),
     [t]
   );
 
@@ -69,6 +71,11 @@ export function SupervisorsView() {
       <SupervisorDetailsDialog
         supervisor={viewingSupervisor}
         onClose={() => setViewingSupervisor(null)}
+      />
+      <DeleteSupervisorDialog
+        supervisor={deletingSupervisor}
+        onClose={() => setDeletingSupervisor(null)}
+        onDeleted={() => setReloadKey((k) => k + 1)}
       />
     </div>
   );

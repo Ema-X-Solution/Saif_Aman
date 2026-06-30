@@ -26,6 +26,7 @@
     "add": "Add",
     "edit": "Edit",
     "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete",
     "save": "Save",
     "cancel": "Cancel",
     "search": "Search",
@@ -80,6 +81,7 @@
     "warning": "Warning",
     "info": "Info",
     "neutral": "Neutral",
+    "loading": "Deleting...",
     "latitude": "Latitude",
     "longitude": "Longitude",
     "all": "All"

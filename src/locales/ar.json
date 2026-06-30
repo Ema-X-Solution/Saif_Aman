@@ -26,6 +26,7 @@
     "add": "إضافة",
     "edit": "تعديل",
     "delete": "حذف",
+    "confirmDelete": "هل أنت متأكد من حذف",
     "save": "حفظ",
     "cancel": "إلغاء",
     "search": "بحث",
@@ -80,6 +81,7 @@
     "warning": "تحذير",
     "info": "معلومات",
     "neutral": "محايد",
+    "loading": "جارٍ الحذف...",
     "latitude": "خط العرض",
     "longitude": "خط الطول",
     "all": "الكل"

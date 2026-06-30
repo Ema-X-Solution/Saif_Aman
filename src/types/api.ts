@@ -98,7 +98,7 @@ export interface ApiStudentBusRef {
 export interface ApiStudentRow {
   id: number;
   name: string;
-  grade: string;
+  grade: { id: number; name: string } | null;
   age: number | null;
   notes: string | null;
   image: string | null;
