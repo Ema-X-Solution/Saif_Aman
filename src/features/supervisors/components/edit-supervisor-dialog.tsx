@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
@@ -25,16 +25,10 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { getAxiosErrorMessage } from "@/lib/http-error-message";
-import { schoolsService } from "@/services/schools.service";
+
 import { usersAdminService } from "@/services/users-admin.service";
 import type { Supervisor } from "@/types/supervisor";
 
