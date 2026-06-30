@@ -40,7 +40,7 @@ import { usersAdminService } from "@/services/users-admin.service";
 const statusEnum = z.enum(["pending", "approved", "rejected"]);
 
 const getBaseSchema = (t: ReturnType<typeof useT>) => z.object({
-  school_id: z.string(),
+  school_id: z.string().optional(),
   name: z.string().min(1, t("common.required")),
   email: z.string().trim(),
   phone: z.string().min(1, t("common.required")),
@@ -68,7 +68,7 @@ export function AddUserDialog({ userType, onCreated }: AddUserDialogProps) {
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname ?? null);
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
-  const requireSchool = userType === "supervisor";
+  const requireSchool = (userType === "driver" &&  userType === "supervisor") ;
 
   const schema = useMemo(
     () =>

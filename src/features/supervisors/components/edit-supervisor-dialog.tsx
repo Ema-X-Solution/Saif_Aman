@@ -41,7 +41,7 @@ import type { Supervisor } from "@/types/supervisor";
 const statusEnum = z.enum(["pending", "approved", "rejected"]);
 
 const getBaseSchema = (t: ReturnType<typeof useT>) => z.object({
-  school_id: z.string(),
+  school_id: z.string().optional(),
   name: z.string().min(1, t("common.required")),
   email: z.string().trim(),
   phone: z.string().min(1, t("common.required")),
@@ -53,11 +53,6 @@ const getBaseSchema = (t: ReturnType<typeof useT>) => z.object({
 });
 
 type FormValues = z.infer<ReturnType<typeof getBaseSchema>>;
-
-interface SchoolOption {
-  id: number;
-  label: string;
-}
 
 interface EditSupervisorDialogProps {
   supervisor: Supervisor | null;
@@ -72,20 +67,9 @@ export function EditSupervisorDialog({ supervisor, onClose, onUpdated }: EditSup
   const dialogDir = locale === "ar" ? "rtl" : "ltr";
 
   const schema = useMemo(
-    () =>
-      getBaseSchema(t).superRefine((data, ctx) => {
-        if (!data.school_id) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: t("common.pickSchool"),
-            path: ["school_id"],
-          });
-        }
-      }),
+    () => getBaseSchema(t),
     [t],
   );
-
-  const [schools, setSchools] = useState<SchoolOption[]>([]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -104,32 +88,17 @@ export function EditSupervisorDialog({ supervisor, onClose, onUpdated }: EditSup
 
   useEffect(() => {
     if (!supervisor) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const rows = await schoolsService.list();
-        if (cancelled) return;
-        setSchools(rows.map((s) => ({ id: Number(s.id), label: s.name })));
-        
-        // Pre-fill form
-        form.reset({
-          school_id: String(rows.find(s => s.name === supervisor.schoolName)?.id || ""),
-          name: supervisor.fullName,
-          email: supervisor.email || "",
-          phone: supervisor.phone === "—" ? "" : supervisor.phone,
-          password: "",
-          status: supervisor.status === "approved" || supervisor.status === "pending" || supervisor.status === "rejected" ? supervisor.status : "approved",
-          address: supervisor.address || "",
-          latitude: supervisor.latitude !== null ? String(supervisor.latitude) : "",
-          longitude: supervisor.longitude !== null ? String(supervisor.longitude) : "",
-        });
-      } catch (err) {
-        if (!cancelled) toast.error(getAxiosErrorMessage(err));
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    // Pre-fill form
+    form.reset({
+      name: supervisor.fullName,
+      email: supervisor.email || "",
+      phone: supervisor.phone === "—" ? "" : supervisor.phone,
+      password: "",
+      status: supervisor.status === "approved" || supervisor.status === "pending" || supervisor.status === "rejected" ? supervisor.status : "approved",
+      address: supervisor.address || "",
+      latitude: supervisor.latitude !== null ? String(supervisor.latitude) : "",
+      longitude: supervisor.longitude !== null ? String(supervisor.longitude) : "",
+    });
   }, [supervisor, form]);
 
   async function onSubmit(values: FormValues) {
@@ -140,7 +109,6 @@ export function EditSupervisorDialog({ supervisor, onClose, onUpdated }: EditSup
       
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const payload: any = {
-        school_id: values.school_id ? Number(values.school_id) : null,
         name: values.name,
         type: "supervisor",
         email: values.email.trim() || null,
@@ -179,34 +147,6 @@ export function EditSupervisorDialog({ supervisor, onClose, onUpdated }: EditSup
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name="school_id"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>{t("common.selectSchool")}</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("common.selectSchool")} />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {schools.map((s) => (
-                        <SelectItem key={s.id} value={String(s.id)}>
-                          {s.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
             <FormField
               control={form.control}
               name="name"
