@@ -4,6 +4,7 @@ import { MoreHorizontal } from "lucide-react";
 import { usePathname } from "next/navigation";
 
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -39,14 +40,21 @@ export function EntityRowActions({ label, actions }: EntityRowActionsProps) {
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuLabel>{t("common.actions")}</DropdownMenuLabel>
+      <DropdownMenuContent
+        align={dir === "rtl" ? "start" : "end"}
+        dir={dir}
+        className="w-48"
+      >
+        <DropdownMenuLabel className="text-start">{t("common.actions")}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {actions.map((action) => (
           <DropdownMenuItem
             key={action.id}
             onClick={action.onSelect}
-            className={action.destructive ? "text-destructive focus:text-destructive" : undefined}
+            className={cn(
+              "text-start",
+              action.destructive ? "text-destructive focus:text-destructive" : undefined
+            )}
           >
             {action.label}
           </DropdownMenuItem>

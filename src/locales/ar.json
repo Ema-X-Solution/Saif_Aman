@@ -249,6 +249,11 @@
     "title": "طلبات أولياء الأمور",
     "description": "مراجعة وإدارة طلبات إنشاء حسابات أولياء الأمور",
     "searchParents": "البحث عن أولياء الأمور",
+    "approveSuccess": "تمت الموافقة على الطلب.",
+    "approveFailed": "فشلت الموافقة على الطلب.",
+    "rejectSuccess": "تم رفض الطلب.",
+    "rejectFailed": "فشل رفض الطلب.",
+    "locationNotAvailable": "الموقع غير متوفر.",
     "created": "تم معالجة الطلب",
     "updated": "تم تحديث الطلب"
   },

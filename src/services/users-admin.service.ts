@@ -10,8 +10,29 @@ export interface UserWritePayload {
   password?: string;
   status: "pending" | "approved" | "rejected";
   address?: string | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  latitude?: number | string | null;
+  longitude?: number | string | null;
+}
+
+function serializeCoordinate(value: number | string | null | undefined): string | null {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+  return String(value);
+}
+
+function serializeUserPayload(payload: UserWritePayload): Record<string, unknown> {
+  const { latitude, longitude, ...rest } = payload;
+  const body: Record<string, unknown> = { ...rest };
+
+  if (latitude !== undefined) {
+    body.latitude = serializeCoordinate(latitude);
+  }
+  if (longitude !== undefined) {
+    body.longitude = serializeCoordinate(longitude);
+  }
+
+  return body;
 }
 
 export const usersAdminService = {
@@ -23,7 +44,7 @@ export const usersAdminService = {
   },
 
   async create(payload: UserWritePayload): Promise<unknown> {
-    const res = await http.post("/users", payload);
+    const res = await http.post("/users", serializeUserPayload(payload));
     return res.data;
   },
 
@@ -34,7 +55,7 @@ export const usersAdminService = {
   },
 
   async update(id: number | string, payload: UserWritePayload): Promise<unknown> {
-    const res = await http.put(`/users/${id}`, payload);
+    const res = await http.put(`/users/${id}`, serializeUserPayload(payload));
     return res.data;
   },
 

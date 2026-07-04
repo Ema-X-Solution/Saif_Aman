@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useT } from "@/i18n/use-t";
+import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -35,6 +36,9 @@ interface Props {
 
 export function ChangeParentStatusDialog({ open, onOpenChange, user, onUpdated }: Props) {
   const t = useT();
+  const pathname = usePathname();
+  const locale = getLocaleFromPathname(pathname ?? null);
+  const dialogDir = locale === "ar" ? "rtl" : "ltr";
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { status: toParentStatus(user?.status) },
@@ -70,7 +74,7 @@ export function ChangeParentStatusDialog({ open, onOpenChange, user, onUpdated }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" dir={dialogDir}>
         <DialogHeader>
           <DialogTitle>{t("dialogs.changeParentStatus")}</DialogTitle>
         </DialogHeader>

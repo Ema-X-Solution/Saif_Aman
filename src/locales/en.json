@@ -249,6 +249,11 @@
     "title": "Parent Requests",
     "description": "Review and manage parent account creation requests",
     "searchParents": "Search parents",
+    "approveSuccess": "Request approved.",
+    "approveFailed": "Failed to approve request.",
+    "rejectSuccess": "Request rejected.",
+    "rejectFailed": "Failed to reject request.",
+    "locationNotAvailable": "Location not available.",
     "created": "Request processed",
     "updated": "Request updated"
   },

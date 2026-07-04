@@ -9,9 +9,13 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import type { ParentRequest } from "@/types/parent-request";
 import { MapPin } from "lucide-react";
 
-function openMap(lat?: number | null, lng?: number | null) {
+function openMap(
+  lat: number | null | undefined,
+  lng: number | null | undefined,
+  t: (key: string) => string
+) {
   if (typeof lat !== "number" || typeof lng !== "number") {
-    toast.error("Location not available.");
+    toast.error(t("parentRequests.locationNotAvailable"));
     return;
   }
   const url = `https://www.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}`;
@@ -40,8 +44,8 @@ export function buildParentRequestColumns(
           type="button"
           variant="ghost"
           size="icon"
-          aria-label="Open location"
-          onClick={() => openMap(row.original.latitude ?? null, row.original.longitude ?? null)}
+          aria-label={t("common.location")}
+          onClick={() => openMap(row.original.latitude ?? null, row.original.longitude ?? null, t)}
           className="h-8 w-8"
         >
           <MapPin className="h-4 w-4" />
@@ -92,9 +96,9 @@ export function buildParentRequestColumns(
             onSelect: async () => {
               try {
                 await onUpdateStatus(row.original.id, "approved");
-                toast.success("Request approved.");
+                toast.success(t("parentRequests.approveSuccess"));
               } catch {
-                toast.error("Failed to approve request.");
+                toast.error(t("parentRequests.approveFailed"));
               }
             },
           });
@@ -107,9 +111,9 @@ export function buildParentRequestColumns(
             onSelect: async () => {
               try {
                 await onUpdateStatus(row.original.id, "rejected");
-                toast.success("Request rejected.");
+                toast.success(t("parentRequests.rejectSuccess"));
               } catch {
-                toast.error("Failed to reject request.");
+                toast.error(t("parentRequests.rejectFailed"));
               }
             },
           });
