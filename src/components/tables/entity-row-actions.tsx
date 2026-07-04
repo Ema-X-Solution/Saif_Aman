@@ -42,7 +42,6 @@ export function EntityRowActions({ label, actions }: EntityRowActionsProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={dir === "rtl" ? "start" : "end"}
-        dir={dir}
         className="w-48"
       >
         <DropdownMenuLabel className="text-start">{t("common.actions")}</DropdownMenuLabel>
