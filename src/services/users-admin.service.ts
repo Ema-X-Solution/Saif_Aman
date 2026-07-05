@@ -21,9 +21,20 @@ function serializeCoordinate(value: number | string | null | undefined): string 
   return String(value);
 }
 
+function serializeAddress(value: string | null | undefined): string {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  return value;
+}
+
 function serializeUserPayload(payload: UserWritePayload): Record<string, unknown> {
-  const { latitude, longitude, ...rest } = payload;
+  const { latitude, longitude, address, ...rest } = payload;
   const body: Record<string, unknown> = { ...rest };
+
+  if (address !== undefined) {
+    body.address = serializeAddress(address);
+  }
 
   if (latitude !== undefined) {
     body.latitude = serializeCoordinate(latitude);
