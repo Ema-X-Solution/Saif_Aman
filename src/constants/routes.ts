@@ -13,6 +13,7 @@ export const ROUTES = {
   parentRequests: "/parent-requests",
   reviews: "/reviews",
   notifications: "/notifications",
+  notificationsSend: "/notifications/send",
   reports: "/reports",
   admins: "/admins",
   settings: "/settings",

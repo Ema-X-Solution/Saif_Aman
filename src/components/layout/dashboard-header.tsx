@@ -136,10 +136,12 @@ export function DashboardHeader({ title }: DashboardHeaderProps) {
                       {note.body}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground/80">
-                      {formatDistanceToNow(new Date(note.createdAt), {
-                        addSuffix: true,
-                        locale: dateLocale,
-                      })}
+                      {note.createdAt && !isNaN(new Date(note.createdAt).getTime())
+                        ? formatDistanceToNow(new Date(note.createdAt), {
+                            addSuffix: true,
+                            locale: dateLocale,
+                          })
+                        : ""}
                     </p>
                   </div>
                 </div>

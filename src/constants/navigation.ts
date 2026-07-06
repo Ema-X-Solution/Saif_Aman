@@ -7,6 +7,8 @@ import {
   School,
   Users,
   Map,
+  Send,
+  Bell,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -28,7 +30,8 @@ export const SIDEBAR_NAV: SidebarNavItem[] = [
   // { labelKey: "sidebar.areas", href: ROUTES.areas, icon: MapPin },
   { labelKey: "sidebar.parentRequests", href: ROUTES.parentRequests, icon: ClipboardList },
   // { labelKey: "sidebar.reviews", href: ROUTES.reviews, icon: Star },
-  // { labelKey: "sidebar.notifications", href: ROUTES.notifications, icon: Bell },
+  { labelKey: "sidebar.notifications", href: ROUTES.notifications, icon: Bell },
+  { labelKey: "sidebar.sendNotification", href: ROUTES.notificationsSend, icon: Send },
   // { labelKey: "sidebar.reports", href: ROUTES.reports, icon: Gauge },
   // { labelKey: "sidebar.admins", href: ROUTES.admins, icon: Shield },
   { labelKey: "sidebar.settings", href: ROUTES.settings, icon: Cog },

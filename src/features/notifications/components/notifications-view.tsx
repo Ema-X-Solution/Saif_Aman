@@ -41,7 +41,7 @@ export function NotificationsView() {
         data={data}
         isLoading={loading}
         searchPlaceholder={t("notifications.searchPlaceholder")}
-        globalSearchAccessor={(row) => `${row.title} ${row.body}`}
+        globalSearchAccessor={(row) => `${row.title} ${row.body ?? ""}`}
       />
     </div>
   );
