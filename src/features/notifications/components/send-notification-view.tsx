@@ -158,8 +158,8 @@ export function SendNotificationView() {
                   className="h-7 px-3 text-xs font-medium"
                 >
                   {filteredUsers.every((u) => selectedUsers.includes(u.id.toString()))
-                    ? "Deselect All"
-                    : "Select All"}
+                    ? t("notifications.deselectAll")
+                    : t("notifications.selectAll")}
                 </Button>
               )}
               {selectedUsers.length > 0 && (
@@ -257,7 +257,7 @@ export function SendNotificationView() {
         <div className="rounded-xl border bg-card p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Send className="h-4 w-4 text-primary" />
-            <span className="text-sm font-semibold">Notification Content</span>
+            <span className="text-sm font-semibold">{t("notifications.contentTitle")}</span>
           </div>
 
           <div className="space-y-2">
