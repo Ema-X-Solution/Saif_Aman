@@ -41,7 +41,9 @@ function StudentsSubTable({ trip }: { trip: Trip }) {
                 <div className="font-semibold text-lg">{tripStudent.student.name}</div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <GraduationCap className="h-4 w-4" />
-                  {tripStudent.student.grade}
+                  {typeof tripStudent.student.grade === 'object' 
+                    ? (tripStudent.student.grade as any)?.name || '' 
+                    : tripStudent.student.grade}
                 </div>
               </div>
             </div>
@@ -97,7 +99,11 @@ function StudentsSubTable({ trip }: { trip: Trip }) {
             {tripStudent.absence_reason && (
               <div className="w-full">
                 <div className="text-xs font-medium text-muted-foreground uppercase">{t("trips.absenceReason")}</div>
-                <div className="text-sm">{tripStudent.absence_reason}</div>
+                <div className="text-sm">
+                  {typeof tripStudent.absence_reason === 'object' 
+                    ? (tripStudent.absence_reason as any)?.name || '' 
+                    : tripStudent.absence_reason}
+                </div>
               </div>
             )}
           </div>
