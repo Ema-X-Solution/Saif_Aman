@@ -35,8 +35,8 @@ export function SendNotificationView() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [userType, setUserType] = useState<string>("all");
-  const [title, setTitle] = useState("Test from Backend");
-  const [message, setMessage] = useState("The bus has started moving.");
+  const [title, setTitle] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     setLoadingUsers(true);
