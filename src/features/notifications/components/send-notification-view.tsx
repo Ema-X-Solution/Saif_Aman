@@ -144,11 +144,30 @@ export function SendNotificationView() {
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-primary" />
             <Label className="text-sm font-semibold">{t("notifications.selectUsers")}</Label>
-            {selectedUsers.length > 0 && (
-              <span className="ms-auto inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
-                {selectedUsers.length} selected
-              </span>
-            )}
+            <div className="ms-auto flex items-center gap-2">
+              {filteredUsers.length > 0 && !loadingUsers && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const allIds = filteredUsers.map((u) => u.id.toString());
+                    const allSelected = allIds.every((id) => selectedUsers.includes(id));
+                    setSelectedUsers(allSelected ? [] : allIds);
+                  }}
+                  className="h-7 px-3 text-xs font-medium"
+                >
+                  {filteredUsers.every((u) => selectedUsers.includes(u.id.toString()))
+                    ? "Deselect All"
+                    : "Select All"}
+                </Button>
+              )}
+              {selectedUsers.length > 0 && (
+                <span className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
+                  {selectedUsers.length} selected
+                </span>
+              )}
+            </div>
           </div>
 
           {/* Search + type filter */}
@@ -180,11 +199,9 @@ export function SendNotificationView() {
               {loadingUsers ? (
                 // Skeleton rows — matches the RTL flex-row-reverse layout
                 Array.from({ length: 5 }).map((_, i) => (
-                  <div key={i} className="flex items-center flex-row-reverse gap-3 px-3 py-2.5">
-                    <div className="flex items-center gap-2">
-                      <Skeleton className="h-3 w-10 rounded" />
-                      <Skeleton className="h-4 w-4 rounded" />
-                    </div>
+                  <div key={i} className="flex items-center gap-3 px-3 py-2.5">
+                    <Skeleton className="h-3 w-8 rounded" />
+                    <Skeleton className="h-4 w-4 rounded shrink-0" />
                     <Skeleton className="h-3.5 flex-1 rounded" />
                   </div>
                 ))
@@ -200,26 +217,27 @@ export function SendNotificationView() {
                   return (
                     <div
                       key={idStr}
-                      className={`flex items-center flex-row-reverse gap-3 cursor-pointer rounded-lg px-3 py-2.5 transition-colors ${
+                      className={`flex items-center gap-3 cursor-pointer rounded-lg px-3 py-2.5 transition-colors ${
                         isSelected
                           ? "bg-primary/10 border border-primary/20"
                           : "hover:bg-muted/60"
                       }`}
                       onClick={() => handleUserSelect(idStr)}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted-foreground font-mono">
-                          #{u.id}
-                        </span>
-                        <input
-                          type="checkbox"
-                          id={`user-${idStr}`}
-                          checked={isSelected}
-                          onChange={() => handleUserSelect(idStr)}
-                          className="h-4 w-4 rounded border-gray-300 accent-primary cursor-pointer"
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      </div>
+                      {/* ID first */}
+                      <span className="text-xs text-muted-foreground font-mono w-8 shrink-0">
+                        #{u.id}
+                      </span>
+                      {/* Checkbox second */}
+                      <input
+                        type="checkbox"
+                        id={`user-${idStr}`}
+                        checked={isSelected}
+                        onChange={() => handleUserSelect(idStr)}
+                        className="h-4 w-4 shrink-0 rounded border-gray-300 accent-primary cursor-pointer"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      {/* Name last */}
                       <label
                         htmlFor={`user-${idStr}`}
                         className="text-sm font-medium cursor-pointer flex-1 select-none"
