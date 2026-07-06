@@ -42,6 +42,7 @@ function StudentsSubTable({ trip }: { trip: Trip }) {
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                   <GraduationCap className="h-4 w-4" />
                   {typeof tripStudent.student.grade === 'object' 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ? (tripStudent.student.grade as any)?.name || '' 
                     : tripStudent.student.grade}
                 </div>
@@ -101,6 +102,7 @@ function StudentsSubTable({ trip }: { trip: Trip }) {
                 <div className="text-xs font-medium text-muted-foreground uppercase">{t("trips.absenceReason")}</div>
                 <div className="text-sm">
                   {typeof tripStudent.absence_reason === 'object' 
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     ? (tripStudent.absence_reason as any)?.name || '' 
                     : tripStudent.absence_reason}
                 </div>
