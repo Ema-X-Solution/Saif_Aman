@@ -131,7 +131,7 @@ export function RemoteTable<T>({
           </TableHeader>
           <TableBody>
             {loading ? (
-              Array.from({ length: 5 }).map((_, rowIndex) => (
+              Array.from({ length: 10 }).map((_, rowIndex) => (
                 <TableRow key={`skeleton-row-${rowIndex}`}>
                   {columns.map((col, colIndex) => (
                     <TableCell key={`skeleton-col-${colIndex}`} className={col.className}>
