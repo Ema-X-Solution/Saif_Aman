@@ -16,6 +16,8 @@ export interface DataTablePaginationProps {
   page: number;
   pageSize: number;
   totalRows: number;
+  /** When provided, used directly as the page count (from API meta.last_page). */
+  lastPage?: number;
   onPageChange: (page: number) => void;
   onPageSizeChange: (size: number) => void;
   pageSizeOptions?: number[];
@@ -25,12 +27,14 @@ export function DataTablePagination({
   page,
   pageSize,
   totalRows,
+  lastPage,
   onPageChange,
   onPageSizeChange,
   pageSizeOptions = [5, 10, 20, 50],
 }: DataTablePaginationProps) {
   const t = useT();
-  const pageCount = Math.max(1, Math.ceil(totalRows / pageSize));
+  // Prefer last_page from the API (exact); fall back to local computation.
+  const pageCount = lastPage ?? Math.max(1, Math.ceil(totalRows / pageSize));
   const canPrev = page > 1;
   const canNext = page < pageCount;
 
@@ -76,7 +80,7 @@ export function DataTablePagination({
             disabled={!canPrev}
             onClick={() => onPageChange(page - 1)}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4 rtl:rotate-180" />
           </Button>
           <span className="px-2 text-sm text-muted-foreground">
             {page} / {pageCount}
@@ -89,7 +93,7 @@ export function DataTablePagination({
             disabled={!canNext}
             onClick={() => onPageChange(page + 1)}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4 rtl:rotate-180" />
           </Button>
         </div>
       </div>

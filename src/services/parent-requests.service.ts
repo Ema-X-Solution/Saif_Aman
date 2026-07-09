@@ -28,8 +28,8 @@ function mapUserToParentRequest(u: ApiUserRow): ParentRequest {
 }
 
 export const parentRequestsService = {
-  async list(): Promise<ParentRequest[]> {
-    const res = await usersAdminService.list({ type: "parent" });
+  async list(opts?: { page?: number; per_page?: number; q?: string }): Promise<ParentRequest[]> {
+    const res = await usersAdminService.list({ type: "parent", ...opts });
     const rows = res.data ?? [];
     return rows.map(mapUserToParentRequest);
   },

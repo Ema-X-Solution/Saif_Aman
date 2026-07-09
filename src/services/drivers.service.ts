@@ -23,8 +23,8 @@ function mapDriver(row: ApiUserRow): Driver {
 }
 
 export const driversService = {
-  async list(): Promise<Driver[]> {
-    const res = await usersAdminService.list({ type: "driver" });
+  async list(opts?: { page?: number; per_page?: number; q?: string }): Promise<Driver[]> {
+    const res = await usersAdminService.list({ type: "driver", ...opts });
     const rows = res.data ?? [];
     return rows.map(mapDriver);
   },

@@ -1,44 +1,90 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
-import { DataTable } from "@/components/tables/data-table";
+import RemoteTable, { type RemoteColumn } from "@/components/tables/remote-table";
 import { PageHeader } from "@/components/shared/page-header";
+import { EntityRowActions } from "@/components/tables/entity-row-actions";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { AddUserDialog } from "@/features/users/components/add-user-dialog";
 import { EditDriverDialog } from "@/features/drivers/components/edit-driver-dialog";
 import { DeleteDriverDialog } from "@/features/drivers/components/delete-driver-dialog";
 import { DriverDetailsDialog } from "@/features/drivers/components/driver-details-dialog";
-import { buildDriverColumns } from "@/features/drivers/lib/drivers-columns";
-import { driversService } from "@/services/drivers.service";
+import { usersAdminService } from "@/services/users-admin.service";
+import type { ApiUserRow } from "@/types/api";
 import type { Driver } from "@/types/driver";
 import { useT } from "@/i18n/use-t";
 
+type DriverRow = {
+  id: string;
+  fullName: string;
+  phone: string;
+  status: "approved" | "pending" | "rejected";
+  raw: ApiUserRow;
+};
+
+function toDriver(u: ApiUserRow): Driver {
+  return {
+    id: String(u.id),
+    fullName: u.name,
+    licenseNumber: "—",
+    schoolId: u.school ? String(u.school.id) : "",
+    schoolName: u.school?.name ?? "—",
+    phone: u.phone ?? "—",
+    status: u.status === "approved" || u.status === "rejected" ? u.status : "pending",
+    updatedAt: u.updated_at,
+  };
+}
+
 export function DriversView() {
   const t = useT();
-  const [data, setData] = useState<Driver[]>([]);
-  const [loading, setLoading] = useState(true);
   const [reloadKey, setReloadKey] = useState(0);
   const [viewingDriver, setViewingDriver] = useState<Driver | null>(null);
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
   const [deletingDriver, setDeletingDriver] = useState<Driver | null>(null);
 
-  const columns = useMemo(() => buildDriverColumns(t, setViewingDriver, setEditingDriver, setDeletingDriver), [t]);
-
-  useEffect(() => {
-    let c = false;
-    (async () => {
-      setLoading(true);
-      try {
-        const rows = await driversService.list();
-        if (!c) setData(rows);
-      } finally {
-        if (!c) setLoading(false);
-      }
-    })();
-    return () => {
-      c = true;
+  const fetcher = async ({ page, pageSize, q }: { page: number; pageSize: number; q?: string }) => {
+    const res = await usersAdminService.list({ page, per_page: pageSize, type: "driver", q });
+    const rows = (res.data ?? []).map((u): DriverRow => ({
+      id: String(u.id),
+      fullName: u.name,
+      phone: u.phone ?? "—",
+      status: u.status === "approved" || u.status === "rejected" ? u.status : "pending",
+      raw: u,
+    }));
+    return {
+      data: rows,
+      total: res.meta?.total ?? rows.length,
+      lastPage: res.meta?.last_page,
     };
-  }, [reloadKey]);
+  };
+
+  const columns: RemoteColumn<DriverRow>[] = useMemo(
+    () => [
+      { key: "fullName", header: t("common.driver") },
+      { key: "phone", header: t("common.phone") },
+      {
+        key: "status",
+        header: t("common.status"),
+        render: (r) => <StatusBadge status={r.status} />,
+      },
+      {
+        key: "actions",
+        header: "",
+        render: (r) => (
+          <EntityRowActions
+            label={r.fullName}
+            actions={[
+              { id: "profile", label: t("users.openProfile"), onSelect: () => setViewingDriver(toDriver(r.raw)) },
+              { id: "edit",    label: t("common.edit"),        onSelect: () => setEditingDriver(toDriver(r.raw)) },
+              { id: "delete",  label: t("common.delete"),      onSelect: () => setDeletingDriver(toDriver(r.raw)), destructive: true },
+            ]}
+          />
+        ),
+      },
+    ],
+    [t],
+  );
 
   return (
     <div className="space-y-6">
@@ -52,30 +98,18 @@ export function DriversView() {
           />
         }
       />
-      <DataTable
+
+      <RemoteTable<DriverRow>
+        key={reloadKey}
         columns={columns}
-        data={data}
-        isLoading={loading}
+        fetcher={fetcher}
+        initialPageSize={10}
         searchPlaceholder={t("users.searchDrivers")}
-        globalSearchAccessor={(row) => row.fullName}
-      />
-      
-      <DriverDetailsDialog
-        driver={viewingDriver}
-        onClose={() => setViewingDriver(null)}
       />
 
-      <EditDriverDialog
-        driver={editingDriver}
-        onClose={() => setEditingDriver(null)}
-        onUpdated={() => setReloadKey((k) => k + 1)}
-      />
-      
-      <DeleteDriverDialog
-        driver={deletingDriver}
-        onClose={() => setDeletingDriver(null)}
-        onDeleted={() => setReloadKey((k) => k + 1)}
-      />
+      <DriverDetailsDialog driver={viewingDriver} onClose={() => setViewingDriver(null)} />
+      <EditDriverDialog driver={editingDriver} onClose={() => setEditingDriver(null)} onUpdated={() => setReloadKey((k) => k + 1)} />
+      <DeleteDriverDialog driver={deletingDriver} onClose={() => setDeletingDriver(null)} onDeleted={() => setReloadKey((k) => k + 1)} />
     </div>
   );
 }

@@ -47,9 +47,19 @@ function serializeUserPayload(payload: UserWritePayload): Record<string, unknown
 }
 
 export const usersAdminService = {
-  async list(options?: { page?: number; type?: string }): Promise<LaravelPaginator<ApiUserRow>> {
+  async list(options?: {
+    page?: number;
+    per_page?: number;
+    type?: string;
+    q?: string;
+  }): Promise<LaravelPaginator<ApiUserRow>> {
     const res = await http.get<LaravelPaginator<ApiUserRow>>("/users", {
-      params: { page: options?.page ?? 1, type: options?.type },
+      params: {
+        page: options?.page ?? 1,
+        per_page: options?.per_page,
+        type: options?.type,
+        q: options?.q || undefined,
+      },
     });
     return res.data;
   },

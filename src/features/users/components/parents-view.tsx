@@ -26,8 +26,8 @@ export function ParentsView() {
   const [selectedUser, setSelectedUser] = useState<ApiUserRow | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const fetcher = async ({ page }: { page: number; pageSize: number; q?: string }) => {
-    const res = await usersAdminService.list({ page, type: "parent" });
+  const fetcher = async ({ page, pageSize, q }: { page: number; pageSize: number; q?: string }) => {
+    const res = await usersAdminService.list({ page, per_page: pageSize, type: "parent", q });
     const rows = res.data ?? [];
     const mapped: ParentRow[] = rows.map((p) => ({
       id: String(p.id),
@@ -37,7 +37,11 @@ export function ParentsView() {
       updatedAt: p.updated_at,
       raw: p,
     }));
-    return { data: mapped, total: res.meta?.total ?? mapped.length };
+    return {
+      data: mapped,
+      total: res.meta?.total ?? mapped.length,
+      lastPage: res.meta?.last_page,
+    };
   };
 
   const columns: RemoteColumn<ParentRow>[] = useMemo(

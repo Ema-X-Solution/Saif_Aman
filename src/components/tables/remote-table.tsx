@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 
@@ -24,9 +25,12 @@ export type RemoteColumn<T> = {
   render?: (row: T) => React.ReactNode;
 };
 
-interface FetchResult<T> {
+export interface FetchResult<T> {
   data: T[];
+  /** Total number of records across all pages (meta.total) */
   total: number;
+  /** Last page number from API (meta.last_page). Falls back to ceil(total/pageSize) if omitted. */
+  lastPage?: number;
 }
 
 interface Props<T> {
@@ -50,22 +54,35 @@ export function RemoteTable<T>({
   const pathname = usePathname();
   const locale = getLocaleFromPathname(pathname ?? null);
   const dir = locale === "ar" ? "rtl" : "ltr";
+
   const [page, setPage] = useState(initialPage);
   const [pageSize, setPageSize] = useState(initialPageSize);
   const [q, setQ] = useState("");
   const [data, setData] = useState<T[]>([]);
   const [total, setTotal] = useState(0);
+  const [lastPage, setLastPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  // Store the latest fetcher in a ref so the data-fetching effect never needs
+  // it as a dependency — this prevents infinite re-runs caused by inline
+  // arrow functions being recreated on every parent render.
+  const fetcherRef = useRef(fetcher);
+  useEffect(() => {
+    fetcherRef.current = fetcher;
+  });
+
+  // Re-fetch whenever page, pageSize, or search query changes.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
       try {
-        const res = await fetcher({ page, pageSize, q: q || undefined });
+        const res = await fetcherRef.current({ page, pageSize, q: q || undefined });
         if (cancelled) return;
         setData(res.data);
         setTotal(res.total);
+        // Use last_page from API meta when available; otherwise compute it.
+        setLastPage(res.lastPage ?? Math.max(1, Math.ceil(res.total / pageSize)));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -73,7 +90,13 @@ export function RemoteTable<T>({
     return () => {
       cancelled = true;
     };
-  }, [page, pageSize, q, fetcher]);
+  }, [page, pageSize, q]);
+
+  // Typing in the search box resets to page 1 immediately.
+  const handleSearch = useCallback((value: string) => {
+    setQ(value);
+    setPage(1);
+  }, []);
 
   const headers = useMemo(
     () => columns.map((c) => (
@@ -92,7 +115,7 @@ export function RemoteTable<T>({
           <Input
             placeholder={searchPlaceholder}
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             aria-label={t("common.search")}
           />
           <Button type="button" onClick={() => setPage(1)}>
@@ -108,11 +131,15 @@ export function RemoteTable<T>({
           </TableHeader>
           <TableBody>
             {loading ? (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
-                  {t("table.loading")}
-                </TableCell>
-              </TableRow>
+              Array.from({ length: 5 }).map((_, rowIndex) => (
+                <TableRow key={`skeleton-row-${rowIndex}`}>
+                  {columns.map((col, colIndex) => (
+                    <TableCell key={`skeleton-col-${colIndex}`} className={col.className}>
+                      <Skeleton className="h-4 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : data.length ? (
               data.map((row, i) => (
                 <TableRow key={i}>
@@ -141,6 +168,7 @@ export function RemoteTable<T>({
           page={page}
           pageSize={pageSize}
           totalRows={total}
+          lastPage={lastPage}
           onPageChange={(p) => setPage(p)}
           onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
         />
