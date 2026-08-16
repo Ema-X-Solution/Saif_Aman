@@ -26,8 +26,8 @@ export function ParentsView() {
   const [selectedUser, setSelectedUser] = useState<ApiUserRow | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const fetcher = async ({ page, pageSize, q }: { page: number; pageSize: number; q?: string }) => {
-    const res = await usersAdminService.list({ page, per_page: pageSize, type: "parent", q });
+  const fetcher = async ({ page, pageSize, search }: { page: number; pageSize: number; search?: string }) => {
+    const res = await usersAdminService.list({ page, per_page: pageSize, type: "parent", search });
     const rows = res.data ?? [];
     const mapped: ParentRow[] = rows.map((p) => ({
       id: String(p.id),

@@ -49,8 +49,8 @@ export function SupervisorsView() {
   const [editingSupervisor, setEditingSupervisor] = useState<Supervisor | null>(null);
   const [deletingSupervisor, setDeletingSupervisor] = useState<Supervisor | null>(null);
 
-  const fetcher = async ({ page, pageSize, q }: { page: number; pageSize: number; q?: string }) => {
-    const res = await usersAdminService.list({ page, per_page: pageSize, type: "supervisor", q });
+  const fetcher = async ({ page, pageSize, search }: { page: number; pageSize: number; search?: string }) => {
+    const res = await usersAdminService.list({ page, per_page: pageSize, type: "supervisor", search });
     const rows = (res.data ?? []).map((u): SupervisorRow => ({
       id: String(u.id),
       fullName: u.name,

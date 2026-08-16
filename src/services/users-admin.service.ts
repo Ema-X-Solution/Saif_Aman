@@ -51,14 +51,14 @@ export const usersAdminService = {
     page?: number;
     per_page?: number;
     type?: string;
-    q?: string;
+    search?: string;
   }): Promise<LaravelPaginator<ApiUserRow>> {
     const res = await http.get<LaravelPaginator<ApiUserRow>>("/users", {
       params: {
         page: options?.page ?? 1,
         per_page: options?.per_page,
         type: options?.type,
-        q: options?.q || undefined,
+        search: options?.search || undefined,
       },
     });
     return res.data;

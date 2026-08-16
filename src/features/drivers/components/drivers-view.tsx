@@ -43,8 +43,8 @@ export function DriversView() {
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
   const [deletingDriver, setDeletingDriver] = useState<Driver | null>(null);
 
-  const fetcher = async ({ page, pageSize, q }: { page: number; pageSize: number; q?: string }) => {
-    const res = await usersAdminService.list({ page, per_page: pageSize, type: "driver", q });
+  const fetcher = async ({ page, pageSize, search }: { page: number; pageSize: number; search?: string }) => {
+    const res = await usersAdminService.list({ page, per_page: pageSize, type: "driver", search });
     const rows = (res.data ?? []).map((u): DriverRow => ({
       id: String(u.id),
       fullName: u.name,

@@ -18,6 +18,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getLocaleFromPathname, useT } from "@/i18n/use-t";
 import { cn } from "@/lib/utils";
 
+/** Milliseconds to wait after the user stops typing before auto-triggering a search fetch. */
+const SEARCH_DEBOUNCE_MS = 500;
+
 export type RemoteColumn<T> = {
   key: string;
   header: string;
@@ -35,7 +38,7 @@ export interface FetchResult<T> {
 
 interface Props<T> {
   columns: RemoteColumn<T>[];
-  fetcher: (opts: { page: number; pageSize: number; q?: string }) => Promise<FetchResult<T>>;
+  fetcher: (opts: { page: number; pageSize: number; search?: string }) => Promise<FetchResult<T>>;
   initialPage?: number;
   initialPageSize?: number;
   searchPlaceholder?: string;
@@ -57,7 +60,10 @@ export function RemoteTable<T>({
 
   const [page, setPage] = useState(initialPage);
   const [pageSize, setPageSize] = useState(initialPageSize);
-  const [q, setQ] = useState("");
+  /** Committed search query — sent to the fetcher. */
+  const [search, setSearch] = useState("");
+  /** Live input draft — reflects what the user is currently typing. */
+  const [draft, setDraft] = useState("");
   const [data, setData] = useState<T[]>([]);
   const [total, setTotal] = useState(0);
   const [lastPage, setLastPage] = useState(1);
@@ -71,13 +77,13 @@ export function RemoteTable<T>({
     fetcherRef.current = fetcher;
   });
 
-  // Re-fetch whenever page, pageSize, or search query changes.
+  // Re-fetch whenever page, pageSize, or committed search query changes.
   useEffect(() => {
     let cancelled = false;
     (async () => {
       setLoading(true);
       try {
-        const res = await fetcherRef.current({ page, pageSize, q: q || undefined });
+        const res = await fetcherRef.current({ page, pageSize, search: search || undefined });
         if (cancelled) return;
         setData(res.data);
         setTotal(res.total);
@@ -90,13 +96,27 @@ export function RemoteTable<T>({
     return () => {
       cancelled = true;
     };
-  }, [page, pageSize, q]);
+  }, [page, pageSize, search]);
 
-  // Typing in the search box resets to page 1 immediately.
-  const handleSearch = useCallback((value: string) => {
-    setQ(value);
+  /** Commit the current draft as the active search query and reset to page 1. */
+  const commitSearch = useCallback((value: string) => {
+    setSearch(value);
     setPage(1);
   }, []);
+
+  // Debounce: auto-commit 500ms after the user stops typing.
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleInputChange = useCallback(
+    (value: string) => {
+      setDraft(value);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => commitSearch(value), SEARCH_DEBOUNCE_MS);
+    },
+    [commitSearch],
+  );
+
+  // Clean up the debounce timer on unmount.
+  useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current); }, []);
 
   const headers = useMemo(
     () => columns.map((c) => (
@@ -114,11 +134,23 @@ export function RemoteTable<T>({
         <div className="flex items-center gap-2">
           <Input
             placeholder={searchPlaceholder}
-            value={q}
-            onChange={(e) => handleSearch(e.target.value)}
+            value={draft}
+            onChange={(e) => handleInputChange(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                if (debounceRef.current) clearTimeout(debounceRef.current);
+                commitSearch(draft);
+              }
+            }}
             aria-label={t("common.search")}
           />
-          <Button type="button" onClick={() => setPage(1)}>
+          <Button
+            type="button"
+            onClick={() => {
+              if (debounceRef.current) clearTimeout(debounceRef.current);
+              commitSearch(draft);
+            }}
+          >
             {t("table.searchAction")}
           </Button>
         </div>

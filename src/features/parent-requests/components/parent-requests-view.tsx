@@ -68,8 +68,8 @@ export function ParentRequestsView() {
   const [editingParent, setEditingParent] = useState<ParentRequest | null>(null);
   const [viewingParent, setViewingParent] = useState<ParentRequest | null>(null);
 
-  const fetcher = async ({ page, pageSize, q }: { page: number; pageSize: number; q?: string }) => {
-    const res = await usersAdminService.list({ page, per_page: pageSize, type: "parent", q });
+  const fetcher = async ({ page, pageSize, search }: { page: number; pageSize: number; search?: string }) => {
+    const res = await usersAdminService.list({ page, per_page: pageSize, type: "parent", search });
     const rows = (res.data ?? []).map((u): ParentRow => ({
       id: String(u.id),
       parentName: u.name,

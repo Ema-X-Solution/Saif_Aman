@@ -29,7 +29,7 @@ function mapSupervisor(row: ApiUserRow): Supervisor {
 }
 
 export const supervisorsService = {
-  async list(opts?: { page?: number; per_page?: number; q?: string }): Promise<Supervisor[]> {
+  async list(opts?: { page?: number; per_page?: number; search?: string }): Promise<Supervisor[]> {
     const res = await usersAdminService.list({ type: "supervisor", ...opts });
     const rows = res.data ?? [];
     return rows.map(mapSupervisor);
