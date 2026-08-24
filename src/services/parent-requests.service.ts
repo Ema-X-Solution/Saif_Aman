@@ -34,6 +34,28 @@ export const parentRequestsService = {
     return rows.map(mapUserToParentRequest);
   },
 
+  async listAll(opts?: { search?: string }): Promise<ParentRequest[]> {
+    const pageSize = 100;
+    const first = await usersAdminService.list({
+      type: "parent",
+      page: 1,
+      per_page: pageSize,
+      search: opts?.search,
+    });
+    const lastPage = first.meta?.last_page ?? 1;
+    const rows = [...(first.data ?? [])];
+    for (let page = 2; page <= lastPage; page += 1) {
+      const next = await usersAdminService.list({
+        type: "parent",
+        page,
+        per_page: pageSize,
+        search: opts?.search,
+      });
+      rows.push(...(next.data ?? []));
+    }
+    return rows.map(mapUserToParentRequest);
+  },
+
   async updateStatus(id: string, status: "approved" | "rejected" | "pending") {
     // Update the underlying user status for parent.
     // Fetch the full user by id then send an update.

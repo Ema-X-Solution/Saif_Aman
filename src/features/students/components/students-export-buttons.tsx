@@ -63,8 +63,9 @@ export function StudentsExportButtons({ schoolId }: StudentsExportButtonsProps) 
     setExporting("pdf");
     try {
       const students = await loadRows();
-      printPdfTable({
+      await printPdfTable({
         title: t("students.title"),
+        filename: "students",
         brand: "SAIF AMAN",
         dir,
         headers,

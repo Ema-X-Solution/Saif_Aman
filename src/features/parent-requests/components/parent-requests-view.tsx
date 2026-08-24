@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { ParentDetailsDialog } from "@/features/parent-requests/components/parent-details-dialog";
 import { EditParentDialog } from "@/features/parent-requests/components/edit-parent-dialog";
 import { DeleteParentDialog } from "@/features/parent-requests/components/delete-parent-dialog";
+import { ParentRequestsExportButtons } from "@/features/parent-requests/components/parent-requests-export-buttons";
 import { usersAdminService } from "@/services/users-admin.service";
 import { parentRequestsService } from "@/services/parent-requests.service";
 import type { ApiUserRow } from "@/types/api";
@@ -187,6 +188,7 @@ export function ParentRequestsView() {
       <PageHeader
         title={t("parentRequests.title")}
         description={t("parentRequests.description")}
+        actions={<ParentRequestsExportButtons />}
       />
 
       <RemoteTable<ParentRow>

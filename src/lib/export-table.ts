@@ -11,10 +11,12 @@ function triggerDownload(blob: Blob, filename: string) {
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
+  link.rel = "noopener";
+  link.style.display = "none";
   document.body.appendChild(link);
   link.click();
   link.remove();
-  URL.revokeObjectURL(url);
+  window.setTimeout(() => URL.revokeObjectURL(url), 2000);
 }
 
 function tableHtml(headers: string[], rows: string[][]): string {
@@ -38,6 +40,7 @@ export function downloadExcelTable(filename: string, headers: string[], rows: st
 
 export interface PrintPdfTableOptions {
   title: string;
+  filename?: string;
   brand?: string;
   subtitle?: string;
   dir: "rtl" | "ltr";
@@ -45,143 +48,95 @@ export interface PrintPdfTableOptions {
   rows: string[][];
 }
 
-export function printPdfTable({
+export async function printPdfTable({
   title,
+  filename,
   brand = "SAIF AMAN",
   subtitle,
   dir,
   headers,
   rows,
 }: PrintPdfTableOptions) {
-  const html = `<!DOCTYPE html>
-<html dir="${dir}" lang="${dir === "rtl" ? "ar" : "en"}">
-<head>
-  <meta charset="UTF-8" />
-  <title>${escapeHtml(title)}</title>
-  <style>
-    @page { size: A4 landscape; margin: 12mm 12mm 14mm; }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
-      color: #0f172a;
-      background: #ffffff;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
-    .sheet { padding: 0; }
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      background: #091f3a;
-      color: #ffffff;
-      padding: 16px 20px;
-      border-bottom: 4px solid #e3a825;
-    }
-    .brand {
-      font-size: 12px;
-      letter-spacing: 0.16em;
-      font-weight: 700;
-      color: #f7cf6a;
-      margin: 0 0 4px;
-      text-transform: uppercase;
-    }
-    .title { font-size: 22px; font-weight: 700; margin: 0; }
-    .meta {
-      text-align: ${dir === "rtl" ? "left" : "right"};
-      font-size: 12px;
-      color: #fae3a6;
-      line-height: 1.6;
-      white-space: nowrap;
-    }
-    .content { padding: 16px 4px 0; }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11.5px;
-    }
-    thead { display: table-header-group; }
-    th {
-      background: #12395e;
-      color: #ffffff;
-      font-weight: 700;
-      padding: 10px 12px;
-      text-align: start;
-      border: 0;
-    }
-    td {
-      padding: 9px 12px;
-      text-align: start;
-      border-bottom: 1px solid #e2e8f0;
-      vertical-align: middle;
-    }
-    tr.even td { background: #ffffff; }
-    tr.odd td { background: #f7f9fc; }
-    tbody tr:last-child td { border-bottom: 2px solid #e3a825; }
-    .footer {
-      margin-top: 14px;
-      font-size: 10px;
-      color: #64748b;
-      display: flex;
-      justify-content: space-between;
-    }
-    @media print {
-      .header { break-inside: avoid; }
-    }
-  </style>
-</head>
-<body>
-  <div class="sheet">
-    <header class="header">
-      <div>
-        <p class="brand">${escapeHtml(brand)}</p>
-        <h1 class="title">${escapeHtml(title)}</h1>
-      </div>
-      ${subtitle ? `<div class="meta">${escapeHtml(subtitle).replace(/\n/g, "<br/>")}</div>` : ""}
-    </header>
-    <div class="content">
-      ${tableHtml(headers, rows)}
-      <div class="footer">
-        <span>${escapeHtml(brand)}</span>
-        <span>${escapeHtml(title)}</span>
+  const host = document.createElement("div");
+  host.setAttribute("dir", dir);
+  host.setAttribute("aria-hidden", "true");
+  host.style.cssText =
+    "position:absolute;left:-10000px;top:0;width:1123px;background:#ffffff;pointer-events:none;";
+  host.innerHTML = `
+    <style>
+      .sa-pdf-sheet { font-family: "Segoe UI", Tahoma, Arial, sans-serif; color: #0f172a; background: #ffffff; }
+      .sa-pdf-header {
+        display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        background: #091f3a; color: #ffffff; padding: 16px 20px; border-bottom: 4px solid #e3a825;
+      }
+      .sa-pdf-brand { font-size: 12px; letter-spacing: 0.16em; font-weight: 700; color: #f7cf6a; margin: 0 0 4px; text-transform: uppercase; }
+      .sa-pdf-title { font-size: 22px; font-weight: 700; margin: 0; }
+      .sa-pdf-meta { text-align: ${dir === "rtl" ? "left" : "right"}; font-size: 12px; color: #fae3a6; line-height: 1.6; white-space: nowrap; }
+      .sa-pdf-content { padding: 16px 8px 8px; }
+      .sa-pdf-sheet table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+      .sa-pdf-sheet th { background: #12395e; color: #ffffff; font-weight: 700; padding: 10px 12px; text-align: start; border: 0; }
+      .sa-pdf-sheet td { padding: 9px 12px; text-align: start; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+      .sa-pdf-sheet tr.even td { background: #ffffff; }
+      .sa-pdf-sheet tr.odd td { background: #f7f9fc; }
+      .sa-pdf-sheet tbody tr:last-child td { border-bottom: 2px solid #e3a825; }
+      .sa-pdf-footer { margin-top: 14px; font-size: 10px; color: #64748b; display: flex; justify-content: space-between; }
+    </style>
+    <div class="sa-pdf-sheet">
+      <header class="sa-pdf-header">
+        <div>
+          <p class="sa-pdf-brand">${escapeHtml(brand)}</p>
+          <h1 class="sa-pdf-title">${escapeHtml(title)}</h1>
+        </div>
+        ${subtitle ? `<div class="sa-pdf-meta">${escapeHtml(subtitle).replace(/\n/g, "<br/>")}</div>` : ""}
+      </header>
+      <div class="sa-pdf-content">
+        ${tableHtml(headers, rows)}
+        <div class="sa-pdf-footer">
+          <span>${escapeHtml(brand)}</span>
+          <span>${escapeHtml(title)}</span>
+        </div>
       </div>
     </div>
-  </div>
-</body>
-</html>`;
+  `;
+  document.body.appendChild(host);
 
-  const iframe = document.createElement("iframe");
-  iframe.setAttribute("aria-hidden", "true");
-  iframe.style.position = "fixed";
-  iframe.style.width = "0";
-  iframe.style.height = "0";
-  iframe.style.border = "0";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  document.body.appendChild(iframe);
+  try {
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+    const canvas = await html2canvas(host, {
+      scale: 2,
+      backgroundColor: "#ffffff",
+      useCORS: true,
+      logging: false,
+      windowWidth: 1123,
+    });
+    const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pageWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    const imgData = canvas.toDataURL("image/jpeg", 0.92);
 
-  const frameWindow = iframe.contentWindow;
-  const frameDoc = iframe.contentDocument ?? frameWindow?.document;
-  if (!frameWindow || !frameDoc) {
-    iframe.remove();
-    throw new Error("Print frame unavailable");
+    let heightLeft = imgHeight;
+    let position = 0;
+    pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+    while (heightLeft > 0) {
+      position -= pageHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
+
+    const safeName = (filename ?? title).replace(/[\\/:*?"<>|]+/g, "-").trim() || "export";
+    const pdfBlob = pdf.output("blob");
+    triggerDownload(
+      new Blob([pdfBlob], { type: "application/octet-stream" }),
+      safeName.endsWith(".pdf") ? safeName : `${safeName}.pdf`,
+    );
+  } finally {
+    host.remove();
   }
-
-  frameDoc.open();
-  frameDoc.write(html);
-  frameDoc.close();
-
-  const cleanup = () => {
-    iframe.remove();
-  };
-
-  const runPrint = () => {
-    frameWindow.focus();
-    frameWindow.print();
-    window.setTimeout(cleanup, 1500);
-  };
-
-  window.setTimeout(runPrint, 250);
 }

@@ -262,7 +262,12 @@
     "locationNotAvailable": "Location not available.",
     "created": "Request processed",
     "updated": "Request updated",
-    "deleted": "Parent deleted"
+    "deleted": "Parent deleted",
+    "exportExcel": "Excel",
+    "exportPdf": "PDF",
+    "exporting": "Exporting...",
+    "exportGenerated": "Generated",
+    "exportTotal": "Total"
   },
   "reviews": {
     "title": "Reviews & ratings",

@@ -262,7 +262,12 @@
     "locationNotAvailable": "الموقع غير متوفر.",
     "created": "تم معالجة الطلب",
     "updated": "تم تحديث الطلب",
-    "deleted": "تم حذف ولي الأمر"
+    "deleted": "تم حذف ولي الأمر",
+    "exportExcel": "Excel",
+    "exportPdf": "PDF",
+    "exporting": "جاري التصدير...",
+    "exportGenerated": "تاريخ التصدير",
+    "exportTotal": "الإجمالي"
   },
   "reviews": {
     "title": "التقييمات والدرجات",
