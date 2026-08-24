@@ -30,6 +30,15 @@ function tableHtml(headers: string[], rows: string[][]): string {
   return `<table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
+function chunkRows<T>(rows: T[], size: number): T[][] {
+  if (rows.length === 0) return [[]];
+  const pages: T[][] = [];
+  for (let i = 0; i < rows.length; i += size) {
+    pages.push(rows.slice(i, i + size));
+  }
+  return pages;
+}
+
 export function downloadExcelTable(filename: string, headers: string[], rows: string[][]) {
   const html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel"><head><meta charset="UTF-8"></head><body>${tableHtml(headers, rows)}</body></html>`;
   const blob = new Blob(["\uFEFF", html], {
@@ -48,6 +57,110 @@ export interface PrintPdfTableOptions {
   rows: string[][];
 }
 
+const PDF_PAGE_WIDTH_PX = 1123;
+/** Landscape A4 content box (297×210mm minus 8mm margins). */
+const PDF_TARGET_SHEET_HEIGHT_PX = Math.round(PDF_PAGE_WIDTH_PX * (194 / 281));
+
+function sheetDocumentHtml(options: {
+  title: string;
+  brand: string;
+  subtitle?: string;
+  dir: "rtl" | "ltr";
+  headers: string[];
+  rows: string[][];
+  pageLabel: string;
+}): string {
+  const { title, brand, subtitle, dir, headers, rows, pageLabel } = options;
+  return `<!DOCTYPE html>
+<html dir="${dir}" lang="${dir === "rtl" ? "ar" : "en"}">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    html, body { margin: 0; padding: 0; background: #ffffff; }
+    .sa-pdf-sheet {
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      color: #0f172a;
+      background: #ffffff;
+      width: ${PDF_PAGE_WIDTH_PX}px;
+      min-height: ${PDF_TARGET_SHEET_HEIGHT_PX}px;
+      display: flex;
+      flex-direction: column;
+    }
+    .sa-pdf-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+      background: #091f3a; color: #ffffff; padding: 16px 20px; border-bottom: 4px solid #e3a825;
+    }
+    .sa-pdf-brand { font-size: 12px; letter-spacing: 0.16em; font-weight: 700; color: #f7cf6a; margin: 0 0 4px; text-transform: uppercase; }
+    .sa-pdf-title { font-size: 22px; font-weight: 700; margin: 0; }
+    .sa-pdf-meta { text-align: ${dir === "rtl" ? "left" : "right"}; font-size: 12px; color: #fae3a6; line-height: 1.6; white-space: nowrap; }
+    .sa-pdf-content { padding: 12px 8px 8px; flex: 1; display: flex; flex-direction: column; }
+    .sa-pdf-table-wrap { flex: 0 0 auto; width: 100%; }
+    .sa-pdf-sheet table {
+      width: 100%;
+      table-layout: fixed;
+      height: auto;
+      border-collapse: collapse;
+      font-size: 10.5px;
+    }
+    .sa-pdf-sheet th { background: #12395e; color: #ffffff; font-weight: 700; padding: 8px 8px; text-align: start; border: 0; }
+    .sa-pdf-sheet td { padding: 6px 8px; text-align: start; border-bottom: 1px solid #e2e8f0; vertical-align: middle; word-break: break-word; overflow-wrap: anywhere; }
+    .sa-pdf-sheet tr.even td { background: #ffffff; }
+    .sa-pdf-sheet tr.odd td { background: #f7f9fc; }
+    .sa-pdf-footer {
+      margin-top: auto; padding-top: 10px; border-top: 2px solid #e3a825;
+      font-size: 10px; color: #64748b; display: flex; justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="sa-pdf-sheet">
+    <header class="sa-pdf-header">
+      <div>
+        <p class="sa-pdf-brand">${escapeHtml(brand)}</p>
+        <h1 class="sa-pdf-title">${escapeHtml(title)}</h1>
+      </div>
+      ${subtitle ? `<div class="sa-pdf-meta">${escapeHtml(subtitle).replace(/\n/g, "<br/>")}</div>` : ""}
+    </header>
+    <div class="sa-pdf-content">
+      <div class="sa-pdf-table-wrap">
+        ${tableHtml(headers, rows)}
+      </div>
+      <div class="sa-pdf-footer">
+        <span>${escapeHtml(brand)}</span>
+        <span>${escapeHtml(pageLabel)}</span>
+        <span>${escapeHtml(title)}</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+async function writeSheet(frameDoc: Document, iframe: HTMLIFrameElement, html: string) {
+  frameDoc.open();
+  frameDoc.write(html);
+  frameDoc.close();
+  await new Promise((resolve) => window.setTimeout(resolve, 40));
+  const sheet = frameDoc.querySelector(".sa-pdf-sheet") as HTMLElement | null;
+  if (!sheet) throw new Error("PDF sheet missing");
+  iframe.style.height = `${Math.max(sheet.scrollHeight, 1)}px`;
+  return sheet;
+}
+
+function measureRowsPerPage(frameDoc: Document): number {
+  const row = frameDoc.querySelector(".sa-pdf-sheet tbody tr") as HTMLElement | null;
+  const header = frameDoc.querySelector(".sa-pdf-header") as HTMLElement | null;
+  const thead = frameDoc.querySelector(".sa-pdf-sheet thead") as HTMLElement | null;
+  const footer = frameDoc.querySelector(".sa-pdf-footer") as HTMLElement | null;
+  const rowHeight = Math.max(row?.getBoundingClientRect().height || 32, 28);
+  const chrome =
+    (header?.getBoundingClientRect().height || 72) +
+    (thead?.getBoundingClientRect().height || 32) +
+    (footer?.getBoundingClientRect().height || 36) +
+    24;
+  return Math.max(1, Math.floor((PDF_TARGET_SHEET_HEIGHT_PX - chrome) / rowHeight));
+}
+
 export async function printPdfTable({
   title,
   filename,
@@ -57,86 +170,107 @@ export async function printPdfTable({
   headers,
   rows,
 }: PrintPdfTableOptions) {
-  const host = document.createElement("div");
-  host.setAttribute("dir", dir);
-  host.setAttribute("aria-hidden", "true");
-  host.style.cssText =
-    "position:absolute;left:-10000px;top:0;width:1123px;background:#ffffff;pointer-events:none;";
-  host.innerHTML = `
-    <style>
-      .sa-pdf-sheet { font-family: "Segoe UI", Tahoma, Arial, sans-serif; color: #0f172a; background: #ffffff; }
-      .sa-pdf-header {
-        display: flex; align-items: center; justify-content: space-between; gap: 16px;
-        background: #091f3a; color: #ffffff; padding: 16px 20px; border-bottom: 4px solid #e3a825;
-      }
-      .sa-pdf-brand { font-size: 12px; letter-spacing: 0.16em; font-weight: 700; color: #f7cf6a; margin: 0 0 4px; text-transform: uppercase; }
-      .sa-pdf-title { font-size: 22px; font-weight: 700; margin: 0; }
-      .sa-pdf-meta { text-align: ${dir === "rtl" ? "left" : "right"}; font-size: 12px; color: #fae3a6; line-height: 1.6; white-space: nowrap; }
-      .sa-pdf-content { padding: 16px 8px 8px; }
-      .sa-pdf-sheet table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
-      .sa-pdf-sheet th { background: #12395e; color: #ffffff; font-weight: 700; padding: 10px 12px; text-align: start; border: 0; }
-      .sa-pdf-sheet td { padding: 9px 12px; text-align: start; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
-      .sa-pdf-sheet tr.even td { background: #ffffff; }
-      .sa-pdf-sheet tr.odd td { background: #f7f9fc; }
-      .sa-pdf-sheet tbody tr:last-child td { border-bottom: 2px solid #e3a825; }
-      .sa-pdf-footer { margin-top: 14px; font-size: 10px; color: #64748b; display: flex; justify-content: space-between; }
-    </style>
-    <div class="sa-pdf-sheet">
-      <header class="sa-pdf-header">
-        <div>
-          <p class="sa-pdf-brand">${escapeHtml(brand)}</p>
-          <h1 class="sa-pdf-title">${escapeHtml(title)}</h1>
-        </div>
-        ${subtitle ? `<div class="sa-pdf-meta">${escapeHtml(subtitle).replace(/\n/g, "<br/>")}</div>` : ""}
-      </header>
-      <div class="sa-pdf-content">
-        ${tableHtml(headers, rows)}
-        <div class="sa-pdf-footer">
-          <span>${escapeHtml(brand)}</span>
-          <span>${escapeHtml(title)}</span>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.appendChild(host);
+  const scrollX = window.scrollX;
+  const scrollY = window.scrollY;
+  const htmlEl = document.documentElement;
+  const bodyEl = document.body;
+  const prevHtmlOverflow = htmlEl.style.overflow;
+  const prevBodyOverflow = bodyEl.style.overflow;
+  htmlEl.style.overflow = "hidden";
+  bodyEl.style.overflow = "hidden";
+
+  const iframe = document.createElement("iframe");
+  iframe.setAttribute("aria-hidden", "true");
+  iframe.tabIndex = -1;
+  iframe.style.cssText =
+    "position:fixed;left:0;top:0;width:1123px;height:1px;opacity:0;border:0;pointer-events:none;z-index:-1;";
+  document.body.appendChild(iframe);
+
+  const frameDoc = iframe.contentDocument;
+  if (!frameDoc) {
+    iframe.remove();
+    htmlEl.style.overflow = prevHtmlOverflow;
+    bodyEl.style.overflow = prevBodyOverflow;
+    window.scrollTo(scrollX, scrollY);
+    throw new Error("Print frame unavailable");
+  }
 
   try {
+    await writeSheet(
+      frameDoc,
+      iframe,
+      sheetDocumentHtml({
+        title,
+        brand,
+        subtitle,
+        dir,
+        headers,
+        rows: rows.length ? rows.slice(0, 3) : [headers.map(() => "—")],
+        pageLabel: "1 / 1",
+      }),
+    );
+    const rowsPerPage = measureRowsPerPage(frameDoc);
+    const pageChunks = chunkRows(rows, rowsPerPage);
+    const totalPages = pageChunks.length;
+
     const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
       import("html2canvas"),
       import("jspdf"),
     ]);
-    const canvas = await html2canvas(host, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      logging: false,
-      windowWidth: 1123,
-    });
     const pdf = new jsPDF({ orientation: "landscape", unit: "mm", format: "a4" });
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = pageWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    const imgData = canvas.toDataURL("image/jpeg", 0.92);
+    const margin = 8;
 
-    let heightLeft = imgHeight;
-    let position = 0;
-    pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
-    heightLeft -= pageHeight;
-    while (heightLeft > 0) {
-      position -= pageHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+    for (let i = 0; i < pageChunks.length; i += 1) {
+      const pageLabel = `${i + 1} / ${totalPages}`;
+      const sheet = await writeSheet(
+        frameDoc,
+        iframe,
+        sheetDocumentHtml({
+          title,
+          brand,
+          subtitle,
+          dir,
+          headers,
+          rows: pageChunks[i],
+          pageLabel,
+        }),
+      );
+
+      const canvas = await html2canvas(sheet, {
+        scale: 2,
+        backgroundColor: "#ffffff",
+        useCORS: true,
+        logging: false,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: PDF_PAGE_WIDTH_PX,
+      });
+
+      if (i > 0) pdf.addPage();
+
+      const maxWidth = pageWidth - margin * 2;
+      const maxHeight = pageHeight - margin * 2;
+      const imgWidth = maxWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const scale = imgHeight > maxHeight ? maxHeight / imgHeight : 1;
+      const drawWidth = imgWidth * scale;
+      const drawHeight = imgHeight * scale;
+      const imgData = canvas.toDataURL("image/jpeg", 0.92);
+      pdf.addImage(imgData, "JPEG", margin, margin, drawWidth, drawHeight);
     }
 
     const safeName = (filename ?? title).replace(/[\\/:*?"<>|]+/g, "-").trim() || "export";
-    const pdfBlob = pdf.output("blob");
+    const buffer = pdf.output("arraybuffer");
     triggerDownload(
-      new Blob([pdfBlob], { type: "application/octet-stream" }),
+      new Blob([buffer], { type: "application/octet-stream" }),
       safeName.endsWith(".pdf") ? safeName : `${safeName}.pdf`,
     );
   } finally {
-    host.remove();
+    iframe.remove();
+    htmlEl.style.overflow = prevHtmlOverflow;
+    bodyEl.style.overflow = prevBodyOverflow;
+    window.scrollTo(scrollX, scrollY);
   }
 }

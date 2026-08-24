@@ -20,7 +20,7 @@ function statusLabel(t: (key: string) => string, status: ParentRequest["status"]
 
 function locationText(row: ParentRequest) {
   if (typeof row.latitude === "number" && typeof row.longitude === "number") {
-    return `${row.latitude}, ${row.longitude}`;
+    return `${row.latitude.toFixed(4)}, ${row.longitude.toFixed(4)}`;
   }
   return "—";
 }
