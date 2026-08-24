@@ -37,9 +37,24 @@ export const studentsService = {
     return mapStudent(res.data.data);
   },
 
-  async list(): Promise<Student[]> {
-    const res = await http.get<LaravelPaginator<ApiStudentRow>>("/students");
-    return (res.data?.data ?? []).map(mapStudent);
+  async list(options?: {
+    page?: number;
+    per_page?: number;
+    search?: string;
+    school_id?: number;
+  }): Promise<{ data: Student[]; meta?: LaravelPaginator<ApiStudentRow>["meta"] }> {
+    const res = await http.get<LaravelPaginator<ApiStudentRow>>("/students", {
+      params: {
+        page: options?.page ?? 1,
+        per_page: options?.per_page,
+        search: options?.search || undefined,
+        school_id: options?.school_id,
+      },
+    });
+    return {
+      data: (res.data?.data ?? []).map(mapStudent),
+      meta: res.data?.meta,
+    };
   },
 
   async create(payload: StudentWritePayload): Promise<unknown> {

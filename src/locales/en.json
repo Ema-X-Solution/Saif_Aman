@@ -256,7 +256,8 @@
     "rejectFailed": "Failed to reject request.",
     "locationNotAvailable": "Location not available.",
     "created": "Request processed",
-    "updated": "Request updated"
+    "updated": "Request updated",
+    "deleted": "Parent deleted"
   },
   "reviews": {
     "title": "Reviews & ratings",

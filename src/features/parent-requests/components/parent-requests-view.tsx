@@ -9,6 +9,7 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { ParentDetailsDialog } from "@/features/parent-requests/components/parent-details-dialog";
 import { EditParentDialog } from "@/features/parent-requests/components/edit-parent-dialog";
+import { DeleteParentDialog } from "@/features/parent-requests/components/delete-parent-dialog";
 import { usersAdminService } from "@/services/users-admin.service";
 import { parentRequestsService } from "@/services/parent-requests.service";
 import type { ApiUserRow } from "@/types/api";
@@ -67,6 +68,7 @@ export function ParentRequestsView() {
   const [reloadKey, setReloadKey] = useState(0);
   const [editingParent, setEditingParent] = useState<ParentRequest | null>(null);
   const [viewingParent, setViewingParent] = useState<ParentRequest | null>(null);
+  const [deletingParent, setDeletingParent] = useState<ParentRequest | null>(null);
 
   const fetcher = async ({ page, pageSize, search }: { page: number; pageSize: number; search?: string }) => {
     const res = await usersAdminService.list({ page, per_page: pageSize, type: "parent", search });
@@ -165,6 +167,12 @@ export function ParentRequestsView() {
                 { id: "view", label: t("common.viewDetails"), onSelect: () => setViewingParent(pr) },
                 { id: "edit", label: t("common.edit"),        onSelect: () => setEditingParent(pr) },
                 ...statusActions,
+                {
+                  id: "delete",
+                  label: t("common.delete"),
+                  onSelect: () => setDeletingParent(pr),
+                  destructive: true,
+                },
               ]}
             />
           );
@@ -197,6 +205,11 @@ export function ParentRequestsView() {
       <ParentDetailsDialog
         parent={viewingParent}
         onClose={() => setViewingParent(null)}
+      />
+      <DeleteParentDialog
+        parent={deletingParent}
+        onClose={() => setDeletingParent(null)}
+        onDeleted={() => setReloadKey((k) => k + 1)}
       />
     </div>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -43,6 +43,8 @@ interface Props<T> {
   initialPageSize?: number;
   searchPlaceholder?: string;
   className?: string;
+  filtersSlot?: ReactNode;
+  pageSizeOptions?: number[];
 }
 
 export function RemoteTable<T>({
@@ -52,6 +54,8 @@ export function RemoteTable<T>({
   initialPageSize = 10,
   searchPlaceholder = "Search...",
   className,
+  filtersSlot,
+  pageSizeOptions,
 }: Props<T>) {
   const t = useT();
   const pathname = usePathname();
@@ -131,28 +135,33 @@ export function RemoteTable<T>({
       className={cn("overflow-hidden rounded-xl border border-border/80 bg-card shadow-sm", className)}
     >
       <div className="p-4">
-        <div className="flex items-center gap-2">
-          <Input
-            placeholder={searchPlaceholder}
-            value={draft}
-            onChange={(e) => handleInputChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-1 items-center gap-2">
+            <Input
+              placeholder={searchPlaceholder}
+              value={draft}
+              onChange={(e) => handleInputChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (debounceRef.current) clearTimeout(debounceRef.current);
+                  commitSearch(draft);
+                }
+              }}
+              aria-label={t("common.search")}
+            />
+            <Button
+              type="button"
+              onClick={() => {
                 if (debounceRef.current) clearTimeout(debounceRef.current);
                 commitSearch(draft);
-              }
-            }}
-            aria-label={t("common.search")}
-          />
-          <Button
-            type="button"
-            onClick={() => {
-              if (debounceRef.current) clearTimeout(debounceRef.current);
-              commitSearch(draft);
-            }}
-          >
-            {t("table.searchAction")}
-          </Button>
+              }}
+            >
+              {t("table.searchAction")}
+            </Button>
+          </div>
+          {filtersSlot ? (
+            <div className="flex flex-wrap items-center gap-2">{filtersSlot}</div>
+          ) : null}
         </div>
       </div>
 
@@ -174,7 +183,7 @@ export function RemoteTable<T>({
               ))
             ) : data.length ? (
               data.map((row, i) => (
-                <TableRow key={i}>
+                <TableRow key={String((row as { id?: string | number }).id ?? i)}>
                   {columns.map((col) => (
                     <TableCell key={col.key} className={col.className}>
                       {col.render
@@ -203,6 +212,7 @@ export function RemoteTable<T>({
           lastPage={lastPage}
           onPageChange={(p) => setPage(p)}
           onPageSizeChange={(s) => { setPageSize(s); setPage(1); }}
+          pageSizeOptions={pageSizeOptions}
         />
       </div>
     </div>

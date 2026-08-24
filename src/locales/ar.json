@@ -256,7 +256,8 @@
     "rejectFailed": "فشل رفض الطلب.",
     "locationNotAvailable": "الموقع غير متوفر.",
     "created": "تم معالجة الطلب",
-    "updated": "تم تحديث الطلب"
+    "updated": "تم تحديث الطلب",
+    "deleted": "تم حذف ولي الأمر"
   },
   "reviews": {
     "title": "التقييمات والدرجات",

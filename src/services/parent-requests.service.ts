@@ -55,4 +55,8 @@ export const parentRequestsService = {
 
     return usersAdminService.update(user.id, payload);
   },
+
+  async remove(id: string): Promise<unknown> {
+    return usersAdminService.removeVendor(id);
+  },
 };
