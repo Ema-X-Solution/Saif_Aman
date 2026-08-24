@@ -11,6 +11,7 @@ import { EditStudentDialog } from "@/features/students/components/edit-student-d
 import { StudentDetailsDialog } from "@/features/students/components/student-details-dialog";
 import { DeleteStudentDialog } from "@/features/students/components/delete-student-dialog";
 import { AssignBusDialog } from "@/features/students/components/assign-bus-dialog";
+import { StudentsExportButtons } from "@/features/students/components/students-export-buttons";
 import { studentsService } from "@/services/students.service";
 import { schoolsService } from "@/services/schools.service";
 import type { Student } from "@/types/student";
@@ -143,7 +144,12 @@ export function StudentsView() {
       <PageHeader
         title={t("students.title")}
         description={t("students.description")}
-        actions={<AddStudentDialog onCreated={() => setReloadKey((k) => k + 1)} />}
+        actions={
+          <>
+            <StudentsExportButtons schoolId={selectedSchool} />
+            <AddStudentDialog onCreated={() => setReloadKey((k) => k + 1)} />
+          </>
+        }
       />
       <RemoteTable<Student>
         key={`${reloadKey}-${selectedSchool}`}

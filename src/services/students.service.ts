@@ -57,6 +57,31 @@ export const studentsService = {
     };
   },
 
+  async listAll(options?: {
+    search?: string;
+    school_id?: number;
+  }): Promise<Student[]> {
+    const pageSize = 100;
+    const first = await studentsService.list({
+      page: 1,
+      per_page: pageSize,
+      search: options?.search,
+      school_id: options?.school_id,
+    });
+    const lastPage = first.meta?.last_page ?? 1;
+    const rows = [...first.data];
+    for (let page = 2; page <= lastPage; page += 1) {
+      const next = await studentsService.list({
+        page,
+        per_page: pageSize,
+        search: options?.search,
+        school_id: options?.school_id,
+      });
+      rows.push(...next.data);
+    }
+    return rows;
+  },
+
   async create(payload: StudentWritePayload): Promise<unknown> {
     const res = await http.post("/students", payload);
     return res.data;

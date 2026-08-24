@@ -194,7 +194,12 @@
     "assignBus": "Assign Bus",
     "assignedBusSuccess": "Bus assigned successfully",
     "removeBus": "Remove Bus",
-    "noBus": "No Bus"
+    "noBus": "No Bus",
+    "exportExcel": "Excel",
+    "exportPdf": "PDF",
+    "exporting": "Exporting...",
+    "exportGenerated": "Generated",
+    "exportTotal": "Total"
   },
   "trips": {
     "title": "Trips",

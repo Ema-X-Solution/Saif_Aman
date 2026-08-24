@@ -194,7 +194,12 @@
     "assignBus": "تعيين باص",
     "assignedBusSuccess": "تم تعيين الباص بنجاح",
     "removeBus": "إزالة الباص",
-    "noBus": "بدون باص"
+    "noBus": "بدون باص",
+    "exportExcel": "Excel",
+    "exportPdf": "PDF",
+    "exporting": "جاري التصدير...",
+    "exportGenerated": "تاريخ التصدير",
+    "exportTotal": "الإجمالي"
   },
   "trips": {
     "title": "الرحلات",
