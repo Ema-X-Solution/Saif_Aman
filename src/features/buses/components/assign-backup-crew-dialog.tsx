@@ -85,22 +85,18 @@ export function AssignBackupCrewDialog({
     (async () => {
       setLoadingRefs(true);
       try {
-        const [busDetails, usersRes] = await Promise.all([
+        const [busDetails, driversRes, supervisorsRes] = await Promise.all([
           busesService.get(bus.id),
-          usersAdminService.list(),
+          usersAdminService.list({ type: "driver", per_page: 100 }),
+          usersAdminService.list({ type: "supervisor", per_page: 100 }),
         ]);
         if (cancelled) return;
 
-        const rows = usersRes.data ?? [];
         setDrivers(
-          rows
-            .filter((u) => u.type === "driver")
-            .map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` }))
+          (driversRes.data ?? []).map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` })),
         );
         setSupervisors(
-          rows
-            .filter((u) => u.type === "supervisor")
-            .map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` }))
+          (supervisorsRes.data ?? []).map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` })),
         );
 
         form.reset({

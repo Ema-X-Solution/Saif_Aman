@@ -91,24 +91,20 @@ export function AddBusDialog({ onCreated }: AddBusDialogProps) {
     (async () => {
       setLoadingRefs(true);
       try {
-        const [schoolRows, usersRes] = await Promise.all([
+        const [schoolRows, driversRes, supervisorsRes] = await Promise.all([
           schoolsService.list(),
-          usersAdminService.list(),
+          usersAdminService.list({ type: "driver", per_page: 100 }),
+          usersAdminService.list({ type: "supervisor", per_page: 100 }),
         ]);
         if (cancelled) return;
         setSchools(
           schoolRows.map((s) => ({ id: Number(s.id), label: s.name })),
         );
-        const rows = usersRes.data ?? [];
         setDrivers(
-          rows
-            .filter((u) => u.type === "driver")
-            .map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` })),
+          (driversRes.data ?? []).map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` })),
         );
         setSupervisors(
-          rows
-            .filter((u) => u.type === "supervisor")
-            .map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` })),
+          (supervisorsRes.data ?? []).map((u) => ({ id: u.id, label: `${u.name} (#${u.id})` })),
         );
       } catch (err) {
         if (!cancelled) toast.error(getAxiosErrorMessage(err));
